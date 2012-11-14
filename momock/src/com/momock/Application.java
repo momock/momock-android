@@ -15,6 +15,29 @@
  */
 package com.momock;
 
-public interface ICase {
+import com.momock.util.Logger;
+
+public class Application extends android.app.Application implements IApplication{
+	static IApplication app = null;
+	public static IApplication getInstance()
+	{
+		return app;
+	}
+	protected int getLogLevel()
+	{
+		return Logger.LEVEL_DEBUG;
+	}
+	@Override
+	public void onCreate() {
+		Logger.open(this.getClass().getName().toLowerCase() + ".log", getLogLevel());
+		app = this;
+		super.onCreate();
+	}
+
+	@Override
+	public void onTerminate() {
+		super.onTerminate();
+		Logger.close();
+	}
 
 }

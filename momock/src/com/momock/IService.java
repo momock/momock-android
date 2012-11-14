@@ -15,6 +15,6 @@
  */
 package com.momock;
 
-public interface ICase {
+public interface IService {
 
 }
