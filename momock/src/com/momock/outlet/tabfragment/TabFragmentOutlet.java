@@ -15,14 +15,8 @@
  ******************************************************************************/
 package com.momock.outlet.tabfragment;
 
-import android.os.Bundle;
-
 import com.momock.outlet.Outlet;
 
 public class TabFragmentOutlet extends Outlet {
-	void T()
-	{
-		Bundle bundle = new Bundle();
-		bundle.get
-	}
+	
 }
