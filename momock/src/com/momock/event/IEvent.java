@@ -13,26 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.util;
+package com.momock.event;
 
-import java.io.IOException;
+public interface IEvent {
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-public class XmlHelper {
-
-    public static void skipCurrentTag(XmlPullParser parser)
-            throws XmlPullParserException, IOException {
-        int outerDepth = parser.getDepth();
-        int type = parser.getEventType();
-    	if (type != XmlPullParser.START_TAG) {
-            throw new IllegalStateException();
-        }
-        while ((type=parser.next()) != XmlPullParser.END_DOCUMENT
-               && (type != XmlPullParser.END_TAG
-                       || parser.getDepth() > outerDepth)) {
-        }
-    }
-    
 }
