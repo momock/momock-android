@@ -15,6 +15,12 @@
  ******************************************************************************/
 package com.momock.app;
 
-public interface IApplication {
 
+public interface IApplication {
+	ICase getActiveCase();
+	void setActiveCase(ICase kase);
+	ICase getRootCase();
+	ICase getCaseByName(String name);
+	void addCase(ICase kase);
+	void removeCase(ICase kase);
 }

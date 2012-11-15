@@ -16,5 +16,14 @@
 package com.momock.app;
 
 public interface ICase {
-
+	String getName();
+	IApplication getApplication();
+	ICase getParent();
+	
+	Object getAttachedObject();
+	void setAttachedObject(Object target);	
+	
+	void run();
+	void onActivate();
+	void onDeactivate();
 }

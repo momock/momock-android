@@ -16,5 +16,14 @@
 package com.momock.app;
 
 public class RootCase extends Case {
-
+	IApplication app;
+	public RootCase(IApplication app)
+	{
+		super(null, null);
+		this.app = app;
+	}
+	@Override
+	public IApplication getApplication() {
+		return app;
+	}
 }

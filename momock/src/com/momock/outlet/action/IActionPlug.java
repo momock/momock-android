@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.outlet;
+package com.momock.outlet.action;
 
-public interface IActionOutlet {
+import com.momock.outlet.IPlug;
+
+public interface IActionPlug extends IPlug{
 
 }

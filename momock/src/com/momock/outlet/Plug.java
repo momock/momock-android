@@ -13,8 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.plug;
+package com.momock.outlet;
 
-public interface ITabFragmentPlug extends IPlug {
+import com.momock.data.DataNode;
+import com.momock.data.IDataNode;
+
+public class Plug implements IPlug {
+	IDataNode properties = new DataNode();
+	
+	@Override
+	public IDataNode getProperties() {
+		return properties;
+	}
 
 }

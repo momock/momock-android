@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.data;
+package com.momock.outlet;
 
-public interface IDataNode {
-	String getName();
-	boolean isValue();
-	Object getValue();
-	void setValue(Object value);
-	IDataNode getParent();
-	boolean isPropertyNode();
+public class Outlet implements IOutlet {
+
 }

@@ -13,31 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.app;
+package com.momock.holder;
 
-import com.momock.util.Logger;
+import com.momock.app.App;
 
-public class Application extends android.app.Application implements IApplication{
-	static IApplication app = null;
-	public static IApplication getInstance()
+public abstract class TextHolder {
+	public abstract String getText();
+	
+	public static TextHolder get(final String text)
 	{
-		return app;
+		return new TextHolder()
+		{
+			public String getText()
+			{
+				return text;
+			}
+		};
 	}
-	protected int getLogLevel()
+	public static TextHolder get(final int resourceId)
 	{
-		return Logger.LEVEL_DEBUG;
+		return new TextHolder()
+		{
+			String text = null;
+			public String getText()
+			{
+				if (text == null)
+					text = App.get().getResources().getString(resourceId);
+				return text;
+			}
+		};
 	}
-	@Override
-	public void onCreate() {
-		Logger.open(this.getClass().getName().toLowerCase() + ".log", getLogLevel());
-		app = this;
-		super.onCreate();
-	}
-
-	@Override
-	public void onTerminate() {
-		super.onTerminate();
-		Logger.close();
-	}
-
+	
 }

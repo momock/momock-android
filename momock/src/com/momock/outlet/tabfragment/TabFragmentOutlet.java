@@ -13,8 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.outlet;
+package com.momock.outlet.tabfragment;
 
-public interface ITabFragmentOutlet extends IOutlet {
+import android.os.Bundle;
 
+import com.momock.outlet.Outlet;
+
+public class TabFragmentOutlet extends Outlet {
+	void T()
+	{
+		Bundle bundle = new Bundle();
+		bundle.get
+	}
 }

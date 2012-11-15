@@ -13,13 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.data;
+package com.momock.app;
 
-public interface IDataNode {
-	String getName();
-	boolean isValue();
-	Object getValue();
-	void setValue(Object value);
-	IDataNode getParent();
-	boolean isPropertyNode();
+import android.app.Activity;
+import android.os.Bundle;
+
+public abstract class CaseActivity extends Activity{
+	protected abstract String getCaseName();
+	
+	protected ICase kase = null;
+	public ICase getCase()
+	{
+		if (kase == null)
+			kase = App.get().getCaseByName(getCaseName());
+		return kase;
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		getCase().setAttachedObject(this);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		App.get().setActiveCase(getCase());
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		getCase().setAttachedObject(null);
+	}
 }
