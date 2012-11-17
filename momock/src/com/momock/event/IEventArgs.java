@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.momock.event;
 
-public interface IEventArgs {
 
+public interface IEventArgs{
+	boolean isConsumed();
+	void setConsumed(boolean consumed);
 }

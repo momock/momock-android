@@ -15,6 +15,6 @@
  ******************************************************************************/
 package com.momock.data;
 
-public interface IDataTable {
+public interface IDataTable extends IDataMutableList<IDataRow>{
 
 }

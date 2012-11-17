@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.momock.data;
 
-public interface IDataRow extends IDataMap<String, Object>{
-
+public interface IDataList <T> {
+	T getItem(int index);
+	int getItemCount();
 }

@@ -15,6 +15,44 @@
  ******************************************************************************/
 package com.momock.data;
 
-public interface IDataRow extends IDataMap<String, Object>{
+import java.util.ArrayList;
 
+public class DataList<T> implements IDataMutableList<T>{
+	ArrayList<T> list = new ArrayList<T>();
+
+	@Override
+	public T getItem(int index) {
+		return list.get(index);
+	}
+
+	@Override
+	public int getItemCount() {
+		return list.size();
+	}
+
+	@Override
+	public void addItem(T val) {
+		list.add(val);
+	}
+
+	@Override
+	public void insertItem(int index, T val) {
+		list.add(index, val);	
+	}
+
+	@Override
+	public void setItem(int index, T val) {
+		list.set(index, val);
+	}
+
+	@Override
+	public void removeItem(T val) {
+		list.remove(val);
+	}
+
+	@Override
+	public void removeItemAt(int index) {
+		list.remove(index);
+	}
+	
 }

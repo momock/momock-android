@@ -15,6 +15,10 @@
  ******************************************************************************/
 package com.momock.data;
 
-public interface IDataRow extends IDataMap<String, Object>{
+import java.util.List;
 
+public interface IDataMap<K, V> {
+	boolean hasProperty(K name);
+	V getProperty(K name);
+	List<K> getPropertyNames();
 }

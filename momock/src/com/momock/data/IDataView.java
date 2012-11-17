@@ -15,6 +15,6 @@
  ******************************************************************************/
 package com.momock.data;
 
-public interface IDataView {
+public interface IDataView extends IDataList<IDataRow>{
 
 }

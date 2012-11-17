@@ -15,6 +15,6 @@
  ******************************************************************************/
 package com.momock.data;
 
-public interface IDataRow extends IDataMap<String, Object>{
+public interface IDataChangedAware {
 
 }

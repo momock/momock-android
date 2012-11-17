@@ -15,6 +15,10 @@
  ******************************************************************************/
 package com.momock.data;
 
-public interface IDataRow extends IDataMap<String, Object>{
-
+public interface IDataMutableList<T> extends IDataList<T>{
+	void addItem(T val);
+	void insertItem(int index, T val);	
+	void setItem(int index, T val);
+	void removeItem(T val);
+	void removeItemAt(int index);
 }

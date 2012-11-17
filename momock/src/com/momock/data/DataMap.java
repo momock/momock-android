@@ -15,6 +15,32 @@
  ******************************************************************************/
 package com.momock.data;
 
-public interface IDataRow extends IDataMap<String, Object>{
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class DataMap<K, V> implements IDataMutableMap<K, V> {
+	HashMap<K, V> map = new HashMap<K, V>();
+	@Override
+	public V getProperty(K name) {
+		return map.get(name);
+	}
+
+	@Override
+	public List<K> getPropertyNames() {
+		List<K> names = new ArrayList<K>();
+		names.addAll(map.keySet());
+		return names;
+	}
+
+	@Override
+	public void setProperty(K name, V val) {
+		map.put(name, val);
+	}
+
+	@Override
+	public boolean hasProperty(K name) {
+		return map.containsKey(name);
+	}
 
 }

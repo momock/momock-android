@@ -21,6 +21,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.view.View;
 
 import com.momock.util.Logger;
@@ -69,6 +70,8 @@ public class App extends android.app.Application implements IApplication {
 			return (Context) ao;
 		if (ao instanceof View)
 			return ((View) ao).getContext();
+		if (ao instanceof Fragment)
+			return ((Fragment) ao).getActivity();
 		return null;
 	}
 

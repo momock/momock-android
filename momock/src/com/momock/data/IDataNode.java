@@ -15,11 +15,10 @@
  ******************************************************************************/
 package com.momock.data;
 
-public interface IDataNode {
+public interface IDataNode extends IDataMutableMap<String, Object>, IDataMutableList<Object>, IDataChangedAware{
 	String getName();
-	boolean isValue();
+	boolean isValueNode();
 	Object getValue();
 	void setValue(Object value);
 	IDataNode getParent();
-	boolean isPropertyNode();
 }

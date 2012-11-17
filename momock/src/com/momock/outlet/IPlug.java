@@ -15,8 +15,9 @@
  ******************************************************************************/
 package com.momock.outlet;
 
-import com.momock.data.IDataNode;
+import com.momock.data.IDataMap;
 
 public interface IPlug {
-	IDataNode getProperties();
+	IDataMap getProperties();
+	void setProperty(String name, Object val);
 }

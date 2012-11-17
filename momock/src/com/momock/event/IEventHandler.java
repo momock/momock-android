@@ -15,6 +15,6 @@
  ******************************************************************************/
 package com.momock.event;
 
-public interface IEventHandler {
-
+public interface IEventHandler<A extends IEventArgs> {
+	void process(Object sender, A args);
 }
