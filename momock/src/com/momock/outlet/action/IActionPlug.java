@@ -15,8 +15,21 @@
  ******************************************************************************/
 package com.momock.outlet.action;
 
+import com.momock.event.IEvent;
+import com.momock.event.IEventArgs;
+import com.momock.holder.ImageHolder;
+import com.momock.holder.TextHolder;
+import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 
 public interface IActionPlug extends IPlug{
-
+	public static final int DEFAULT_ORDER = 100;
+	
+	int getOrder();
+	TextHolder getText();
+	ImageHolder getIcon();
+	
+	IOutlet<IActionPlug> getSubOutlet();
+	
+	IEvent<IEventArgs> getExecuteEvent();
 }

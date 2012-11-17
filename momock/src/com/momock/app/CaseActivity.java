@@ -18,21 +18,23 @@ package com.momock.app;
 import android.app.Activity;
 import android.os.Bundle;
 
-public abstract class CaseActivity extends Activity{
+public abstract class CaseActivity<T extends ICase> extends Activity {
+
 	protected abstract String getCaseName();
-	
-	protected ICase kase = null;
-	public ICase getCase()
-	{
-		if (kase == null)
-			kase = App.get().getCaseByName(getCaseName());
+	protected T kase = null;
+
+	@SuppressWarnings("unchecked")
+	public T getCase() {
+		if (kase == null) {
+			kase = (T)App.get().getCase(getCaseName());
+		}
 		return kase;
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getCase().setAttachedObject(this);
+		getCase().attach(this);
 	}
 
 	@Override
@@ -49,6 +51,6 @@ public abstract class CaseActivity extends Activity{
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		getCase().setAttachedObject(null);
+		getCase().attach(null);
 	}
 }

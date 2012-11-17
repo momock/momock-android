@@ -15,6 +15,10 @@
  ******************************************************************************/
 package com.momock.data;
 
-public interface IDataChangedAware {
+import com.momock.event.IEventHandler;
 
+public interface IDataChangedAware {
+	void fireDataChangedEvent(Object sender, DataChangedEventArgs args);
+	void addDataChangedHandler(IEventHandler<DataChangedEventArgs> handler);
+	void removeDataChangedHandler(IEventHandler<DataChangedEventArgs> handler);
 }

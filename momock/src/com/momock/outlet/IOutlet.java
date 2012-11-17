@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.momock.outlet;
 
-public interface IOutlet {
 
+public interface IOutlet<T extends IPlug>{
+	T addPlug(T plug);
+	void removePlug(T plug);
 }

@@ -15,33 +15,38 @@
  ******************************************************************************/
 package com.momock.outlet;
 
-import java.util.List;
+import com.momock.data.DataList;
 
-import com.momock.data.DataMap;
-import com.momock.data.IDataMutableMap;
+public class ProxyOutlet implements IOutlet<IPlug>{
+	DataList<IOutlet<?>> outlets = new DataList<IOutlet<?>>();
 
-public class Plug implements IPlug, IDataMutableMap<String, Object>{
-	protected DataMap<String, Object> properties = null;
-
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public boolean hasProperty(String name) {		
-		return properties == null ? false : properties.hasProperty(name);
+	public IPlug addPlug(IPlug plug) {
+		for(int i = 0; i < outlets.getItemCount(); i ++)
+		{
+			IOutlet outlet = outlets.getItem(i);
+			outlet.addPlug(plug);
+		}
+		return plug;
 	}
-
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public Object getProperty(String name) {
-		return properties == null ? null :  properties.getProperty(name);
+	public void removePlug(IPlug plug) {
+		for(int i = 0; i < outlets.getItemCount(); i ++)
+		{
+			IOutlet outlet = outlets.getItem(i);
+			outlet.removePlug(plug);
+		}
 	}
-
-	@Override
-	public List<String> getPropertyNames() {
-		return properties == null ? null : properties.getPropertyNames();
+	
+	public void addOutlet(IOutlet<?> outlet)
+	{
+		outlets.addItem(outlet);
 	}
-
-	@Override
-	public void setProperty(String name, Object val) {
-		if (properties == null)
-			properties = new DataMap<String, Object>();
-		properties.setProperty(name, val);
+	public void removeOutlet(IOutlet<?> outlet)
+	{
+		outlets.removeItem(outlet);
 	}
 }

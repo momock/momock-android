@@ -19,7 +19,7 @@ public class RootCase extends Case {
 	IApplication app;
 	public RootCase(IApplication app)
 	{
-		super(null, null);
+		super(null);
 		this.app = app;
 	}
 	@Override

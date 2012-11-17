@@ -19,8 +19,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class DataMap<K, V> implements IDataMutableMap<K, V> {
+import com.momock.event.Event;
+import com.momock.event.IEvent;
+import com.momock.event.IEventHandler;
+
+public class DataMap<K, V> implements IDataMutableMap<K, V>, IDataChangedAware {
 	HashMap<K, V> map = new HashMap<K, V>();
+
 	@Override
 	public V getProperty(K name) {
 		return map.get(name);
@@ -43,4 +48,29 @@ public class DataMap<K, V> implements IDataMutableMap<K, V> {
 		return map.containsKey(name);
 	}
 
+	// IDataChangedAware implementation
+	IEvent<DataChangedEventArgs> dataChanged = null;
+
+	@Override
+	public void fireDataChangedEvent(Object sender, DataChangedEventArgs args) {
+		if (sender == null) sender = this;
+		if (dataChanged != null)
+			dataChanged.fireEvent(sender, args);
+	}
+
+	@Override
+	public void addDataChangedHandler(
+			IEventHandler<DataChangedEventArgs> handler) {
+		if (dataChanged == null)
+			dataChanged = new Event<DataChangedEventArgs>();
+		dataChanged.addEventHandler(handler);
+	}
+
+	@Override
+	public void removeDataChangedHandler(
+			IEventHandler<DataChangedEventArgs> handler) {
+		if (dataChanged == null)
+			return;
+		dataChanged.removeEventHandler(handler);
+	}
 }

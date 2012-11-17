@@ -17,18 +17,10 @@ package com.momock.app;
 
 
 public class Case implements ICase {
-	String name;
 	ICase parentCase;
-	Object attachedObject = null;
 	public Case(ICase parentCase)
 	{
 		this.parentCase = parentCase;
-		this.name = this.getClass().getName();
-	}
-	public Case(ICase parentCase, String name)
-	{
-		this.parentCase = parentCase;
-		this.name = name;
 	}
 	public IApplication getApplication()
 	{
@@ -37,10 +29,6 @@ public class Case implements ICase {
 	public ICase getParent()
 	{
 		return parentCase;
-	}
-	public String getName()
-	{
-		return name;
 	}
 	@Override
 	public void onActivate() {
@@ -54,21 +42,25 @@ public class Case implements ICase {
 	public void run() {
 		
 	}
+
+	Object attachedHandle= null;
 	@Override
-	public Object getAttachedObject() {
-		return attachedObject;
+	public Object getAttachedHandle() {
+		return attachedHandle;
 	}
 	@Override
-	public void setAttachedObject(Object target) {
-		if (attachedObject != null)	onDetach();
-		attachedObject = target;	
-		if (attachedObject != null)	onAttach();
+	public void attach(Object target) {
+		if (attachedHandle != null)	onDetach();
+		attachedHandle = target;	
+		if (attachedHandle != null)	onAttach();
 	}
-	protected void onAttach()
+	@Override
+	public void onAttach()
 	{
 		
 	}
-	protected void onDetach()
+	@Override
+	public void onDetach()
 	{
 		
 	}

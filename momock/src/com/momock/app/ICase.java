@@ -15,13 +15,15 @@
  ******************************************************************************/
 package com.momock.app;
 
+
 public interface ICase {
-	String getName();
 	IApplication getApplication();
 	ICase getParent();
 	
-	Object getAttachedObject();
-	void setAttachedObject(Object target);	
+	Object getAttachedHandle();
+	void attach(Object target);	
+	void onAttach();
+	void onDetach();
 	
 	void run();
 	void onActivate();

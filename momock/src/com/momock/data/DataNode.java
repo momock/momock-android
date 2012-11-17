@@ -17,6 +17,9 @@ package com.momock.data;
 
 import java.util.List;
 
+import com.momock.event.Event;
+import com.momock.event.IEvent;
+import com.momock.event.IEventHandler;
 import com.momock.util.Logger;
 
 public class DataNode implements IDataNode {
@@ -79,7 +82,8 @@ public class DataNode implements IDataNode {
 	@Override
 	public String getName() {
 		return name;
-	}
+	}	
+	// IDataMutableMap implementation
 	@Override
 	public void setProperty(String name, Object val) {
 		DataMap<String, Object> map = getMap();
@@ -104,6 +108,7 @@ public class DataNode implements IDataNode {
 		if (map == null) return null;
 		return map.getPropertyNames();
 	}
+	// IDataMutableList implementation
 	@Override
 	public void addItem(Object val) {
 		DataList<Object> list = getList();
@@ -145,5 +150,28 @@ public class DataNode implements IDataNode {
 		DataList<Object> list = getList();
 		if (list == null) return 0;
 		return list.getItemCount();
+	}
+	// IDataChangedAware implementation
+	IEvent<DataChangedEventArgs> dataChanged = null;
+	@Override
+	public void fireDataChangedEvent(Object sender, DataChangedEventArgs args) {
+		if (sender == null) sender = this;
+		if (dataChanged != null)
+			dataChanged.fireEvent(sender, args);
+		if (parent != null)
+			parent.fireDataChangedEvent(sender, args);
+	}
+	@Override
+	public void addDataChangedHandler(
+			IEventHandler<DataChangedEventArgs> handler) {
+		if (dataChanged == null) 
+			dataChanged = new Event<DataChangedEventArgs>();
+		dataChanged.addEventHandler(handler);
+	}
+	@Override
+	public void removeDataChangedHandler(
+			IEventHandler<DataChangedEventArgs> handler) {
+		if (dataChanged == null) return;
+		dataChanged.removeEventHandler(handler);
 	}
 }

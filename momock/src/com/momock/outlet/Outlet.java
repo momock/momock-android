@@ -15,6 +15,58 @@
  ******************************************************************************/
 package com.momock.outlet;
 
-public class Outlet implements IOutlet {
+import java.util.ArrayList;
+import java.util.List;
 
+import com.momock.data.DataChangedEventArgs;
+import com.momock.data.IDataChangedAware;
+import com.momock.event.Event;
+import com.momock.event.IEvent;
+import com.momock.event.IEventHandler;
+import com.momock.util.Logger;
+
+public class Outlet<T extends IPlug> implements IOutlet<T>, IDataChangedAware {
+	protected List<T> plugs = null;
+	@Override
+	public T addPlug(T plug) {
+		if (plugs == null) plugs = new ArrayList<T>();
+		plugs.add(plug);
+		return plug;
+	}
+
+	@Override
+	public void removePlug(T plug) {
+		if (plugs == null)
+		{
+			Logger.warn("Try to remove plug in an empty outlet!");
+			return;
+		}
+		plugs.remove(plug);
+	}
+
+	// IDataChangedAware implementation
+	IEvent<DataChangedEventArgs> dataChanged = null;
+
+	@Override
+	public void fireDataChangedEvent(Object sender, DataChangedEventArgs args) {
+		if (sender == null) sender = this;
+		if (dataChanged != null)
+			dataChanged.fireEvent(sender, args);
+	}
+
+	@Override
+	public void addDataChangedHandler(
+			IEventHandler<DataChangedEventArgs> handler) {
+		if (dataChanged == null)
+			dataChanged = new Event<DataChangedEventArgs>();
+		dataChanged.addEventHandler(handler);
+	}
+
+	@Override
+	public void removeDataChangedHandler(
+			IEventHandler<DataChangedEventArgs> handler) {
+		if (dataChanged == null)
+			return;
+		dataChanged.removeEventHandler(handler);
+	}
 }

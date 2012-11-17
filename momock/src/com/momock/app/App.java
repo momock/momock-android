@@ -16,14 +16,15 @@
 package com.momock.app;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
+import com.momock.outlet.IOutlet;
+import com.momock.outlet.PlaceholderOutlet;
 import com.momock.util.Logger;
 
 public class App extends android.app.Application implements IApplication {
@@ -63,7 +64,7 @@ public class App extends android.app.Application implements IApplication {
 
 	// Helper methods
 	public Context getCurrentContext() {
-		Object ao = App.get().getActiveCase().getAttachedObject();
+		Object ao = App.get().getActiveCase().getAttachedHandle();
 		if (ao == null)
 			return null;
 		if (ao instanceof Context)
@@ -75,27 +76,19 @@ public class App extends android.app.Application implements IApplication {
 		return null;
 	}
 
-	public void addCase(Class<?> kaseClass) {
-		addCase(kaseClass.getName(), kaseClass);
-	}
-
 	public void addCase(String name, Class<?> kaseClass) {
-		Class<?>[] parmTypes = { ICase.class, String.class };
-		Object[] parms = { this.getRootCase(), name };
+		Class<?>[] parmTypes = { ICase.class};
+		Object[] parms = { this.getRootCase() };
 		try {
 			Constructor<?> constructor = kaseClass.getConstructor(parmTypes);
-			addCase((ICase) constructor.newInstance(parms));
+			addCase(name, (ICase) constructor.newInstance(parms));
 		} catch (Exception e) {
 			Logger.error(e.getMessage());
 		}
 	}
 
-	public ICase getCase(Class<?> kaseClass) {
-		return this.getCaseByName(kaseClass.getName());
-	}
-
-	public void runCase(Class<?> kaseClass) {
-		getCase(kaseClass).run();
+	public void runCase(String name) {
+		getCase(name).run();
 	}
 
 	public void startActivity(Class<?> activityClass) {
@@ -106,7 +99,7 @@ public class App extends android.app.Application implements IApplication {
 	// Implementation for IApplication interface
 	protected ICase activeCase = null;
 	protected ICase rootCase = null;
-	protected List<ICase> cases = new ArrayList<ICase>();
+	protected HashMap<String, ICase> cases = new HashMap<String, ICase>();
 
 	@Override
 	public ICase getActiveCase() {
@@ -132,26 +125,60 @@ public class App extends android.app.Application implements IApplication {
 	}
 
 	@Override
-	public ICase getCaseByName(String name) {
+	public ICase getCase(String name) {
 		if (name == null)
 			return null;
-		for (int i = 0; i < cases.size(); i++) {
-			ICase kase = cases.get(i);
-			if (name.equals(kase.getName()))
-				return kase;
+		return cases.get(name);
+	}
+
+	@Override
+	public void addCase(String name, ICase kase) {
+		if (!cases.containsKey(name))
+			cases.put(name, kase);
+	}
+
+	@Override
+	public void removeCase(String name) {
+		if (cases.containsKey(name))
+			cases.remove(name);
+	}
+
+	@SuppressWarnings("rawtypes")
+	HashMap<String, IOutlet> outlets = new HashMap<String, IOutlet>(); 
+	@SuppressWarnings("rawtypes")
+	@Override
+	public IOutlet getOutlet(String name) {
+		IOutlet outlet = null;
+		if (outlets.containsKey(name))
+			outlet = outlets.get(name);
+		else
+		{
+			outlet = new PlaceholderOutlet();
+			outlets.put(name, outlet);
 		}
-		return null;
+		return outlet;
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public void addOutlet(String name, IOutlet outlet) {
+		if (outlets.containsKey(name) && outlet != null)
+		{
+			IOutlet oldOutlet = outlets.get(name);
+			if (oldOutlet instanceof PlaceholderOutlet)
+				((PlaceholderOutlet)oldOutlet).transfer(outlet);
+		}
+		if (outlet == null)
+			outlets.remove(name);
+		else
+			outlets.put(name, outlet);
 	}
 
 	@Override
-	public void addCase(ICase kase) {
-		if (!cases.contains(kase))
-			cases.add(kase);
-	}
-
-	@Override
-	public void removeCase(ICase kase) {
-		if (cases.contains(kase))
-			cases.remove(kase);
+	public void removeOutlet(String name) {
+		if (outlets.containsKey(name))
+		{
+			outlets.remove(name);
+		}
 	}
 }

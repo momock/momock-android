@@ -15,13 +15,8 @@
  ******************************************************************************/
 package com.momock.event;
 
-import java.util.List;
 
-import com.momock.data.DataMap;
-import com.momock.data.IDataMutableMap;
-
-public class EventArgs implements IEventArgs, IDataMutableMap<String, Object>{
-	protected DataMap<String, Object> properties = null;
+public class EventArgs implements IEventArgs{
 	protected boolean consumed = false;
 	@Override
 	public boolean isConsumed() {
@@ -32,27 +27,4 @@ public class EventArgs implements IEventArgs, IDataMutableMap<String, Object>{
 	public void setConsumed(boolean consumed) {
 		this.consumed = consumed;
 	}
-
-	@Override
-	public boolean hasProperty(String name) {		
-		return properties == null ? false : properties.hasProperty(name);
-	}
-
-	@Override
-	public Object getProperty(String name) {
-		return properties == null ? null :  properties.getProperty(name);
-	}
-
-	@Override
-	public List<String> getPropertyNames() {
-		return properties == null ? null : properties.getPropertyNames();
-	}
-
-	@Override
-	public void setProperty(String name, Object val) {
-		if (properties == null)
-			properties = new DataMap<String, Object>();
-		properties.setProperty(name, val);
-	}
-
 }
