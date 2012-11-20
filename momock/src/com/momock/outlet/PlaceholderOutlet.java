@@ -28,7 +28,7 @@ public class PlaceholderOutlet<T extends IPlug> implements IOutlet<T> {
 	}
 
 	@Override
-	public void removePlug(IPlug plug) {
+	public void removePlug(T plug) {
 		plugs.remove(plug);
 	}
 
@@ -46,23 +46,47 @@ public class PlaceholderOutlet<T extends IPlug> implements IOutlet<T> {
 
 	@Override
 	public Object getAttachedObject() {
-		return null;
+		throw new RuntimeException("Unable to call getAttachedObject in a PlaceholderOutlet");
 	}
 
 	@Override
 	public void attach(Object target) {
+		throw new RuntimeException("Unable to call attach in a PlaceholderOutlet");
 	}
 
 	@Override
 	public void detach() {
+		throw new RuntimeException("Unable to call detach in a PlaceholderOutlet");
 	}
 
 	@Override
 	public void onAttach(Object target) {
+		throw new RuntimeException("Unable to call onAttach in a PlaceholderOutlet");
 	}
 
 	@Override
 	public void onDetach(Object target) {
+		throw new RuntimeException("Unable to call onDetach in a PlaceholderOutlet");
+	}
+
+	@Override
+	public T getActivePlug() {
+		throw new RuntimeException("Unable to call getActivePlug in a PlaceholderOutlet");		
+	}
+
+	@Override
+	public void setActivePlug(T plug) {		
+		throw new RuntimeException("Unable to call setActivePlug in a PlaceholderOutlet");
+	}
+
+	@Override
+	public void onActivate(T plug) {
+		throw new RuntimeException("Unable to call onActivate in a PlaceholderOutlet");		
+	}
+
+	@Override
+	public void onDeactivate(T plug) {
+		throw new RuntimeException("Unable to call onDeactivate in a PlaceholderOutlet");		
 	}
 
 }

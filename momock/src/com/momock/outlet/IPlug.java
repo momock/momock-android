@@ -17,6 +17,10 @@ package com.momock.outlet;
 
 import com.momock.data.IDataMutableMap;
 
+public interface IPlug extends IDataMutableMap<String, Object> {
 
-public interface IPlug extends IDataMutableMap<String, Object>{
+	void onActivate();
+
+	void onDeactivate();
+
 }

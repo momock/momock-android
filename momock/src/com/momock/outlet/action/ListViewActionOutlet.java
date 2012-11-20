@@ -17,9 +17,12 @@ package com.momock.outlet.action;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
+import com.momock.binder.ViewBinder;
+import com.momock.holder.ViewHolder;
 import com.momock.outlet.Outlet;
 
 public class ListViewActionOutlet extends Outlet<IActionPlug>{
@@ -32,9 +35,17 @@ public class ListViewActionOutlet extends Outlet<IActionPlug>{
 	}
 	@Override
 	public void onAttach(Object target) {
-		ListView lv = (ListView)target;
+		final ListView lv = (ListView)target;
 		if (lv != null)
 		{
+			lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {				
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					IActionPlug plug = (IActionPlug)plugs.get(position);
+					plug.getExecuteEvent().fireEvent(plug, null);					
+				}
+			});
 			lv.setAdapter(new BaseAdapter(){
 
 				@Override
@@ -60,6 +71,24 @@ public class ListViewActionOutlet extends Outlet<IActionPlug>{
 				
 			});
 		}
+	}
+	
+	public static ListViewActionOutlet getSimple(final String propName){
+		final ViewBinder binder = new ViewBinder();
+		binder.link(propName, android.R.id.text1);
+		return new ListViewActionOutlet(new ListViewActionOutlet.OnCreateItemViewHandler() {
+			
+			@Override
+			public View onBindItemView(View convertView, IActionPlug plug,
+					ViewGroup parent) {
+				View view = convertView;
+				if (view == null){
+					view = ViewHolder.get(android.R.layout.simple_list_item_1).getView();
+				}
+				binder.bind(view, plug);
+				return view;
+			}
+		});		
 	}
 
 }

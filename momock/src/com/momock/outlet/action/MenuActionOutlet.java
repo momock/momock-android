@@ -27,7 +27,7 @@ public class MenuActionOutlet extends Outlet<IActionPlug>{
 	{
 		if (plugs == null || !(target instanceof Menu)) return;		
 		Menu menu = (Menu)target;
-		for(IActionPlug plug : plugs)
+		for(final IActionPlug plug : plugs)
 		{
 			String text = plug.getText() == null ? null : plug.getText().getText();
 			final MenuItem mi = menu.add(text == null ? "" : text);
@@ -40,7 +40,7 @@ public class MenuActionOutlet extends Outlet<IActionPlug>{
 				
 				@Override
 				public boolean onMenuItemClick(MenuItem item) {
-					event.fireEvent(mi, null);
+					event.fireEvent(plug, null);
 					return true;
 				}
 			});

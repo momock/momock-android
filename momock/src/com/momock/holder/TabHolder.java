@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.momock.holder;
 
+import java.lang.ref.WeakReference;
+
 import android.app.Activity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -22,26 +24,26 @@ import android.widget.TabHost;
 import android.widget.TabWidget;
 
 public class TabHolder implements IComponentHolder {
-	TabHost tabHost;
-	TabWidget tabWidget;
-	ViewGroup tabContent;
+	WeakReference<TabHost> tabHost;
+	WeakReference<TabWidget> tabWidget;
+	WeakReference<ViewGroup> tabContent;
 
 	public TabHolder(TabHost tabHost, TabWidget tabWidget, ViewGroup tabContent) {
-		this.tabHost = tabHost;
-		this.tabWidget = tabWidget;
-		this.tabContent = tabContent;
+		this.tabHost = new WeakReference<TabHost>(tabHost);
+		this.tabWidget = new WeakReference<TabWidget>(tabWidget);
+		this.tabContent = new WeakReference<ViewGroup>(tabContent);
 	}
 
 	public TabHost getTabHost() {
-		return tabHost;
+		return tabHost.get();
 	}
 
 	public TabWidget getTabWidget() {
-		return tabWidget;
+		return tabWidget.get();
 	}
 
 	public ViewGroup getTabContent() {
-		return tabContent;
+		return tabContent.get();
 	}
 
 	public static TabHolder get(final Activity activity) {

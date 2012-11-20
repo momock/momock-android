@@ -35,14 +35,15 @@ public abstract class ViewHolder implements IComponentHolder{
 		this.handler = handler;
 		return this;
 	}
-	public static ViewHolder get(final View view)
+	public static ViewHolder get(View view)
 	{
+		final WeakReference<View> refView = new WeakReference<View>(view);
 		return new ViewHolder()
 		{
 
 			@Override
 			public View getView() {
-				return view;
+				return refView.get();
 			}
 			
 		};
@@ -51,8 +52,9 @@ public abstract class ViewHolder implements IComponentHolder{
 	{
 		return get(App.get(), resourceId);
 	}
-	public static ViewHolder get(final Context context, final int resourceId)
+	public static ViewHolder get(Context context, final int resourceId)
 	{
+		final WeakReference<Context> refContext = new WeakReference<Context>(context);
 		return new ViewHolder()
 		{
 			WeakReference<View> ref = null;
@@ -60,7 +62,7 @@ public abstract class ViewHolder implements IComponentHolder{
 			public View getView() {
 				if (ref == null || ref.get() == null)
 				{
-					LayoutInflater inflater = App.get().getLayoutInflater(context);
+					LayoutInflater inflater = App.get().getLayoutInflater(refContext.get());
 					ref = new WeakReference<View>(inflater.inflate(resourceId, null));
 					if (handler != null)
 						handler.onCreateView(ref.get());

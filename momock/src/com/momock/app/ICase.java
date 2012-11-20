@@ -15,16 +15,11 @@
  ******************************************************************************/
 package com.momock.app;
 
-import com.momock.IAttachable;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 
-public interface ICase extends IAttachable {
+public interface ICase {
 	ICase getParent();
-
-	ICase getActiveCase();
-
-	void setActiveCase(ICase kase);
 
 	ICase getCase(String name);
 
@@ -40,7 +35,21 @@ public interface ICase extends IAttachable {
 
 	void run();
 
+	ICase getActiveCase();
+
+	void setActiveCase(ICase kase);
+
 	void onActivate();
 
 	void onDeactivate();
+
+	Object getAttachedObject();
+
+	void attach(Object target);
+
+	void detach();
+
+	void onAttach(Object target);
+
+	void onDetach(Object target);
 }

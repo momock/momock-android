@@ -15,6 +15,42 @@
  ******************************************************************************/
 package com.momock.holder;
 
-public class FragmentHolder implements IComponentHolder{
+import java.lang.ref.WeakReference;
 
+import android.support.v4.app.Fragment;
+
+import com.momock.util.Logger;
+
+public abstract class FragmentHolder implements IComponentHolder{
+	public abstract Fragment getFragment();
+
+	public static FragmentHolder get(final Fragment f)
+	{
+		return new FragmentHolder(){
+
+			@Override
+			public Fragment getFragment() {
+				return f;
+			}
+			
+		};
+	}
+	public static FragmentHolder get(final Class<?> fc)
+	{
+		return new FragmentHolder(){
+			Fragment fragment = null;
+			@Override
+			public Fragment getFragment() {
+				if (fragment == null){
+					try {
+						Logger.debug("Creating fragment " + fc.getName());
+						fragment = (Fragment)fc.newInstance();
+					} catch (Exception e) {
+						Logger.error(e.getMessage());
+					}
+				}
+				return fragment;
+			}			
+		};
+	}
 }

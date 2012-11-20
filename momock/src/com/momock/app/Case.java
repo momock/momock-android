@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.momock.app;
 
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 import com.momock.outlet.IOutlet;
@@ -50,10 +49,10 @@ public abstract class Case implements ICase {
 	}
 
 	// IAttachable implementation
-	WeakReference<Object> attachedObject = null;
+	Object attachedObject = null;
 	@Override
 	public Object getAttachedObject() {
-		return attachedObject == null ? null : attachedObject.get();
+		return attachedObject;
 	}
 
 	@Override
@@ -61,7 +60,7 @@ public abstract class Case implements ICase {
 		detach();
 		if (target != null)
 		{
-			attachedObject = new WeakReference<Object>(target);	
+			attachedObject = target;	
 			onAttach(target);
 		}
 	}
@@ -70,7 +69,7 @@ public abstract class Case implements ICase {
 	public void detach(){
 		if (getAttachedObject() != null)
 		{
-			onDetach(attachedObject.get());
+			onDetach(attachedObject);
 			attachedObject = null;
 		}
 	}
@@ -116,7 +115,10 @@ public abstract class Case implements ICase {
 	public ICase getCase(String name) {
 		if (name == null)
 			return null;
-		return cases.get(name);
+		ICase kase = cases.get(name);
+		if (kase == null)
+			kase = getParent() == null ? App.get().getCase(name) : getParent().getCase(name);
+		return kase;
 	}
 
 	@Override
@@ -139,7 +141,9 @@ public abstract class Case implements ICase {
 		IOutlet<T> outlet = null;
 		if (outlets.containsKey(name))
 			outlet = outlets.get(name);
-		else
+		if (outlet == null)
+			outlet = (IOutlet<T>) (getParent() == null ? App.get().getOutlet(name) : getParent().getOutlet(name));
+		if (outlet == null)
 		{
 			outlet = new PlaceholderOutlet<T>();
 			outlets.put(name, outlet);

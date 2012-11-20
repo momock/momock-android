@@ -18,7 +18,6 @@ package com.momock.outlet;
 import java.util.List;
 
 import com.momock.data.DataMap;
-import com.momock.data.IDataMutableMap;
 
 public class Plug implements IPlug{
 	protected DataMap<String, Object> properties = null;
@@ -43,5 +42,15 @@ public class Plug implements IPlug{
 		if (properties == null)
 			properties = new DataMap<String, Object>();
 		properties.setProperty(name, val);
+	}
+
+	@Override
+	public void onActivate() {
+		
+	}
+
+	@Override
+	public void onDeactivate() {
+		
 	}
 }
