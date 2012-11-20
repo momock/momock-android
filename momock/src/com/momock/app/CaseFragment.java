@@ -13,11 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.outlet.card;
+package com.momock.app;
 
-import com.momock.holder.IComponentHolder;
-import com.momock.outlet.IPlug;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.View;
 
-public interface ICardPlug extends IPlug {
-	IComponentHolder getComponent();
+public class CaseFragment extends Fragment{
+	protected ICase kase = null;
+	public ICase getCase(){
+		return kase;
+	}
+	public void setCase(ICase kase){
+		this.kase = kase;
+	}
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		kase.attach(this);
+	}
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		kase.detach();
+	}
+	
 }

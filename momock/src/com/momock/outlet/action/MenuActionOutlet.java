@@ -22,7 +22,7 @@ import com.momock.event.IEvent;
 import com.momock.event.IEventArgs;
 import com.momock.outlet.Outlet;
 
-public class MenuActionOutlet extends Outlet<IActionPlug>{
+public class MenuActionOutlet extends Outlet<IActionPlug> {
 	public void onAttach(Object target)
 	{
 		if (plugs == null || !(target instanceof Menu)) return;		

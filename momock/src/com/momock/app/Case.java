@@ -121,6 +121,9 @@ public abstract class Case implements ICase {
 		return kase;
 	}
 
+	public void addCase(ICase kase){
+		addCase(kase.getClass().getName(), kase);
+	}
 	@Override
 	public void addCase(String name, ICase kase) {
 		if (!cases.containsKey(name))

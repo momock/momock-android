@@ -25,7 +25,7 @@ import com.momock.binder.ViewBinder;
 import com.momock.holder.ViewHolder;
 import com.momock.outlet.Outlet;
 
-public class ListViewActionOutlet extends Outlet<IActionPlug>{
+public class ListViewActionOutlet extends Outlet<IActionPlug> {
 	public static interface OnCreateItemViewHandler {
 		View onBindItemView(View convertView, IActionPlug plug, ViewGroup parent);
 	}
@@ -35,6 +35,8 @@ public class ListViewActionOutlet extends Outlet<IActionPlug>{
 	}
 	@Override
 	public void onAttach(Object target) {
+		if (target instanceof ViewHolder)
+			target = ((ViewHolder)target).getView();
 		final ListView lv = (ListView)target;
 		if (lv != null)
 		{
@@ -73,9 +75,9 @@ public class ListViewActionOutlet extends Outlet<IActionPlug>{
 		}
 	}
 	
-	public static ListViewActionOutlet getSimple(final String propName){
+	public static ListViewActionOutlet getSimple(){
 		final ViewBinder binder = new ViewBinder();
-		binder.link(propName, android.R.id.text1);
+		binder.link("Text", android.R.id.text1);
 		return new ListViewActionOutlet(new ListViewActionOutlet.OnCreateItemViewHandler() {
 			
 			@Override

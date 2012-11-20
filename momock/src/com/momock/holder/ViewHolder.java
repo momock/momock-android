@@ -48,6 +48,40 @@ public abstract class ViewHolder implements IComponentHolder{
 			
 		};
 	}
+
+	public static ViewHolder get(View parentView, final int id)
+	{
+		final WeakReference<View> refView = new WeakReference<View>(parentView);
+		return new ViewHolder()
+		{
+			WeakReference<View> refChild = null;
+			@Override
+			public View getView() {
+				if (refView.get() != null && refChild == null){
+					refChild = new WeakReference<View>(refView.get().findViewById(id));
+				}
+				return refChild == null ? null : refChild.get();
+			}
+			
+		};
+	}
+
+	public static ViewHolder get(View parentView, final String tag)
+	{
+		final WeakReference<View> refView = new WeakReference<View>(parentView);
+		return new ViewHolder()
+		{
+			WeakReference<View> refChild = null;
+			@Override
+			public View getView() {
+				if (refView.get() != null && refChild == null){
+					refChild = new WeakReference<View>(refView.get().findViewWithTag(tag));
+				}
+				return refChild == null ? null : refChild.get();
+			}
+			
+		};
+	}
 	public static ViewHolder get(final int resourceId)
 	{
 		return get(App.get(), resourceId);

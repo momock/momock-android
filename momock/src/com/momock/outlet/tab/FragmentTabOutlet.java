@@ -17,7 +17,7 @@ package com.momock.outlet.tab;
 
 import com.momock.outlet.Outlet;
 
-public class FragmentTabOutlet extends Outlet<ITabPlug>{
+public class FragmentTabOutlet extends Outlet<ITabPlug> {
 
 	@Override
 	public void onAttach(Object target) {
