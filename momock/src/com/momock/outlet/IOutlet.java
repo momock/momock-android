@@ -15,8 +15,11 @@
  ******************************************************************************/
 package com.momock.outlet;
 
+import com.momock.IAttachable;
 
-public interface IOutlet<T extends IPlug>{
+
+public interface IOutlet<T extends IPlug> extends IAttachable{
 	T addPlug(T plug);
 	void removePlug(T plug);
+	T[] getAllPlugs();
 }

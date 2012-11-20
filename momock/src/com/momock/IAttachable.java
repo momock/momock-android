@@ -13,35 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.holder;
+package com.momock;
 
-import com.momock.app.App;
+public interface IAttachable {
 
-public abstract class TextHolder implements IGraphicsHolder {
-	public abstract String getText();
-	
-	public static TextHolder get(final String text)
-	{
-		return new TextHolder()
-		{
-			public String getText()
-			{
-				return text;
-			}
-		};
-	}
-	public static TextHolder get(final int resourceId)
-	{
-		return new TextHolder()
-		{
-			String text = null;
-			public String getText()
-			{
-				if (text == null)
-					text = App.get().getResources().getString(resourceId);
-				return text;
-			}
-		};
-	}
+	Object getAttachedObject();
+	void attach(Object target);	
+	void detach();
+	void onAttach(Object target);
+	void onDetach(Object target);
 	
 }

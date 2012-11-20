@@ -20,7 +20,7 @@ import java.util.List;
 import com.momock.data.DataMap;
 import com.momock.data.IDataMutableMap;
 
-public class Plug implements IPlug, IDataMutableMap<String, Object>{
+public class Plug implements IPlug{
 	protected DataMap<String, Object> properties = null;
 
 	@Override

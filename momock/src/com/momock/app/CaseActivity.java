@@ -15,18 +15,17 @@
  ******************************************************************************/
 package com.momock.app;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
-public abstract class CaseActivity<T extends ICase> extends Activity {
+public abstract class CaseActivity extends FragmentActivity {
 
 	protected abstract String getCaseName();
-	protected T kase = null;
+	protected ICase kase = null;
 
-	@SuppressWarnings("unchecked")
-	public T getCase() {
+	public ICase getCase() {
 		if (kase == null) {
-			kase = (T)App.get().getCase(getCaseName());
+			kase = (ICase)App.get().getCase(getCaseName());
 		}
 		return kase;
 	}
@@ -51,6 +50,6 @@ public abstract class CaseActivity<T extends ICase> extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		getCase().attach(null);
+		getCase().detach();
 	}
 }

@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.outlet.tabfragment;
+package com.momock.outlet;
 
-import com.momock.outlet.Outlet;
-
-public class TabFragmentOutlet extends Outlet {
+public interface ICompositeOutlet<T extends IPlug> extends IOutlet<T>{
+	void addOutlet(String name);
+	void removeOutlet(String name);
+	void addOutlet(IOutlet<T> outlet);
+	void removeOutlet(IOutlet<T> outlet);
 	
+	IOutlet<T>[] getAllOutlets();
 }

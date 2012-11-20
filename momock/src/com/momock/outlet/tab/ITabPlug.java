@@ -13,10 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.outlet.tabfragment;
+package com.momock.outlet.tab;
 
-import com.momock.outlet.Plug;
+import com.momock.holder.IComponentHolder;
+import com.momock.holder.ImageHolder;
+import com.momock.holder.TextHolder;
+import com.momock.outlet.IPlug;
 
-public class TabFragmentPlug extends Plug {
+public interface ITabPlug extends IPlug {
+	public static final int DEFAULT_ORDER = 100;
 
+	int getOrder();
+	TextHolder getText();
+	ImageHolder getIcon();
+	IComponentHolder getContent();
+	
+	void onOpen();
+	void onClose();
 }

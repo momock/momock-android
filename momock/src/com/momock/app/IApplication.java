@@ -16,13 +16,12 @@
 package com.momock.app;
 
 import com.momock.outlet.IOutlet;
+import com.momock.outlet.IPlug;
 
 public interface IApplication {
 	ICase getActiveCase();
 
 	void setActiveCase(ICase kase);
-
-	ICase getRootCase();
 
 	ICase getCase(String name);
 
@@ -30,11 +29,9 @@ public interface IApplication {
 
 	void removeCase(String name);
 
-	@SuppressWarnings("rawtypes")
-	IOutlet getOutlet(String name);
+	<T extends IPlug> IOutlet<T> getOutlet(String name);
 
-	@SuppressWarnings("rawtypes")
-	void addOutlet(String name, IOutlet outlet);
+	<T extends IPlug> void addOutlet(String name, IOutlet<T> outlet);
 
 	void removeOutlet(String name);
 }

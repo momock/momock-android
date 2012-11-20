@@ -15,20 +15,25 @@
  ******************************************************************************/
 package com.momock.app;
 
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import com.momock.outlet.IOutlet;
+import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
 import com.momock.util.Logger;
 
-public class App extends android.app.Application implements IApplication {
+public abstract class App extends android.app.Application implements IApplication {
 	static App app = null;
+	
+	Map<Context, LayoutInflater> cachedLayoutInflater = new WeakHashMap<Context, LayoutInflater>();
 
 	public static App get() {
 		return app;
@@ -36,6 +41,20 @@ public class App extends android.app.Application implements IApplication {
 
 	protected int getLogLevel() {
 		return Logger.LEVEL_DEBUG;
+	}
+	
+	public LayoutInflater getLayoutInflater()
+	{
+		return getLayoutInflater(this);
+	}
+	
+	public LayoutInflater getLayoutInflater(Context context)
+	{		
+		if (cachedLayoutInflater.containsKey(context))
+			return cachedLayoutInflater.get(context);
+		LayoutInflater layoutInflater = LayoutInflater.from(context);
+		cachedLayoutInflater.put(context, layoutInflater);
+		return layoutInflater;
 	}
 
 	@Override
@@ -54,17 +73,13 @@ public class App extends android.app.Application implements IApplication {
 		Logger.close();
 	}
 
-	protected void onAddCases() {
+	protected abstract void onAddCases();
 
-	}
-
-	protected void onAddServices() {
-
-	}
+	protected abstract void onAddServices();
 
 	// Helper methods
 	public Context getCurrentContext() {
-		Object ao = App.get().getActiveCase().getAttachedHandle();
+		Object ao = App.get().getActiveCase().getAttachedObject();
 		if (ao == null)
 			return null;
 		if (ao instanceof Context)
@@ -74,17 +89,6 @@ public class App extends android.app.Application implements IApplication {
 		if (ao instanceof Fragment)
 			return ((Fragment) ao).getActivity();
 		return null;
-	}
-
-	public void addCase(String name, Class<?> kaseClass) {
-		Class<?>[] parmTypes = { ICase.class};
-		Object[] parms = { this.getRootCase() };
-		try {
-			Constructor<?> constructor = kaseClass.getConstructor(parmTypes);
-			addCase(name, (ICase) constructor.newInstance(parms));
-		} catch (Exception e) {
-			Logger.error(e.getMessage());
-		}
 	}
 
 	public void runCase(String name) {
@@ -98,7 +102,6 @@ public class App extends android.app.Application implements IApplication {
 
 	// Implementation for IApplication interface
 	protected ICase activeCase = null;
-	protected ICase rootCase = null;
 	protected HashMap<String, ICase> cases = new HashMap<String, ICase>();
 
 	@Override
@@ -116,14 +119,7 @@ public class App extends android.app.Application implements IApplication {
 				activeCase.onActivate();
 		}
 	}
-
-	@Override
-	public ICase getRootCase() {
-		if (rootCase == null)
-			rootCase = new RootCase(this);
-		return rootCase;
-	}
-
+	
 	@Override
 	public ICase getCase(String name) {
 		if (name == null)
@@ -145,28 +141,29 @@ public class App extends android.app.Application implements IApplication {
 
 	@SuppressWarnings("rawtypes")
 	HashMap<String, IOutlet> outlets = new HashMap<String, IOutlet>(); 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "unchecked" })
 	@Override
-	public IOutlet getOutlet(String name) {
-		IOutlet outlet = null;
+	public <T extends IPlug> IOutlet<T> getOutlet(String name) {
+		IOutlet<T> outlet = null;
 		if (outlets.containsKey(name))
 			outlet = outlets.get(name);
 		else
 		{
-			outlet = new PlaceholderOutlet();
+			outlet = new PlaceholderOutlet<T>();
 			outlets.put(name, outlet);
 		}
 		return outlet;
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings("unchecked")
 	@Override
-	public void addOutlet(String name, IOutlet outlet) {
+	public <T extends IPlug> void addOutlet(String name, IOutlet<T> outlet) {
+		Logger.debug("addOutlet : " + name);
 		if (outlets.containsKey(name) && outlet != null)
 		{
-			IOutlet oldOutlet = outlets.get(name);
+			IOutlet<T> oldOutlet = outlets.get(name);
 			if (oldOutlet instanceof PlaceholderOutlet)
-				((PlaceholderOutlet)oldOutlet).transfer(outlet);
+				((PlaceholderOutlet<T>)oldOutlet).transfer(outlet);
 		}
 		if (outlet == null)
 			outlets.remove(name);

@@ -13,17 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.app;
+package com.momock.holder;
 
-public class RootCase extends Case {
-	IApplication app;
-	public RootCase(IApplication app)
-	{
-		super(null);
-		this.app = app;
-	}
-	@Override
-	public IApplication getApplication() {
-		return app;
-	}
+public interface IGraphicsHolder {
+
 }

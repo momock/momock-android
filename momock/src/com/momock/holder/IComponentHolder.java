@@ -15,33 +15,6 @@
  ******************************************************************************/
 package com.momock.holder;
 
-import com.momock.app.App;
+public interface IComponentHolder {
 
-public abstract class TextHolder implements IGraphicsHolder {
-	public abstract String getText();
-	
-	public static TextHolder get(final String text)
-	{
-		return new TextHolder()
-		{
-			public String getText()
-			{
-				return text;
-			}
-		};
-	}
-	public static TextHolder get(final int resourceId)
-	{
-		return new TextHolder()
-		{
-			String text = null;
-			public String getText()
-			{
-				if (text == null)
-					text = App.get().getResources().getString(resourceId);
-				return text;
-			}
-		};
-	}
-	
 }

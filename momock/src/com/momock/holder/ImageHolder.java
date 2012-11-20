@@ -23,7 +23,7 @@ import android.graphics.drawable.Drawable;
 
 import com.momock.app.App;
 
-public class ImageHolder {
+public class ImageHolder implements IGraphicsHolder{
 	Drawable drawable = null;
 	public Drawable getAsDrawable() {
 		if (drawable == null)

@@ -13,35 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.holder;
+package com.momock.outlet.tab;
 
-import com.momock.app.App;
+import com.momock.outlet.Outlet;
 
-public abstract class TextHolder implements IGraphicsHolder {
-	public abstract String getText();
-	
-	public static TextHolder get(final String text)
-	{
-		return new TextHolder()
-		{
-			public String getText()
-			{
-				return text;
-			}
-		};
+public class FragmentTabOutlet extends Outlet<ITabPlug>{
+
+	@Override
+	public void onAttach(Object target) {
+		
 	}
-	public static TextHolder get(final int resourceId)
-	{
-		return new TextHolder()
-		{
-			String text = null;
-			public String getText()
-			{
-				if (text == null)
-					text = App.get().getResources().getString(resourceId);
-				return text;
-			}
-		};
-	}
-	
+
 }

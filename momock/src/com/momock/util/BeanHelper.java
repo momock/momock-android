@@ -22,19 +22,18 @@ import java.util.Map;
 import org.xmlpull.v1.XmlPullParser;
 
 public class BeanHelper {
-	static HashMap<Class<?>, HashMap<String, Method>> propsCache = new HashMap<Class<?>, HashMap<String, Method>>();
-	@SuppressWarnings("rawtypes")
-	public static void copyPropertiesFromMap(Object obj, Map propsToCopy) {
-		Class<?> beanClass = obj.getClass();
+	static HashMap<Class<?>, HashMap<String, Method>> setPropsCache = new HashMap<Class<?>, HashMap<String, Method>>();
+	static HashMap<Class<?>, HashMap<String, Method>> getPropsCache = new HashMap<Class<?>, HashMap<String, Method>>();
+	static Map<String, Method> getSetPropertyMethods(Class<?> beanClass){
 		HashMap<String, Method> props;
-		if (propsCache.containsKey(beanClass))
+		if (setPropsCache.containsKey(beanClass))
 		{
-			props = propsCache.get(beanClass);			
+			props = setPropsCache.get(beanClass);			
 		}
 		else
 		{
 			props = new HashMap<String, Method>();
-			propsCache.put(beanClass, props);
+			setPropsCache.put(beanClass, props);
 			Method[] ms = beanClass.getMethods();
 			for(int i = 0; i < ms.length; i++)
 			{
@@ -46,7 +45,79 @@ public class BeanHelper {
 					props.put(name, m);
 				}
 			}
-		}		
+		}	
+		return props;
+	}
+	static Map<String, Method> getGetPropertyMethods(Class<?> beanClass){
+		HashMap<String, Method> props;
+		if (getPropsCache.containsKey(beanClass))
+		{
+			props = getPropsCache.get(beanClass);			
+		}
+		else
+		{
+			props = new HashMap<String, Method>();
+			getPropsCache.put(beanClass, props);
+			Method[] ms = beanClass.getMethods();
+			for(int i = 0; i < ms.length; i++)
+			{
+				Method m = ms[i];
+				String name = m.getName();
+				if (name.startsWith("get") && name.length() > 3 && Character.isUpperCase(name.charAt(3)))
+				{
+					name = name.substring(3);
+					props.put(name, m);
+				}
+			}
+		}	
+		return props;
+	}
+	public static Object getProperty(Object obj, String name, Object def)
+	{
+		Object val = null;
+		Map<String, Method> props = getGetPropertyMethods(obj.getClass());
+		String propName = NamingHelper.toPascalCase(name);
+		Method m = (Method)props.get(propName);		
+		if (m == null) return def;
+		m.setAccessible(true);
+		try {
+			val = m.invoke(obj);
+		} catch (Exception e) {
+			Logger.error(e.getMessage());
+		}
+		return val == null ? def : val;
+	}
+	public static Class<?> getPropertyType(Object obj, String name){
+		Map<String, Method> props = getGetPropertyMethods(obj.getClass());
+		String propName = NamingHelper.toPascalCase(name);
+		Method m = (Method)props.get(propName);		
+		if (m != null)
+			return m.getReturnType();
+		else
+		{
+			props = getSetPropertyMethods(obj.getClass());
+			m = (Method)props.get(propName);	
+			if (m != null)
+				return m.getParameterTypes()[0];
+		}
+		return null;
+	}
+	public static void setProperty(Object obj, String name, Object val)
+	{
+		Map<String, Method> props = getSetPropertyMethods(obj.getClass());
+		String propName = NamingHelper.toPascalCase(name);
+		Method m = (Method)props.get(propName);		
+		if (m == null) return;
+		m.setAccessible(true);	
+		try {
+			m.invoke(obj, val);
+		} catch (Exception e) {
+			Logger.error(e.getMessage());
+		}
+	}
+	@SuppressWarnings("rawtypes")
+	public static void copyPropertiesFromMap(Object obj, Map propsToCopy) {
+		Map<String, Method> props = getSetPropertyMethods(obj.getClass());
 		for (Object key : propsToCopy.keySet()) {
 			String propName = NamingHelper.toPascalCase(key.toString());
 			Method m = (Method)props.get(propName);			
