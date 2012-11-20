@@ -16,7 +16,7 @@
 package com.momock.samples;
 
 import com.momock.app.App;
-import com.momock.samples.cases.action.ActionCase;
+import com.momock.samples.cases.settings.SettingsCase;
 import com.momock.util.Logger;
 
 public class SampleApplication extends App{
@@ -30,7 +30,7 @@ public class SampleApplication extends App{
 	@Override
 	protected void onAddCases() {
 		addCase(Cases.MAIN, new MainCase());
-		addCase(Cases.SAMPLE_ACTION, new ActionCase());
+		addCase(Cases.SETTINGS, new SettingsCase());
 	}
 
 	@Override

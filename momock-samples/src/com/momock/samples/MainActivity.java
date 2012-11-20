@@ -18,9 +18,11 @@ package com.momock.samples;
 import android.os.Bundle;
 import android.view.Menu;
 
-import com.momock.app.App;
 import com.momock.app.CaseActivity;
+import com.momock.app.ICase;
+import com.momock.holder.FragmentContainerHolder;
 import com.momock.outlet.IOutlet;
+import com.momock.samples.cases.mainmenu.MainMenuCase;
 
 public class MainActivity extends CaseActivity {
 
@@ -28,19 +30,28 @@ public class MainActivity extends CaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        IOutlet outlet = App.get().getOutlet(Outlets.SAMPLES);
-        outlet.attach(this.findViewById(R.id.lvSamples));
+        
+        getCase().getOutlet(Outlets.MAIN_CONTAINER).attach(FragmentContainerHolder.get(this, R.id.fragment_content));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
+    	getCase().getOutlet(Outlets.MAIN_MENU).attach(menu);
         return true;
     }
 
 	@Override
 	protected String getCaseName() {
 		return Cases.MAIN;
+	}
+
+	@Override
+	public void onBackPressed() {
+        IOutlet<?> outlet = getCase().getOutlet(Outlets.MAIN_CONTAINER);
+        ICase mainmenu = getCase().getCase(MainMenuCase.class.getName());
+		if (outlet.getActivePlug() == mainmenu)
+			super.onBackPressed();
+		else
+			mainmenu.run();
 	}
 }

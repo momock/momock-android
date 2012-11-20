@@ -13,65 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.samples.cases.action;
+package com.momock.samples.cases.mainmenu;
 
 import android.support.v4.app.Fragment;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
 
 import com.momock.app.Case;
 import com.momock.app.ICase;
-import com.momock.event.IEventArgs;
-import com.momock.event.IEventHandler;
 import com.momock.holder.FragmentHolder;
-import com.momock.holder.TextHolder;
 import com.momock.holder.ViewHolder;
 import com.momock.outlet.IOutlet;
-import com.momock.outlet.action.ActionPlug;
-import com.momock.outlet.action.IActionPlug;
+import com.momock.outlet.action.ListViewActionOutlet;
 import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
 import com.momock.samples.Outlets;
 import com.momock.samples.R;
 
-public class ActionCase extends Case{
-	public ActionCase(ICase parent) {
+public class MainMenuCase extends Case {
+	ICardPlug plug;
+	public MainMenuCase(ICase parent) {
 		super(parent);
 	}
 
-	ICardPlug plug = null;
 	@Override
-	protected void onCreate() {	
-		IOutlet<IActionPlug> outlet = getParent().getOutlet(Outlets.SAMPLES);
-		outlet.addPlug(ActionPlug.get(TextHolder.get("Action Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
-			@Override
-			public void process(Object sender, IEventArgs args) {
-				run();
-			}			
-		}));
+	protected void onCreate() {
+		getParent().addOutlet(Outlets.SAMPLES, ListViewActionOutlet.getSimple());
+		plug = CardPlug.get(FragmentHolder.get(R.layout.fragment_mainmenu, this));
+		run();
 	}
 
 	@Override
 	public void run() {
-		if (plug == null)
-			plug = CardPlug.get(FragmentHolder.get(R.layout.fragment_action, this));
 		IOutlet<ICardPlug> outlet = getParent().getOutlet(Outlets.MAIN_CONTAINER);
 		outlet.setActivePlug(plug);
-		super.run();
 	}
 
 	@Override
 	public void onAttach(Object target) {
 		View view = ((Fragment)target).getView();
-		Button btn = (Button)ViewHolder.get(view, R.id.button1).getView();
-		btn.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Toast.makeText(v.getContext(), "Hello", Toast.LENGTH_LONG).show();
-			}
-		});
+        getOutlet(Outlets.SAMPLES).attach(ViewHolder.get(view, R.id.lvMainMenu));      
+
 	}
 
 }

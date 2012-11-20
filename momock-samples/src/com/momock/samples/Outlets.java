@@ -18,4 +18,5 @@ package com.momock.samples;
 public interface Outlets {
 	public static final String MAIN_MENU = "MAIN_MENU";
 	public static final String SAMPLES = "SAMPLES";
+	public static final String MAIN_CONTAINER = "MAIN_CONTAINER";
 }

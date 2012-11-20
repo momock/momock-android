@@ -13,27 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.samples;
+package com.momock.samples.cases.settings;
 
 import com.momock.app.App;
 import com.momock.app.Case;
-import com.momock.outlet.action.MenuActionOutlet;
-import com.momock.outlet.card.FragmentCardOutlet;
-import com.momock.samples.cases.action.ActionCase;
-import com.momock.samples.cases.mainmenu.MainMenuCase;
-import com.momock.samples.cases.tab.TabCase;
+import com.momock.event.IEventArgs;
+import com.momock.event.IEventHandler;
+import com.momock.holder.TextHolder;
+import com.momock.outlet.IOutlet;
+import com.momock.outlet.action.ActionPlug;
+import com.momock.outlet.action.IActionPlug;
+import com.momock.samples.Outlets;
 
-public class MainCase extends Case{
+public class SettingsCase extends Case {
 
 	@Override
-	protected void onCreate() {		
-		App.get().addOutlet(Outlets.MAIN_MENU, new MenuActionOutlet());
-			
-		addOutlet(Outlets.MAIN_CONTAINER, new FragmentCardOutlet());
-		
-		addCase(new MainMenuCase(this));
-		addCase(new ActionCase(this));
-		addCase(new TabCase(this));
+	protected void onCreate() {
+		IOutlet<IActionPlug> outlet = App.get().getOutlet(Outlets.MAIN_MENU);
+		outlet.addPlug(ActionPlug.get(TextHolder.get("Settings"),
+				new IEventHandler<IEventArgs>() {
+					@Override
+					public void process(Object sender, IEventArgs args) {
+						run();
+					}
+				}));
+	}
+
+	@Override
+	public void run() {
+		App.get().startActivity(SettingsActivity.class);
 	}
 
 }

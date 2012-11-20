@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.samples.cases.action;
-
-import android.support.v4.app.Fragment;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
+package com.momock.samples.cases.tab;
 
 import com.momock.app.Case;
 import com.momock.app.ICase;
@@ -26,7 +21,6 @@ import com.momock.event.IEventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.TextHolder;
-import com.momock.holder.ViewHolder;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.action.ActionPlug;
 import com.momock.outlet.action.IActionPlug;
@@ -35,8 +29,9 @@ import com.momock.outlet.card.ICardPlug;
 import com.momock.samples.Outlets;
 import com.momock.samples.R;
 
-public class ActionCase extends Case{
-	public ActionCase(ICase parent) {
+public class TabCase extends Case{
+
+	public TabCase(ICase parent) {
 		super(parent);
 	}
 
@@ -44,7 +39,7 @@ public class ActionCase extends Case{
 	@Override
 	protected void onCreate() {	
 		IOutlet<IActionPlug> outlet = getParent().getOutlet(Outlets.SAMPLES);
-		outlet.addPlug(ActionPlug.get(TextHolder.get("Action Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
+		outlet.addPlug(ActionPlug.get(TextHolder.get("Tab Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
 			@Override
 			public void process(Object sender, IEventArgs args) {
 				run();
@@ -55,23 +50,9 @@ public class ActionCase extends Case{
 	@Override
 	public void run() {
 		if (plug == null)
-			plug = CardPlug.get(FragmentHolder.get(R.layout.fragment_action, this));
+			plug = CardPlug.get(FragmentHolder.get(R.layout.fragment_tab, this));
 		IOutlet<ICardPlug> outlet = getParent().getOutlet(Outlets.MAIN_CONTAINER);
 		outlet.setActivePlug(plug);
-		super.run();
-	}
-
-	@Override
-	public void onAttach(Object target) {
-		View view = ((Fragment)target).getView();
-		Button btn = (Button)ViewHolder.get(view, R.id.button1).getView();
-		btn.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Toast.makeText(v.getContext(), "Hello", Toast.LENGTH_LONG).show();
-			}
-		});
 	}
 
 }
