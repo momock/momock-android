@@ -15,17 +15,22 @@
  ******************************************************************************/
 package com.momock.samples.cases.tab;
 
+import android.support.v4.app.Fragment;
+
 import com.momock.app.Case;
 import com.momock.app.ICase;
 import com.momock.event.IEventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.FragmentHolder;
+import com.momock.holder.TabHolder;
 import com.momock.holder.TextHolder;
+import com.momock.holder.ViewHolder;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.action.ActionPlug;
-import com.momock.outlet.action.IActionPlug;
 import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
+import com.momock.outlet.tab.TabOutlet;
+import com.momock.outlet.tab.TabPlug;
 import com.momock.samples.Outlets;
 import com.momock.samples.R;
 
@@ -35,24 +40,33 @@ public class TabCase extends Case{
 		super(parent);
 	}
 
-	ICardPlug plug = null;
+	TabOutlet tabs = new TabOutlet();
+	ICardPlug plug = CardPlug.get(FragmentHolder.get(R.layout.case_tab, this));
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	protected void onCreate() {	
-		IOutlet<IActionPlug> outlet = getParent().getOutlet(Outlets.SAMPLES);
-		outlet.addPlug(ActionPlug.get(TextHolder.get("Tab Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
+	public void onCreate() {	
+		IOutlet outlet = getParent().getOutlet(Outlets.SAMPLES);
+		outlet.addPlug(ActionPlug.get(new TextHolder("Tab Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
 			@Override
 			public void process(Object sender, IEventArgs args) {
 				run();
 			}			
 		}));
+
+		tabs.addPlug(TabPlug.get(new TextHolder("Tab 1"), null, ViewHolder.get(R.layout.tab_one)));
+		tabs.addPlug(TabPlug.get(new TextHolder("Tab 2"), null, ViewHolder.get(R.layout.tab_two)));
+		tabs.addPlug(TabPlug.get(new TextHolder("Tab 3"), null, ViewHolder.get(R.layout.tab_three)));
+		tabs.addPlug(TabPlug.get(new TextHolder("Tab 4"), null, ViewHolder.get(R.layout.tab_four)));
 	}
 
 	@Override
-	public void run() {
-		if (plug == null)
-			plug = CardPlug.get(FragmentHolder.get(R.layout.fragment_tab, this));
-		IOutlet<ICardPlug> outlet = getParent().getOutlet(Outlets.MAIN_CONTAINER);
-		outlet.setActivePlug(plug);
+	public void run(Object... args) {
+		getParent().getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(plug);
+	}
+
+	@Override
+	public void onAttach(Object target) {
+		tabs.attach(new TabHolder((Fragment)target));
 	}
 
 }

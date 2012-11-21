@@ -29,8 +29,8 @@ public class SampleApplication extends App{
 	
 	@Override
 	protected void onAddCases() {
-		addCase(Cases.MAIN, new MainCase());
-		addCase(Cases.SETTINGS, new SettingsCase());
+		addCase(new MainCase(Cases.MAIN));
+		addCase(new SettingsCase(Cases.SETTINGS));
 	}
 
 	@Override

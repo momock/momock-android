@@ -21,7 +21,6 @@ import android.view.Menu;
 import com.momock.app.CaseActivity;
 import com.momock.app.ICase;
 import com.momock.holder.FragmentContainerHolder;
-import com.momock.outlet.IOutlet;
 import com.momock.samples.cases.mainmenu.MainMenuCase;
 
 public class MainActivity extends CaseActivity {
@@ -29,9 +28,9 @@ public class MainActivity extends CaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.case_main);
         
-        getCase().getOutlet(Outlets.MAIN_CONTAINER).attach(FragmentContainerHolder.get(this, R.id.fragment_content));
+        getCase().getOutlet(Outlets.MAIN_CONTAINER).attach(new FragmentContainerHolder(this, R.id.fragment_content));
     }
 
     @Override
@@ -47,9 +46,8 @@ public class MainActivity extends CaseActivity {
 
 	@Override
 	public void onBackPressed() {
-        IOutlet<?> outlet = getCase().getOutlet(Outlets.MAIN_CONTAINER);
         ICase mainmenu = getCase().getCase(MainMenuCase.class.getName());
-		if (outlet.getActivePlug() == mainmenu)
+		if (getCase().getOutlet(Outlets.MAIN_CONTAINER).getActivePlug() == mainmenu)
 			super.onBackPressed();
 		else
 			mainmenu.run();

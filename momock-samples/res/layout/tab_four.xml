@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   Copyright 2012 momock.com
   
@@ -13,8 +14,17 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<resources>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
-    <style name="AppTheme" parent="android:Theme.Black" />
 
-</resources>
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tab Four"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+</LinearLayout>

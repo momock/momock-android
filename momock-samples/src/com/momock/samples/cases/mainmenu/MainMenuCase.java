@@ -16,13 +16,11 @@
 package com.momock.samples.cases.mainmenu;
 
 import android.support.v4.app.Fragment;
-import android.view.View;
 
 import com.momock.app.Case;
 import com.momock.app.ICase;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.ViewHolder;
-import com.momock.outlet.IOutlet;
 import com.momock.outlet.action.ListViewActionOutlet;
 import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
@@ -36,22 +34,20 @@ public class MainMenuCase extends Case {
 	}
 
 	@Override
-	protected void onCreate() {
+	public void onCreate() {
 		getParent().addOutlet(Outlets.SAMPLES, ListViewActionOutlet.getSimple());
-		plug = CardPlug.get(FragmentHolder.get(R.layout.fragment_mainmenu, this));
+		plug = CardPlug.get(FragmentHolder.get(R.layout.case_mainmenu, this));
 		run();
 	}
 
 	@Override
-	public void run() {
-		IOutlet<ICardPlug> outlet = getParent().getOutlet(Outlets.MAIN_CONTAINER);
-		outlet.setActivePlug(plug);
+	public void run(Object... args) {
+		getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(plug);
 	}
 
 	@Override
 	public void onAttach(Object target) {
-		View view = ((Fragment)target).getView();
-        getOutlet(Outlets.SAMPLES).attach(ViewHolder.get(view, R.id.lvMainMenu));      
+        getOutlet(Outlets.SAMPLES).attach(ViewHolder.get((Fragment)target, R.id.lvMainMenu));      
 
 	}
 

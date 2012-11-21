@@ -13,59 +13,60 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.samples.cases.action;
+package com.momock.samples.cases.tab;
 
 import android.support.v4.app.Fragment;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
 
 import com.momock.app.Case;
 import com.momock.app.ICase;
 import com.momock.event.IEventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.FragmentHolder;
+import com.momock.holder.FragmentTabHolder;
 import com.momock.holder.TextHolder;
 import com.momock.holder.ViewHolder;
+import com.momock.outlet.IOutlet;
 import com.momock.outlet.action.ActionPlug;
+import com.momock.outlet.action.IActionPlug;
 import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
+import com.momock.outlet.tab.FragmentTabOutlet;
+import com.momock.outlet.tab.TabPlug;
 import com.momock.samples.Outlets;
 import com.momock.samples.R;
 
-public class ActionCase extends Case{
-	public ActionCase(ICase parent) {
+public class FragmentTabCase extends Case {
+
+	public FragmentTabCase(ICase parent) {
 		super(parent);
 	}
 
-	ICardPlug plug = CardPlug.get(FragmentHolder.get(R.layout.case_action, this));
+	FragmentTabOutlet tabs = new FragmentTabOutlet();
+	ICardPlug plug = CardPlug.get(FragmentHolder.get(R.layout.case_fragment_tab, this));
 	@Override
 	public void onCreate() {	
-		getOutlet(Outlets.SAMPLES).addPlug(ActionPlug.get(new TextHolder("Action Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
+		IOutlet<IActionPlug, ViewHolder> outlet = getParent().getOutlet(Outlets.SAMPLES);
+		outlet.addPlug(ActionPlug.get(new TextHolder("Fragment Tab Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
 			@Override
 			public void process(Object sender, IEventArgs args) {
 				run();
 			}			
 		}));
+
+		tabs.addPlug(TabPlug.get(new TextHolder("Fragment Tab 1"), null, FragmentHolder.get(R.layout.tab_one)));
+		tabs.addPlug(TabPlug.get(new TextHolder("Fragment Tab 2"), null, FragmentHolder.get(R.layout.tab_two)));
+		tabs.addPlug(TabPlug.get(new TextHolder("Fragment Tab 3"), null, FragmentHolder.get(R.layout.tab_three)));
+		tabs.addPlug(TabPlug.get(new TextHolder("Fragment Tab 4"), null, FragmentHolder.get(R.layout.tab_four)));
 	}
 
 	@Override
 	public void run(Object... args) {
-		getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(plug);
-		super.run();
+		getParent().getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(plug);
 	}
 
 	@Override
-	public void onAttach(Object target) {
-		View view = ((Fragment)target).getView();
-		Button btn = (Button)ViewHolder.get(view, R.id.button1).getView();
-		btn.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Toast.makeText(v.getContext(), "Hello", Toast.LENGTH_LONG).show();
-			}
-		});
+	public void onAttach(Object target) {		
+		tabs.attach(new FragmentTabHolder((Fragment)target, R.id.realtabcontent));
 	}
 
 }

@@ -13,24 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.samples.cases.settings;
+package com.momock.samples.cases.tab;
 
-import android.os.Bundle;
+public class FragmentPagerTabCase {
 
-import com.momock.app.CaseActivity;
-import com.momock.samples.Cases;
-import com.momock.samples.R;
-
-public class SettingsActivity extends CaseActivity {
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.case_settings);
-    }
-
-	@Override
-	protected String getCaseName() {
-		return Cases.SETTINGS;
-	}
 }

@@ -20,6 +20,7 @@ import com.momock.app.Case;
 import com.momock.event.IEventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.TextHolder;
+import com.momock.holder.ViewHolder;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.action.ActionPlug;
 import com.momock.outlet.action.IActionPlug;
@@ -27,10 +28,14 @@ import com.momock.samples.Outlets;
 
 public class SettingsCase extends Case {
 
+	public SettingsCase(String name) {
+		super(name);
+	}
+
 	@Override
-	protected void onCreate() {
-		IOutlet<IActionPlug> outlet = App.get().getOutlet(Outlets.MAIN_MENU);
-		outlet.addPlug(ActionPlug.get(TextHolder.get("Settings"),
+	public void onCreate() {
+		IOutlet<IActionPlug, ViewHolder> outlet = App.get().getOutlet(Outlets.MAIN_MENU);
+		outlet.addPlug(ActionPlug.get(new TextHolder("Settings"),
 				new IEventHandler<IEventArgs>() {
 					@Override
 					public void process(Object sender, IEventArgs args) {
@@ -40,7 +45,7 @@ public class SettingsCase extends Case {
 	}
 
 	@Override
-	public void run() {
+	public void run(Object... args) {
 		App.get().startActivity(SettingsActivity.class);
 	}
 
