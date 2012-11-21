@@ -17,6 +17,8 @@ package com.momock.app;
 
 import java.util.HashMap;
 
+import junit.framework.Assert;
+
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
@@ -24,16 +26,32 @@ import com.momock.util.Logger;
 
 
 public abstract class Case implements ICase {
-	public Case()
+	String name;
+	public Case(){
+		name = getClass().getName();
+	}
+	public Case(String name)
 	{
-		onCreate();
+		this.name = name;
 	}
 	public Case(ICase parent){
 		this.parent = parent;
-		onCreate();
+		this.name = getClass().getName();
+	}
+
+	public Case(ICase parent, String name){
+		this.parent = parent;
+		this.name = name;
+	}
+	public String getName(){
+		return name;
 	}
 	
-	protected abstract void onCreate();
+	public String getFullName(){
+		return getParent() != null ? getParent().getFullName() + "/" + name : "/" + name;
+	}
+	
+	public abstract void onCreate();
 	
 	@Override
 	public void onActivate() {
@@ -44,7 +62,7 @@ public abstract class Case implements ICase {
 		
 	}
 	@Override
-	public void run() {
+	public void run(Object... args) {
 		
 	}
 
@@ -113,23 +131,32 @@ public abstract class Case implements ICase {
 	
 	@Override
 	public ICase getCase(String name) {
-		if (name == null)
-			return null;
-		ICase kase = cases.get(name);
-		if (kase == null)
-			kase = getParent() == null ? App.get().getCase(name) : getParent().getCase(name);
+		Assert.assertNotNull(name);
+		ICase kase = null;
+		int pos = name.indexOf('/');
+		if (pos == -1){
+			kase = cases.get(name);			
+		} else {
+			if (name.startsWith("/"))
+				kase = App.get().getCase(name);
+			else{
+				kase = cases.get(name.substring(0, pos));
+				if (kase != null)
+					kase = kase.getCase(name.substring(pos + 1));
+			}
+		}
 		return kase;
 	}
 
-	public void addCase(ICase kase){
-		addCase(kase.getClass().getName(), kase);
-	}
 	@Override
-	public void addCase(String name, ICase kase) {
-		if (!cases.containsKey(name))
-			cases.put(name, kase);
+	public void addCase(ICase kase){
+		if (!cases.containsKey(kase.getName()))
+		{
+			cases.put(kase.getName(), kase);
+			kase.onCreate();
+		}
 	}
-
+	
 	@Override
 	public void removeCase(String name) {
 		if (cases.containsKey(name))
@@ -138,31 +165,31 @@ public abstract class Case implements ICase {
 
 	@SuppressWarnings("rawtypes")
 	HashMap<String, IOutlet> outlets = new HashMap<String, IOutlet>(); 
+
 	@SuppressWarnings({ "unchecked" })
 	@Override
-	public <T extends IPlug> IOutlet<T> getOutlet(String name) {
-		IOutlet<T> outlet = null;
+	public <P extends IPlug, T> IOutlet<P, T> getOutlet(String name) {
+		IOutlet<P, T> outlet = null;
 		if (outlets.containsKey(name))
 			outlet = outlets.get(name);
 		if (outlet == null)
-			outlet = (IOutlet<T>) (getParent() == null ? App.get().getOutlet(name) : getParent().getOutlet(name));
+			outlet = (IOutlet<P, T>)(getParent() == null ? App.get().getOutlet(name) : getParent().getOutlet(name));
 		if (outlet == null)
 		{
-			outlet = new PlaceholderOutlet<T>();
+			outlet = new PlaceholderOutlet<P, T>();
 			outlets.put(name, outlet);
 		}
 		return outlet;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends IPlug> void addOutlet(String name, IOutlet<T> outlet) {
+	public  <P extends IPlug, T> void addOutlet(String name, IOutlet<P, T> outlet) {
 		Logger.debug("addOutlet : " + name);
 		if (outlets.containsKey(name) && outlet != null)
 		{
-			IOutlet<T> oldOutlet = outlets.get(name);
+			IOutlet<?, ?> oldOutlet = outlets.get(name);
 			if (oldOutlet instanceof PlaceholderOutlet)
-				((PlaceholderOutlet<T>)oldOutlet).transfer(outlet);
+				((PlaceholderOutlet<?, ?>)oldOutlet).transfer(outlet);
 		}
 		if (outlet == null)
 			outlets.remove(name);

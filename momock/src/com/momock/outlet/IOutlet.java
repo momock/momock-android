@@ -15,28 +15,30 @@
  ******************************************************************************/
 package com.momock.outlet;
 
-public interface IOutlet<T extends IPlug> {
-	T addPlug(T plug);
+import com.momock.data.IDataList;
 
-	void removePlug(T plug);
+public interface IOutlet<P extends IPlug, T> {
+	P addPlug(P plug);
 
-	T[] getAllPlugs();
+	void removePlug(P plug);
 
-	Object getAttachedObject();
+	IDataList<P> getAllPlugs();
 
-	void attach(Object target);
+	T getAttachedObject();
+
+	void attach(T target);
 
 	void detach();
 
-	void onAttach(Object target);
+	void onAttach(T target);
 
-	void onDetach(Object target);
+	void onDetach(T target);
 
-	T getActivePlug();
+	P getActivePlug();
 
-	void setActivePlug(T plug);
+	void setActivePlug(P plug);
 
-	void onActivate(T plug);
+	void onActivate(P plug);
 
-	void onDeactivate(T plug);
+	void onDeactivate(P plug);
 }

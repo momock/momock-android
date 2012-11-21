@@ -28,7 +28,7 @@ public class ActionPlug extends Plug implements IActionPlug {
 	int order = DEFAULT_ORDER;
 	TextHolder text = null;
 	ImageHolder icon = null;
-	IOutlet<IActionPlug> subOutlet = null;
+	IOutlet<IActionPlug, ?> subOutlet = null;
 	IEvent<IEventArgs> event = new Event<IEventArgs>();
 	
 	private ActionPlug()
@@ -64,11 +64,11 @@ public class ActionPlug extends Plug implements IActionPlug {
 	}
 	
 	@Override
-	public IOutlet<IActionPlug> getSubOutlet() {
+	public IOutlet<IActionPlug, ?> getSubOutlet() {
 		return subOutlet;
 	}
 
-	public ActionPlug setSubOutlet(IOutlet<IActionPlug> subOutlet)
+	public ActionPlug setSubOutlet(IOutlet<IActionPlug, ?> subOutlet)
 	{
 		this.subOutlet = subOutlet;
 		return this;

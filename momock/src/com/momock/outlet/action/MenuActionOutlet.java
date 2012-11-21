@@ -15,20 +15,25 @@
  ******************************************************************************/
 package com.momock.outlet.action;
 
+import junit.framework.Assert;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.momock.data.IDataList;
 import com.momock.event.IEvent;
 import com.momock.event.IEventArgs;
+import com.momock.holder.ViewHolder;
 import com.momock.outlet.Outlet;
 
-public class MenuActionOutlet extends Outlet<IActionPlug> {
-	public void onAttach(Object target)
+public class MenuActionOutlet extends Outlet<IActionPlug, ViewHolder> {
+	public void onAttach(ViewHolder target)
 	{
-		if (plugs == null || !(target instanceof Menu)) return;		
-		Menu menu = (Menu)target;
-		for(final IActionPlug plug : plugs)
+		Assert.assertTrue(target.getView() instanceof Menu);		
+		Menu menu = (Menu)target.getView();
+		IDataList<IActionPlug> plugs = getAllPlugs();
+		for(int i = 0; i < plugs.getItemCount(); i++)
 		{
+			final IActionPlug plug = plugs.getItem(i);
 			String text = plug.getText() == null ? null : plug.getText().getText();
 			final MenuItem mi = menu.add(text == null ? "" : text);
 			if (plug.getIcon() != null)

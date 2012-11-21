@@ -15,82 +15,30 @@
  ******************************************************************************/
 package com.momock.outlet.action;
 
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
-
-import com.momock.binder.ViewBinder;
+import com.momock.binder.ListViewBinder;
+import com.momock.binder.ListViewBinder.ItemClickedEventArgs;
+import com.momock.event.IEventHandler;
 import com.momock.holder.ViewHolder;
 import com.momock.outlet.Outlet;
 
-public class ListViewActionOutlet extends Outlet<IActionPlug> {
-	public static interface OnCreateItemViewHandler {
-		View onBindItemView(View convertView, IActionPlug plug, ViewGroup parent);
-	}
-	OnCreateItemViewHandler handler = null;
-	public ListViewActionOutlet(OnCreateItemViewHandler handler){
-		this.handler = handler;
-	}
-	@Override
-	public void onAttach(Object target) {
-		if (target instanceof ViewHolder)
-			target = ((ViewHolder)target).getView();
-		final ListView lv = (ListView)target;
-		if (lv != null)
-		{
-			lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {				
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-					IActionPlug plug = (IActionPlug)plugs.get(position);
-					plug.getExecuteEvent().fireEvent(plug, null);					
-				}
-			});
-			lv.setAdapter(new BaseAdapter(){
+public class ListViewActionOutlet extends Outlet<IActionPlug, ViewHolder> {
 
-				@Override
-				public int getCount() {
-					return plugs.size();
-				}
-
-				@Override
-				public Object getItem(int position) {
-					return plugs.get(position);
-				}
-
-				@Override
-				public long getItemId(int position) {
-					return position;
-				}
-
-				@Override
-				public View getView(int position, View convertView,
-						ViewGroup parent) {
-					return handler.onBindItemView(convertView, plugs.get(position), parent);
-				}
-				
-			});
-		}
-	}
-	
-	public static ListViewActionOutlet getSimple(){
-		final ViewBinder binder = new ViewBinder();
-		binder.link("Text", android.R.id.text1);
-		return new ListViewActionOutlet(new ListViewActionOutlet.OnCreateItemViewHandler() {
-			
+	public static ListViewActionOutlet getSimple() {
+		return new ListViewActionOutlet() {
 			@Override
-			public View onBindItemView(View convertView, IActionPlug plug,
-					ViewGroup parent) {
-				View view = convertView;
-				if (view == null){
-					view = ViewHolder.get(android.R.layout.simple_list_item_1).getView();
-				}
-				binder.bind(view, plug);
-				return view;
-			}
-		});		
-	}
+			public void onAttach(ViewHolder target) {
+				ListViewBinder binder = ListViewBinder.getSimple("Text");
+				binder.addItemClickedEventHandler(new IEventHandler<ListViewBinder.ItemClickedEventArgs>() {
 
+					@Override
+					public void process(Object sender, ItemClickedEventArgs args) {
+						IActionPlug plug = (IActionPlug) args.getItem();
+						plug.getExecuteEvent().fireEvent(plug, null);
+					}
+
+				});
+				binder.bind(target, getAllPlugs());
+			}
+		};
+	}
 }

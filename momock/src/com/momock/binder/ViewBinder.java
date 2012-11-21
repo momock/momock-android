@@ -27,6 +27,7 @@ import android.widget.TextView;
 import com.momock.data.IDataMap;
 import com.momock.holder.ImageHolder;
 import com.momock.holder.TextHolder;
+import com.momock.holder.ViewHolder;
 import com.momock.util.BeanHelper;
 import com.momock.util.Convert;
 
@@ -34,12 +35,12 @@ public class ViewBinder {
 	public static interface Setter{
 		boolean onSet(View view, String viewProp, Object val);
 	}
-	static List<Setter> setters = new ArrayList<Setter>();
-	public static void addSetter(Setter setter){
-		setters.add(setter);
+	static List<Setter> globalSetters = new ArrayList<Setter>();
+	public static void addGlobalSetter(Setter setter){
+		globalSetters.add(0, setter);
 	}
 	static{
-		addSetter(new Setter(){
+		addGlobalSetter(new Setter(){
 			@Override
 			public boolean onSet(View view, String viewProp, Object val) {
 				if (view instanceof TextView && ("Text".equals(viewProp) || viewProp == null && val instanceof TextHolder)){
@@ -49,7 +50,7 @@ public class ViewBinder {
 				return false;
 			}			
 		});
-		addSetter(new Setter(){
+		addGlobalSetter(new Setter(){
 			@Override
 			public boolean onSet(View view, String viewProp, Object val) {
 				if (view instanceof ImageView){
@@ -68,6 +69,10 @@ public class ViewBinder {
 			}			
 		});
 	}
+	List<Setter> customSetters = new ArrayList<Setter>();
+	public void addSetter(Setter setter){
+		customSetters.add(0, setter);
+	}
 	class PropView
 	{
 		public String propName;
@@ -79,6 +84,9 @@ public class ViewBinder {
 			this.viewIdOrTag = viewIdOrTag;
 			this.viewProp = viewProp;
 		}
+	}
+	public ViewBinder()	{
+		onCreate();
 	}
 	List<PropView> relations = new ArrayList<PropView>();
 	public ViewBinder link(String name, int resourceId){
@@ -97,6 +105,12 @@ public class ViewBinder {
 		relations.add(new PropView(name, tag, viewProp));
 		return this;
 	}
+	public void bind(ViewHolder view, Object target){
+		bind(view.getView(), target);
+	}
+	protected void onCreate(){
+		
+	}
 	@SuppressWarnings("unchecked")
 	public void bind(View view, Object target){
 		IDataMap<String, Object> map = null;
@@ -112,12 +126,20 @@ public class ViewBinder {
 				val = BeanHelper.getProperty(target, name, null);
 			if (val != null){
 				View cv = null;
+				boolean set = false;
 				if (tagOrId instanceof String)
 					cv = view.findViewWithTag(tagOrId.toString());
 				else
 					cv = view.findViewById(Convert.toInteger(tagOrId));
-				for(Setter s : setters){
-					if (s.onSet(cv, pv.viewProp, val)) break;
+				for(Setter s : customSetters){
+					set = s.onSet(cv, pv.viewProp, val);
+					if (set) break;
+				}
+				if (!set){
+					for(Setter s : globalSetters){
+						set = s.onSet(cv, pv.viewProp, val);
+						if (set) break;
+					}
 				}
 			}
 		}

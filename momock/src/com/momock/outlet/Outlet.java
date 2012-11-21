@@ -15,46 +15,35 @@
  ******************************************************************************/
 package com.momock.outlet;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.momock.app.App;
 import com.momock.data.DataChangedEventArgs;
+import com.momock.data.DataList;
 import com.momock.data.IDataChangedAware;
+import com.momock.data.IDataList;
+import com.momock.data.IDataMutableList;
 import com.momock.event.Event;
 import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 
-public class Outlet<T extends IPlug> implements ICompositeOutlet<T>,
+public class Outlet<P extends IPlug, T> implements IOutlet<P, T>,
 		IDataChangedAware {
-	protected List<T> plugs = new ArrayList<T>();
-	protected T activePlug = null;
+	private IDataMutableList<P> plugs = new DataList<P>();
+	protected P activePlug = null;
 
 	@Override
-	public T addPlug(T plug) {
-		if (!plugs.contains(plug))
-			plugs.add(plug);
+	public P addPlug(P plug) {
+		if (!plugs.hasItem(plug))
+			plugs.addItem(plug);
 		return plug;
 	}
 
 	@Override
-	public void removePlug(T plug) {
-		plugs.remove(plug);
+	public void removePlug(P plug) {
+		plugs.removeItem(plug);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public T[] getAllPlugs() {
-		List<T> all = new ArrayList<T>();
-		all.addAll(plugs);
-		for (IOutlet<T> outlet : this.getAllOutlets()) {
-			T[] ts = outlet.getAllPlugs();
-			for (int i = 0; i < ts.length; i++) {
-				if (!all.contains(ts[i]))
-					all.add(ts[i]);
-			}
-		}
-		return (T[]) all.toArray();
+	public IDataList<P> getAllPlugs() {
+		return plugs;
 	}
 
 	// IDataChangedAware implementation
@@ -85,15 +74,15 @@ public class Outlet<T extends IPlug> implements ICompositeOutlet<T>,
 	}
 
 	// IAttachable implementation
-	Object attachedObject = null;
+	T attachedObject = null;
 
 	@Override
-	public Object getAttachedObject() {
+	public T getAttachedObject() {
 		return attachedObject;
 	}
 
 	@Override
-	public void attach(Object target) {
+	public void attach(T target) {
 		detach();
 		if (target != null) {
 			attachedObject = target;
@@ -110,66 +99,22 @@ public class Outlet<T extends IPlug> implements ICompositeOutlet<T>,
 	}
 
 	@Override
-	public void onAttach(Object target) {
+	public void onAttach(T target) {
 
 	}
 
 	@Override
-	public void onDetach(Object target) {
+	public void onDetach(T target) {
 
 	}
 
-	// ICompositeOutlet
-	@SuppressWarnings("rawtypes")
-	List outlets = new ArrayList();
-
-	@SuppressWarnings("unchecked")
 	@Override
-	public void addOutlet(String name) {
-		outlets.add(name);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void removeOutlet(String name) {
-		outlets.add(name);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void addOutlet(IOutlet<T> outlet) {
-		outlets.add(outlet);
-	}
-
-	@Override
-	public void removeOutlet(IOutlet<T> outlet) {
-		outlets.remove(outlet);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public IOutlet<T>[] getAllOutlets() {
-		List<IOutlet<T>> all = new ArrayList<IOutlet<T>>();
-		for (int i = 0; i < outlets.size(); i++) {
-			IOutlet<T> outlet = null;
-			if (outlets.get(i) instanceof String)
-				outlet = (IOutlet<T>) App.get().getOutlet(
-						(String) outlets.get(i));
-			else
-				outlet = (IOutlet<T>) outlets.get(i);
-			if (outlet != null && !all.contains(outlet))
-				all.add(outlet);
-		}
-		return (IOutlet<T>[]) all.toArray();
-	}
-
-	@Override
-	public T getActivePlug() {
+	public P getActivePlug() {
 		return activePlug;
 	}
 
 	@Override
-	public void setActivePlug(T plug) {
+	public void setActivePlug(P plug) {
 		if (activePlug != plug) {
 			if (activePlug != null)
 				onDeactivate(activePlug);
@@ -180,12 +125,12 @@ public class Outlet<T extends IPlug> implements ICompositeOutlet<T>,
 	}
 
 	@Override
-	public void onActivate(T plug) {
+	public void onActivate(P plug) {
 		if (plug != null) plug.onActivate();		
 	}
 
 	@Override
-	public void onDeactivate(T plug) {
+	public void onDeactivate(P plug) {
 		if (plug != null) plug.onDeactivate();		
 	}
 

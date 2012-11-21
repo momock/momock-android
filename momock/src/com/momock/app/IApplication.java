@@ -25,13 +25,13 @@ public interface IApplication {
 
 	ICase getCase(String name);
 
-	void addCase(String name, ICase kase);
+	void addCase(ICase kase);
 
 	void removeCase(String name);
 
-	<T extends IPlug> IOutlet<T> getOutlet(String name);
+	<P extends IPlug, T> IOutlet<P, T> getOutlet(String name);
 
-	<T extends IPlug> void addOutlet(String name, IOutlet<T> outlet);
+	<P extends IPlug, T> void addOutlet(String name, IOutlet<P, T> outlet);
 
 	void removeOutlet(String name);
 }

@@ -17,28 +17,40 @@ package com.momock.holder;
 
 import java.lang.ref.WeakReference;
 
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.view.View;
 
-public class FragmentContainerHolder implements IComponentHolder{
-	int fragmentContainerId;
+public class FragmentTabHolder extends TabHolder {
+
+	int tabContentId;
 	WeakReference<FragmentManager> refFragmentManager;
-	public int getFragmentContainerId()	{
-		return fragmentContainerId;
+	public int getTabContentId()	{
+		return tabContentId;
 	}
 	public FragmentManager getFragmentManager(){
 		return refFragmentManager.get();
 	}
-	
-	public FragmentContainerHolder(FragmentActivity activity, int fragmentContainerId)
+
+	public FragmentTabHolder(FragmentManager fm, View container, int tabContentId)
 	{
-		this.fragmentContainerId = fragmentContainerId;
-		refFragmentManager = new WeakReference<FragmentManager>(activity.getSupportFragmentManager());
+		super(container, tabContentId);
+		this.tabContentId = tabContentId;
+		refFragmentManager = new WeakReference<FragmentManager>(fm);
 	}
 
-	public FragmentContainerHolder(FragmentManager fm, int fragmentContainerId)
+	public FragmentTabHolder(FragmentActivity activity, View container, int tabContentId)
 	{
-		this.fragmentContainerId = fragmentContainerId;
-		refFragmentManager = new WeakReference<FragmentManager>(fm);
+		super(container, tabContentId);
+		this.tabContentId = tabContentId;
+		refFragmentManager = new WeakReference<FragmentManager>(activity.getSupportFragmentManager());
+	}
+	
+	public FragmentTabHolder(Fragment containerFragment, int tabContentId)
+	{
+		super(containerFragment.getView(), tabContentId);
+		this.tabContentId = tabContentId;
+		refFragmentManager = new WeakReference<FragmentManager>(containerFragment.getFragmentManager());
 	}
 }

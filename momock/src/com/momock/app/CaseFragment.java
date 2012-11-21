@@ -19,23 +19,29 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
-public class CaseFragment extends Fragment{
+public abstract class CaseFragment extends Fragment{
+
+	protected abstract String getCaseName();
 	protected ICase kase = null;
-	public ICase getCase(){
+
+	public ICase getCase() {
+		if (kase == null) {
+			String name = getCaseName();			
+			kase = name == null ? null : (ICase)App.get().getCase(name);
+		}
 		return kase;
 	}
-	public void setCase(ICase kase){
-		this.kase = kase;
-	}
+
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		kase.attach(this);
+		if (getCase() != null)
+			getCase().attach(this);
 	}
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		kase.detach();
+		if (getCase() != null)
+			getCase().detach();
 	}
-	
 }

@@ -15,29 +15,30 @@
  ******************************************************************************/
 package com.momock.outlet.tab;
 
+import junit.framework.Assert;
 import android.view.View;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 
+import com.momock.data.IDataList;
 import com.momock.holder.TabHolder;
 import com.momock.holder.ViewHolder;
 import com.momock.outlet.Outlet;
 
-public class TabOutlet extends Outlet<ITabPlug> {
+public class TabOutlet extends Outlet<ITabPlug, TabHolder> {
 
 	@Override
-	public void onAttach(Object target) {
-		TabHolder tab = (TabHolder)target;
-		if (tab == null)
+	public void onAttach(TabHolder target) {
+		Assert.assertNotNull(target);
+		final TabHost tabHost = target.getTabHost();
+		tabHost.setup();
+		IDataList<ITabPlug> plugs = getAllPlugs();
+		for(int i = 0; i < plugs.getItemCount(); i++)
 		{
-			throw new RuntimeException("TabOutlet must attach with a TabHolder!");
-		}
-		tab.getTabHost().setup();
-		for(final ITabPlug plug : plugs)
-		{
+			final ITabPlug plug = plugs.getItem(i);
 			if (plug.getContent() instanceof ViewHolder)
 			{
-		        TabHost.TabSpec spec = tab.getTabHost().newTabSpec("");
+		        TabHost.TabSpec spec = tabHost.newTabSpec("");
 		        spec.setIndicator(plug.getText() == null ? null : plug.getText().getText(),
 		        		plug.getIcon() == null ? null : plug.getIcon().getAsDrawable());        
 		        spec.setContent(new TabContentFactory(){
@@ -48,7 +49,7 @@ public class TabOutlet extends Outlet<ITabPlug> {
 					}
 		        	
 		        });
-		        tab.getTabHost().addTab(spec);		
+		        tabHost.addTab(spec);		
 			}	
 		}
 	}

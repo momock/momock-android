@@ -16,14 +16,23 @@
 package com.momock.data;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.momock.event.Event;
 import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 
 public class DataList<T> implements IDataMutableList<T>, IDataChangedAware{
-	ArrayList<T> list = new ArrayList<T>();
+	List<T> list = null;
 
+	public DataList(){
+		list = new ArrayList<T>();
+	}
+	
+	public DataList(List<T> list){
+		this.list = list;
+	}
+	
 	@Override
 	public T getItem(int index) {
 		return list.get(index);
@@ -83,5 +92,10 @@ public class DataList<T> implements IDataMutableList<T>, IDataChangedAware{
 		if (dataChanged == null)
 			return;
 		dataChanged.removeEventHandler(handler);
+	}
+
+	@Override
+	public boolean hasItem(T item) {
+		return list.contains(item);
 	}
 }

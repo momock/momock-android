@@ -174,4 +174,10 @@ public class DataNode implements IDataNode {
 		if (dataChanged == null) return;
 		dataChanged.removeEventHandler(handler);
 	}
+	@Override
+	public boolean hasItem(Object item) {
+		DataList<Object> list = getList();
+		if (list == null) return false;
+		return list.hasItem(item);
+	}
 }

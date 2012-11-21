@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import junit.framework.Assert;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
@@ -63,8 +64,8 @@ public abstract class App extends android.app.Application implements IApplicatio
 				getLogLevel());
 		app = this;
 		super.onCreate();
-		onAddCases();
 		onAddServices();
+		onAddCases();
 	}
 
 	@Override
@@ -122,15 +123,33 @@ public abstract class App extends android.app.Application implements IApplicatio
 	
 	@Override
 	public ICase getCase(String name) {
-		if (name == null)
-			return null;
-		return cases.get(name);
+		Assert.assertNotNull(name);
+		ICase kase = null;
+		int pos = name.indexOf('/');
+		if (pos == -1){
+			kase = cases.get(name);
+		} else {
+			if (name.startsWith("/"))
+				name = name.substring(1);
+			pos = name.indexOf('/');
+			if (pos == -1)
+				kase = cases.get(name);
+			else {
+				kase = cases.get(name.substring(0, pos));
+				if (kase != null)
+					kase = kase.getCase(name.substring(pos + 1));	
+			}						
+		}
+		return kase;
 	}
 
 	@Override
-	public void addCase(String name, ICase kase) {
-		if (!cases.containsKey(name))
-			cases.put(name, kase);
+	public void addCase(ICase kase){
+		if (!cases.containsKey(kase.getName()))
+		{
+			cases.put(kase.getName(), kase);
+			kase.onCreate();
+		}
 	}
 
 	@Override
@@ -141,29 +160,29 @@ public abstract class App extends android.app.Application implements IApplicatio
 
 	@SuppressWarnings("rawtypes")
 	HashMap<String, IOutlet> outlets = new HashMap<String, IOutlet>(); 
-	@SuppressWarnings({ "unchecked" })
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public <T extends IPlug> IOutlet<T> getOutlet(String name) {
-		IOutlet<T> outlet = null;
+	public <P extends IPlug, T> IOutlet<P, T> getOutlet(String name) {
+		IOutlet<P, T> outlet = null;
 		if (outlets.containsKey(name))
 			outlet = outlets.get(name);
 		else
 		{
-			outlet = new PlaceholderOutlet<T>();
+			outlet = new PlaceholderOutlet();
 			outlets.put(name, outlet);
 		}
 		return outlet;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends IPlug> void addOutlet(String name, IOutlet<T> outlet) {
+	public  <P extends IPlug, T> void addOutlet(String name, IOutlet<P, T> outlet) {
 		Logger.debug("addOutlet : " + name);
 		if (outlets.containsKey(name) && outlet != null)
 		{
-			IOutlet<T> oldOutlet = outlets.get(name);
+			IOutlet<?, ?> oldOutlet = outlets.get(name);
 			if (oldOutlet instanceof PlaceholderOutlet)
-				((PlaceholderOutlet<T>)oldOutlet).transfer(outlet);
+				((PlaceholderOutlet<?, ?>)oldOutlet).transfer(outlet);
 		}
 		if (outlet == null)
 			outlets.remove(name);

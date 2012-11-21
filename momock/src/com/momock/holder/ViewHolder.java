@@ -17,26 +17,29 @@ package com.momock.holder;
 
 import java.lang.ref.WeakReference;
 
-import com.momock.app.App;
-
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.momock.app.App;
+
 public abstract class ViewHolder implements IComponentHolder{
-	public static interface OnCreateViewHandler
+	public static interface OnViewCreatedHandler
 	{
-		void onCreateView(View view);
+		void onViewCreated(View view);
 	}
-	OnCreateViewHandler handler = null;
 	public abstract View getView();
-	public ViewHolder setOnCreateViewHandler(OnCreateViewHandler handler)
-	{
-		this.handler = handler;
-		return this;
+
+	public static ViewHolder get(Fragment fragment)	{
+		return get(fragment.getView());
 	}
-	public static ViewHolder get(View view)
-	{
+
+	public static ViewHolder get(Fragment fragment, int id)	{
+		return get(fragment.getView(), id);
+	}
+	
+	public static ViewHolder get(View view)	{
 		final WeakReference<View> refView = new WeakReference<View>(view);
 		return new ViewHolder()
 		{
@@ -82,11 +85,16 @@ public abstract class ViewHolder implements IComponentHolder{
 			
 		};
 	}
-	public static ViewHolder get(final int resourceId)
+
+	public static ViewHolder get(int resourceId)
 	{
-		return get(App.get(), resourceId);
+		return get(resourceId, null);
 	}
-	public static ViewHolder get(Context context, final int resourceId)
+	public static ViewHolder get(int resourceId, OnViewCreatedHandler handler)
+	{
+		return get(App.get(), resourceId, handler);
+	}
+	public static ViewHolder get(Context context, final int resourceId, final OnViewCreatedHandler handler)
 	{
 		final WeakReference<Context> refContext = new WeakReference<Context>(context);
 		return new ViewHolder()
@@ -99,7 +107,7 @@ public abstract class ViewHolder implements IComponentHolder{
 					LayoutInflater inflater = App.get().getLayoutInflater(refContext.get());
 					ref = new WeakReference<View>(inflater.inflate(resourceId, null));
 					if (handler != null)
-						handler.onCreateView(ref.get());
+						handler.onViewCreated(ref.get());
 				}
 				return ref.get();
 			}

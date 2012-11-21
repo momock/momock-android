@@ -15,78 +15,82 @@
  ******************************************************************************/
 package com.momock.outlet;
 
-import java.util.ArrayList;
-import java.util.List;
+import junit.framework.Assert;
 
-public class PlaceholderOutlet<T extends IPlug> implements IOutlet<T> {
-	List<T> plugs = new ArrayList<T>();
+import com.momock.data.DataList;
+import com.momock.data.IDataList;
+import com.momock.data.IDataMutableList;
+
+public class PlaceholderOutlet<P extends IPlug, T> implements IOutlet<P, T> {
+	IDataMutableList<P> plugs = new DataList<P>();
 
 	@Override
-	public T addPlug(T plug) {
-		plugs.add(plug);
+	public P addPlug(P plug) {
+		plugs.addItem(plug);
 		return plug;
 	}
 
 	@Override
-	public void removePlug(T plug) {
-		plugs.remove(plug);
+	public void removePlug(P plug) {
+		plugs.removeItem(plug);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public T[] getAllPlugs() {
-		return (T[]) plugs.toArray();
+	public IDataList<P> getAllPlugs() {
+		return plugs;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void transfer(IOutlet outlet) {
-		for (int i = 0; i < plugs.size(); i++)
-			outlet.addPlug(plugs.get(i));
+		for (int i = 0; i < plugs.getItemCount(); i++)
+			outlet.addPlug(plugs.getItem(i));
 	}
 
 	@Override
-	public Object getAttachedObject() {
-		throw new RuntimeException("Unable to call getAttachedObject in a PlaceholderOutlet");
+	public T getAttachedObject() {
+		Assert.assertTrue(false);
+		return null;
 	}
 
 	@Override
-	public void attach(Object target) {
-		throw new RuntimeException("Unable to call attach in a PlaceholderOutlet");
+	public void attach(T target) {
+		Assert.assertTrue(false);
 	}
 
 	@Override
 	public void detach() {
-		throw new RuntimeException("Unable to call detach in a PlaceholderOutlet");
+		Assert.assertTrue(false);
 	}
 
 	@Override
-	public void onAttach(Object target) {
-		throw new RuntimeException("Unable to call onAttach in a PlaceholderOutlet");
+	public void onAttach(T target) {
+		Assert.assertTrue(false);
 	}
 
 	@Override
-	public void onDetach(Object target) {
-		throw new RuntimeException("Unable to call onDetach in a PlaceholderOutlet");
+	public void onDetach(T target) {
+		Assert.assertTrue(false);
 	}
 
 	@Override
-	public T getActivePlug() {
-		throw new RuntimeException("Unable to call getActivePlug in a PlaceholderOutlet");		
+	public P getActivePlug() {
+		Assert.assertTrue(false);
+		return null;
 	}
 
 	@Override
-	public void setActivePlug(T plug) {		
-		throw new RuntimeException("Unable to call setActivePlug in a PlaceholderOutlet");
+	public void setActivePlug(P plug) {		
+		Assert.assertTrue(false);
 	}
 
 	@Override
-	public void onActivate(T plug) {
-		throw new RuntimeException("Unable to call onActivate in a PlaceholderOutlet");		
+	public void onActivate(P plug) {
+		Assert.assertTrue(false);		
 	}
 
 	@Override
-	public void onDeactivate(T plug) {
-		throw new RuntimeException("Unable to call onDeactivate in a PlaceholderOutlet");		
+	public void onDeactivate(P plug) {
+		Assert.assertTrue(false);		
 	}
 
 }

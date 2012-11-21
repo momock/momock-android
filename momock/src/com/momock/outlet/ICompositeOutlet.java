@@ -15,11 +15,11 @@
  ******************************************************************************/
 package com.momock.outlet;
 
-public interface ICompositeOutlet<T extends IPlug> extends IOutlet<T>{
+public interface ICompositeOutlet<O extends IOutlet<?, ?>>{
 	void addOutlet(String name);
 	void removeOutlet(String name);
-	void addOutlet(IOutlet<T> outlet);
-	void removeOutlet(IOutlet<T> outlet);
+	void addOutlet(O outlet);
+	void removeOutlet(O outlet);
 	
-	IOutlet<T>[] getAllOutlets();
+	O[] getAllOutlets();
 }

@@ -17,31 +17,17 @@ package com.momock.holder;
 
 import com.momock.app.App;
 
-public abstract class TextHolder implements IGraphicsHolder {
-	public abstract String getText();
-	
-	public static TextHolder get(final String text)
-	{
-		return new TextHolder()
-		{
-			public String getText()
-			{
-				return text;
-			}
-		};
+public class TextHolder implements IGraphicsHolder {
+	String text = null;
+	public TextHolder(String text){
+		this.text = text;
 	}
-	public static TextHolder get(final int resourceId)
-	{
-		return new TextHolder()
-		{
-			String text = null;
-			public String getText()
-			{
-				if (text == null)
-					text = App.get().getResources().getString(resourceId);
-				return text;
-			}
-		};
+
+	public TextHolder(int resourceId){
+		text = App.get().getResources().getString(resourceId);
 	}
 	
+	public String getText(){
+		return text;
+	}	
 }

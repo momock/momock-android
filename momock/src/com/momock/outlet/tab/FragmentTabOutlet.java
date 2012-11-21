@@ -15,13 +15,77 @@
  ******************************************************************************/
 package com.momock.outlet.tab;
 
+import junit.framework.Assert;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.View;
+import android.widget.TabHost;
+import android.widget.TabHost.TabContentFactory;
+
+import com.momock.data.IDataList;
+import com.momock.holder.FragmentHolder;
+import com.momock.holder.FragmentTabHolder;
 import com.momock.outlet.Outlet;
+import com.momock.util.Convert;
 
-public class FragmentTabOutlet extends Outlet<ITabPlug> {
-
+public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> {
+	
 	@Override
-	public void onAttach(Object target) {
-		
+	public void onAttach(final FragmentTabHolder target) {
+		Assert.assertNotNull(target);
+		final TabHost tabHost = target.getTabHost();
+		final IDataList<ITabPlug> plugs = getAllPlugs();
+		tabHost.setup();
+		tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+			
+			@Override
+			public void onTabChanged(String tabId) {
+				int index = Convert.toInteger(tabId);
+				int id = target.getTabContentId();
+				ITabPlug plug = plugs.getItem(index);
+				FragmentManager fm = getAttachedObject().getFragmentManager();
+				Fragment fragment = fm.findFragmentById(id);
+				FragmentTransaction ft = fm.beginTransaction();
+				if (plug.getContent() instanceof FragmentHolder)
+				{
+					FragmentHolder fh = (FragmentHolder)plug.getContent();
+					if (fragment == null)
+						ft.add(id, fh.getFragment());
+					else 
+						ft.replace(id, fh.getFragment());							
+					ft.commit();
+				} else {
+					if (fragment != null) {
+						ft.remove(fragment);
+						ft.commit();
+					}
+				}
+				//fm.executePendingTransactions();
+			}
+		});
+		for(int i = 0; i < plugs.getItemCount(); i++)
+		{
+			final ITabPlug plug = plugs.getItem(i);
+			if (plug.getContent() instanceof FragmentHolder)
+			{
+		        TabHost.TabSpec spec = tabHost.newTabSpec("" + i);
+		        spec.setIndicator(plug.getText() == null ? null : plug.getText().getText(),
+		        		plug.getIcon() == null ? null : plug.getIcon().getAsDrawable());        
+		        spec.setContent(new TabContentFactory(){
+
+					@Override
+					public View createTabContent(String tag) {
+		                View v = new View(tabHost.getContext());
+		                v.setMinimumWidth(0);
+		                v.setMinimumHeight(0);
+						return v;
+					}
+		        	
+		        });
+		        tabHost.addTab(spec);		
+			}	
+		}
 	}
 
 }

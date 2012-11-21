@@ -30,11 +30,17 @@ public abstract class FragmentHolder implements IComponentHolder{
 	public static class SimpleFragment extends CaseFragment
 	{
 		public static final String RID = "RID";
+		public static final String CASE_ID = "CASE_ID";
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
 			int resourceId = getArguments().getInt(RID);
 			return ViewHolder.get(resourceId).getView();
+		}
+		@Override
+		protected String getCaseName() {
+			String name = getArguments().getString(CASE_ID);
+			return name;
 		}
 	}
 	public static FragmentHolder get(final Fragment f)
@@ -79,34 +85,15 @@ public abstract class FragmentHolder implements IComponentHolder{
 		};
 	}
 
-	public static <T extends CaseFragment> FragmentHolder get(final Class<T> fc, final ICase kase)
-	{
-		return new FragmentHolder(){
-			CaseFragment fragment = null;
-			@Override
-			public Fragment getFragment() {
-				if (fragment == null){
-					try {
-						Logger.debug("Creating fragment " + fc.getName());
-						fragment = fc.newInstance();
-						fragment.setCase(kase);
-					} catch (Exception e) {
-						Logger.error(e.getMessage());
-					}
-				}
-				return fragment;
-			}			
-		};
-	}
 	public static FragmentHolder get(final int resourceId, final ICase kase){
 		return new FragmentHolder(){
 			@Override
 			public Fragment getFragment() {
 				Bundle args = new Bundle();
 				args.putInt(SimpleFragment.RID, resourceId);
+				args.putString(SimpleFragment.CASE_ID, kase.getFullName());
 				SimpleFragment f = new SimpleFragment();
 				f.setArguments(args);
-				f.setCase(kase);
 				return f;
 			}			
 		};

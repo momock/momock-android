@@ -29,7 +29,7 @@ public interface IActionPlug extends IPlug{
 	TextHolder getText();
 	ImageHolder getIcon();
 	
-	IOutlet<IActionPlug> getSubOutlet();
+	IOutlet<IActionPlug, ?> getSubOutlet();
 	
 	IEvent<IEventArgs> getExecuteEvent();
 }
