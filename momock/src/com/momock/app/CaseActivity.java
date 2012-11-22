@@ -15,11 +15,11 @@
  ******************************************************************************/
 package com.momock.app;
 
-import com.momock.util.Logger;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+
+import com.momock.util.Logger;
 
 public abstract class CaseActivity extends FragmentActivity {
 

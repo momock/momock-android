@@ -25,16 +25,18 @@ import android.widget.TabHost.TabContentFactory;
 import com.momock.data.IDataList;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.FragmentTabHolder;
+import com.momock.holder.ViewHolder;
 import com.momock.outlet.Outlet;
 import com.momock.util.Logger;
 
 public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> {
 	Fragment lastFragment = null;
+	IDataList<ITabPlug> plugs;
 	@Override
 	public void onAttach(final FragmentTabHolder target) {
 		Logger.check(target != null, "Parameter target cannot be null!");
 		final TabHost tabHost = target.getTabHost();
-		final IDataList<ITabPlug> plugs = getAllPlugs();
+		plugs = getAllPlugs();
 		tabHost.setup();
 		tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
 			
@@ -89,4 +91,15 @@ public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> {
 		}
 	}
 
+	@Override
+	public void onActivate(ITabPlug plug) {
+		Logger.check(plug.getContent() instanceof ViewHolder, "The plug of FragmentTabOutlet must include a ViewHolder!");
+		TabHost tabHost = getAttachedObject().getTabHost();
+		for(int i = 0; i < plugs.getItemCount(); i++){
+			if (plugs.getItem(i) == plug){
+				tabHost.setCurrentTab(i);
+				break;				
+			}
+		}		
+	}
 }

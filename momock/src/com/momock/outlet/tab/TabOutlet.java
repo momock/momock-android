@@ -26,13 +26,13 @@ import com.momock.outlet.Outlet;
 import com.momock.util.Logger;
 
 public class TabOutlet extends Outlet<ITabPlug, TabHolder> {
-
+	IDataList<ITabPlug> plugs;
 	@Override
 	public void onAttach(TabHolder target) {
 		Logger.check(target != null, "Parameter target cannot be null!");
 		final TabHost tabHost = target.getTabHost();
 		tabHost.setup();
-		IDataList<ITabPlug> plugs = getAllPlugs();
+		plugs = getAllPlugs();
 		for(int i = 0; i < plugs.getItemCount(); i++)
 		{
 			final ITabPlug plug = plugs.getItem(i);
@@ -53,5 +53,15 @@ public class TabOutlet extends Outlet<ITabPlug, TabHolder> {
 	        tabHost.addTab(spec);	
 		}
 	}
-	
+	@Override
+	public void onActivate(ITabPlug plug) {
+		Logger.check(plug.getContent() instanceof ViewHolder, "The plug of TabOutlet must include a ViewHolder!");
+		TabHost tabHost = getAttachedObject().getTabHost();
+		for(int i = 0; i < plugs.getItemCount(); i++){
+			if (plugs.getItem(i) == plug){
+				tabHost.setCurrentTab(i);
+				break;				
+			}
+		}		
+	}
 }
