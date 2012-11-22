@@ -36,21 +36,21 @@ public class TabOutlet extends Outlet<ITabPlug, TabHolder> {
 		for(int i = 0; i < plugs.getItemCount(); i++)
 		{
 			final ITabPlug plug = plugs.getItem(i);
-			if (plug.getContent() instanceof ViewHolder)
-			{
-		        TabHost.TabSpec spec = tabHost.newTabSpec("");
-		        spec.setIndicator(plug.getText() == null ? null : plug.getText().getText(),
-		        		plug.getIcon() == null ? null : plug.getIcon().getAsDrawable());        
-		        spec.setContent(new TabContentFactory(){
+			Logger.check(plug.getContent() instanceof ViewHolder, "TabOutlet could only contains ViewHolder content");
+			((ViewHolder)plug.getContent()).reset();
+	        TabHost.TabSpec spec = tabHost.newTabSpec("");
+	        spec.setIndicator(plug.getText() == null ? null : plug.getText().getText(),
+	        		plug.getIcon() == null ? null : plug.getIcon().getAsDrawable());        
+	        spec.setContent(new TabContentFactory(){
 
-					@Override
-					public View createTabContent(String tag) {
-						return ((ViewHolder)plug.getContent()).getView();
-					}
-		        	
-		        });
-		        tabHost.addTab(spec);		
-			}	
+				@Override
+				public View createTabContent(String tag) {
+					View view = ((ViewHolder)plug.getContent()).getView();
+					return view;
+				}
+	        	
+	        });
+	        tabHost.addTab(spec);	
 		}
 	}
 	

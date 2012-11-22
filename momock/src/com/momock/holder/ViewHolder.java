@@ -30,6 +30,7 @@ public abstract class ViewHolder implements IComponentHolder{
 		void onViewCreated(View view);
 	}
 	public abstract View getView();
+	public abstract void reset();
 
 	public static ViewHolder get(Fragment fragment)	{
 		return get(fragment.getView());
@@ -48,6 +49,10 @@ public abstract class ViewHolder implements IComponentHolder{
 			public View getView() {
 				return refView.get();
 			}
+
+			@Override
+			public void reset() {
+			}
 			
 		};
 	}
@@ -65,7 +70,11 @@ public abstract class ViewHolder implements IComponentHolder{
 				}
 				return refChild == null ? null : refChild.get();
 			}
-			
+
+			@Override
+			public void reset() {
+				refChild = null;
+			}
 		};
 	}
 
@@ -83,6 +92,10 @@ public abstract class ViewHolder implements IComponentHolder{
 				return refChild == null ? null : refChild.get();
 			}
 			
+			@Override
+			public void reset() {
+				refChild = null;
+			}			
 		};
 	}
 
@@ -112,6 +125,10 @@ public abstract class ViewHolder implements IComponentHolder{
 				return ref.get();
 			}
 			
+			@Override
+			public void reset() {
+				ref = null;
+			}
 		};
 	}
 }
