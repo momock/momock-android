@@ -17,15 +17,13 @@ package com.momock.app;
 
 import java.util.HashMap;
 
-import junit.framework.Assert;
-
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
 import com.momock.util.Logger;
 
 
-public abstract class Case implements ICase {
+public abstract class Case<A> implements ICase<A> {
 	String name;
 	public Case(){
 		name = getClass().getName();
@@ -34,12 +32,12 @@ public abstract class Case implements ICase {
 	{
 		this.name = name;
 	}
-	public Case(ICase parent){
+	public Case(ICase<?> parent){
 		this.parent = parent;
 		this.name = getClass().getName();
 	}
 
-	public Case(ICase parent, String name){
+	public Case(ICase<?> parent, String name){
 		this.parent = parent;
 		this.name = name;
 	}
@@ -67,14 +65,14 @@ public abstract class Case implements ICase {
 	}
 
 	// IAttachable implementation
-	Object attachedObject = null;
+	A attachedObject = null;
 	@Override
-	public Object getAttachedObject() {
+	public A getAttachedObject() {
 		return attachedObject;
 	}
 
 	@Override
-	public void attach(Object target) {
+	public void attach(A target) {
 		detach();
 		if (target != null)
 		{
@@ -93,33 +91,33 @@ public abstract class Case implements ICase {
 	}
 	
 	@Override
-	public void onAttach(Object target)
+	public void onAttach(A target)
 	{
 		
 	}
 	@Override
-	public void onDetach(Object target)
+	public void onDetach(A target)
 	{
 		
 	}
 
 	// Implementation for ICase interface
-	protected ICase activeCase = null;
-	protected ICase parent;
-	protected HashMap<String, ICase> cases = new HashMap<String, ICase>();
+	protected ICase<?> activeCase = null;
+	protected ICase<?> parent;
+	protected HashMap<String, ICase<?>> cases = new HashMap<String, ICase<?>>();
 
 	@Override
-	public ICase getParent() {
+	public ICase<?> getParent() {
 		return parent;
 	}
 	
 	@Override
-	public ICase getActiveCase() {
+	public ICase<?> getActiveCase() {
 		return activeCase;
 	}
 
 	@Override
-	public void setActiveCase(ICase kase) {
+	public void setActiveCase(ICase<?> kase) {
 		if (activeCase != kase) {
 			if (activeCase != null)
 				activeCase.onDeactivate();
@@ -130,9 +128,9 @@ public abstract class Case implements ICase {
 	}
 	
 	@Override
-	public ICase getCase(String name) {
-		Assert.assertNotNull(name);
-		ICase kase = null;
+	public ICase<?> getCase(String name) {
+		Logger.check(name != null, "Parameter name cannot be null!");
+		ICase<?> kase = null;
 		int pos = name.indexOf('/');
 		if (pos == -1){
 			kase = cases.get(name);			
@@ -149,7 +147,7 @@ public abstract class Case implements ICase {
 	}
 
 	@Override
-	public void addCase(ICase kase){
+	public void addCase(ICase<?> kase){
 		if (!cases.containsKey(kase.getName()))
 		{
 			cases.put(kase.getName(), kase);

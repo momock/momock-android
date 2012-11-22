@@ -18,18 +18,18 @@ package com.momock.app;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 
-public interface ICase {
+public interface ICase<A> {
 	String getName();
 	
 	String getFullName();
 	
 	void onCreate();
 	
-	ICase getParent();
+	ICase<?> getParent();
 
-	ICase getCase(String name);
+	ICase<?> getCase(String name);
 
-	void addCase(ICase kase);
+	void addCase(ICase<?> kase);
 
 	void removeCase(String name);
 
@@ -41,9 +41,9 @@ public interface ICase {
 
 	void run(Object... args);
 
-	ICase getActiveCase();
+	ICase<?> getActiveCase();
 
-	void setActiveCase(ICase kase);
+	void setActiveCase(ICase<?> kase);
 
 	void onActivate();
 
@@ -51,11 +51,11 @@ public interface ICase {
 
 	Object getAttachedObject();
 
-	void attach(Object target);
+	void attach(A target);
 
 	void detach();
 
-	void onAttach(Object target);
+	void onAttach(A target);
 
-	void onDetach(Object target);
+	void onDetach(A target);
 }

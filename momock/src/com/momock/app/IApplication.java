@@ -19,13 +19,13 @@ import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 
 public interface IApplication {
-	ICase getActiveCase();
+	ICase<?> getActiveCase();
 
-	void setActiveCase(ICase kase);
+	void setActiveCase(ICase<?> kase);
 
-	ICase getCase(String name);
+	ICase<?> getCase(String name);
 
-	void addCase(ICase kase);
+	void addCase(ICase<?> kase);
 
 	void removeCase(String name);
 
@@ -34,4 +34,8 @@ public interface IApplication {
 	<P extends IPlug, T> void addOutlet(String name, IOutlet<P, T> outlet);
 
 	void removeOutlet(String name);
+	
+	void addNamedPlug(String name, IPlug plug);
+	
+	IPlug getNamedPlug(String name);
 }

@@ -15,33 +15,119 @@
  ******************************************************************************/
 package com.momock.app;
 
+import com.momock.util.Logger;
+
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 public abstract class CaseFragment extends Fragment{
 
 	protected abstract String getCaseName();
-	protected ICase kase = null;
+	protected ICase<Fragment> kase = null;
 
-	public ICase getCase() {
+	@SuppressWarnings("unchecked")
+	public ICase<Fragment> getCase() {
 		if (kase == null) {
 			String name = getCaseName();			
-			kase = name == null ? null : (ICase)App.get().getCase(name);
+			kase = name == null ? null : (ICase<Fragment>)App.get().getCase(name);
 		}
 		return kase;
 	}
 
+	protected void log(String msg){
+		Logger.debug((getCase() == null ? this.toString() : getCase().getFullName()) + " : " + msg);
+	}
+	
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
+		log("onViewCreated");
 		super.onViewCreated(view, savedInstanceState);
-		if (getCase() != null)
-			getCase().attach(this);
 	}
 	@Override
 	public void onDestroyView() {
+		log("onDestroyView");
 		super.onDestroyView();
 		if (getCase() != null)
 			getCase().detach();
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		log("onActivityResult");
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	@Override
+	public void onAttach(Activity activity) {
+		log("onAttach");
+		super.onAttach(activity);
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		log("onCreate");
+		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		log("onCreateView");
+		return super.onCreateView(inflater, container, savedInstanceState);
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		log("onActivityCreated");
+		super.onActivityCreated(savedInstanceState);
+	}
+
+	@Override
+	public void onStart() {
+		log("onStart");
+		super.onStart();
+		if (getCase() != null)
+			getCase().attach(this);
+	}
+
+	@Override
+	public void onResume() {
+		log("onResume");
+		super.onResume();
+	}
+
+	@Override
+	public void onPause() {
+		log("onPause");
+		super.onPause();
+	}
+
+	@Override
+	public void onStop() {
+		log("onStop");
+		super.onStop();
+	}
+
+	@Override
+	public void onLowMemory() {
+		log("onLowMemory");
+		super.onLowMemory();
+	}
+
+	@Override
+	public void onDestroy() {
+		log("onDestroy");
+		super.onDestroy();
+	}
+
+	@Override
+	public void onDetach() {
+		log("onDetach");
+		super.onDetach();
 	}
 }

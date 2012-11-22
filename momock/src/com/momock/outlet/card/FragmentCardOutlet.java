@@ -24,6 +24,7 @@ import com.momock.holder.FragmentHolder;
 import com.momock.outlet.Outlet;
 
 public class FragmentCardOutlet extends Outlet<ICardPlug, FragmentContainerHolder> {	
+	Fragment lastFragment = null;
 	@Override
 	public void onAttach(FragmentContainerHolder target) {
 		setActivePlug(getActivePlug());
@@ -36,23 +37,23 @@ public class FragmentCardOutlet extends Outlet<ICardPlug, FragmentContainerHolde
 		{
 			int id = getAttachedObject().getFragmentContainerId();
 			FragmentManager fm = getAttachedObject().getFragmentManager();
-			Fragment fragment = fm.findFragmentById(id);
 			FragmentTransaction ft = fm.beginTransaction();
+			if (lastFragment != null) {
+				ft.detach(lastFragment);
+			}
 			if (plug != null && plug.getComponent() instanceof FragmentHolder)
 			{
 				FragmentHolder fh = (FragmentHolder)plug.getComponent();
-				if (fragment == null)
+				if (!fh.isCreated())
 					ft.add(id, fh.getFragment());
 				else 
-					ft.replace(id, fh.getFragment());							
-				ft.commit();
+					ft.attach(fh.getFragment());	
+				lastFragment = fh.getFragment();
 			} else {
-				if (fragment != null) {
-					ft.remove(fragment);
-					ft.commit();
-				}
+				lastFragment = null;
 			}
-			//fm.executePendingTransactions();
+			ft.commit();
+			fm.executePendingTransactions();
 		}
 	}
 

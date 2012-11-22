@@ -122,4 +122,18 @@ public class Logger {
 		logStream.flush();
 	}
 
+	public static void check(boolean condition, String msg){
+		if (!condition)	{
+			if (logLevel > LEVEL_ERROR) return;
+
+			Throwable t = new Throwable(); 
+			StackTraceElement trace = t.getStackTrace()[1];
+			android.util.Log.e(getSourceInfo(trace), msg);
+			checkLogFile();
+			logStream.println(getLog("ASSERT", msg));
+			logStream.flush();
+			
+			throw new RuntimeException(msg);
+		}
+	}
 }

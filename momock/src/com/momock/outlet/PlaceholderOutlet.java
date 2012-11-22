@@ -15,11 +15,10 @@
  ******************************************************************************/
 package com.momock.outlet;
 
-import junit.framework.Assert;
-
 import com.momock.data.DataList;
 import com.momock.data.IDataList;
 import com.momock.data.IDataMutableList;
+import com.momock.util.Logger;
 
 public class PlaceholderOutlet<P extends IPlug, T> implements IOutlet<P, T> {
 	IDataMutableList<P> plugs = new DataList<P>();
@@ -48,49 +47,49 @@ public class PlaceholderOutlet<P extends IPlug, T> implements IOutlet<P, T> {
 
 	@Override
 	public T getAttachedObject() {
-		Assert.assertTrue(false);
+		Logger.check(false, "PlaceholderOutlet.getAttachedObject should not be called!");
 		return null;
 	}
 
 	@Override
 	public void attach(T target) {
-		Assert.assertTrue(false);
+		Logger.check(false, "PlaceholderOutlet.attach should not be called!");
 	}
 
 	@Override
 	public void detach() {
-		Assert.assertTrue(false);
+		Logger.check(false, "PlaceholderOutlet.detach should not be called!");
 	}
 
 	@Override
 	public void onAttach(T target) {
-		Assert.assertTrue(false);
+		Logger.check(false, "PlaceholderOutlet.onAttach should not be called!");
 	}
 
 	@Override
 	public void onDetach(T target) {
-		Assert.assertTrue(false);
+		Logger.check(false, "PlaceholderOutlet.onDetach should not be called!");
 	}
 
 	@Override
 	public P getActivePlug() {
-		Assert.assertTrue(false);
+		Logger.check(false, "PlaceholderOutlet.getActivePlug should not be called!");
 		return null;
 	}
 
 	@Override
 	public void setActivePlug(P plug) {		
-		Assert.assertTrue(false);
+		Logger.check(false, "PlaceholderOutlet.setActivePlug should not be called!");
 	}
 
 	@Override
 	public void onActivate(P plug) {
-		Assert.assertTrue(false);		
+		Logger.check(false, "PlaceholderOutlet.onActivate should not be called!");
 	}
 
 	@Override
 	public void onDeactivate(P plug) {
-		Assert.assertTrue(false);		
+		Logger.check(false, "PlaceholderOutlet.onDeactivate should not be called!");
 	}
 
 }

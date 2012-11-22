@@ -17,75 +17,116 @@ package com.momock.holder;
 
 import java.lang.ref.WeakReference;
 
-import junit.framework.Assert;
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 
-public class TabHolder implements IComponentHolder {
-	WeakReference<TabHost> tabHost;
-	WeakReference<TabWidget> tabWidget;
-	WeakReference<ViewGroup> tabContent;
+import com.momock.util.Logger;
 
-	public TabHolder(Activity activity) {
-		Assert.assertNotNull(activity);
-		create((TabHost) activity.findViewById(android.R.id.tabhost),
-				(TabWidget) activity.findViewById(android.R.id.tabs),
-				(FrameLayout) activity.findViewById(android.R.id.tabcontent));
-	}
-
-	public TabHolder(Activity activity, int realTabContentId) {
-		Assert.assertNotNull(activity);
-		create((TabHost) activity.findViewById(android.R.id.tabhost),
-				(TabWidget) activity.findViewById(android.R.id.tabs),
-				(ViewGroup) activity.findViewById(realTabContentId));
-	}
-
-	public TabHolder(Fragment container) {
-		this(container.getView());
-	}
-
-	public TabHolder(Fragment container, int realTabContentId) {
-		this(container.getView(), realTabContentId);
-	}
-	
-	public TabHolder(View container) {
-		Assert.assertNotNull(container);
-		create((TabHost) (container instanceof TabHost ? container
-				: container.findViewById(android.R.id.tabhost)),
-				(TabWidget) container.findViewById(android.R.id.tabs),
-				(FrameLayout) container.findViewById(android.R.id.tabcontent));
-	}
-
-	public TabHolder(View container, int realTabContentId) {
-		Assert.assertNotNull(container);
-		create((TabHost) (container instanceof TabHost ? container
-				: container.findViewById(android.R.id.tabhost)),
-				(TabWidget) container.findViewById(android.R.id.tabs),
-				(ViewGroup) container.findViewById(realTabContentId));
-	}
-
-	protected void create(TabHost tabHost, TabWidget tabWidget,
-			ViewGroup tabContent) {
-		Assert.assertTrue(tabHost != null && tabWidget != null && tabContent != null);
-		this.tabHost = new WeakReference<TabHost>(tabHost);
-		this.tabWidget = new WeakReference<TabWidget>(tabWidget);
-		this.tabContent = new WeakReference<ViewGroup>(tabContent);
-	}
-
-	public TabHost getTabHost() {
-		return tabHost.get();
-	}
+public abstract class TabHolder implements IComponentHolder {
+	public abstract TabHost getTabHost();
 
 	public TabWidget getTabWidget() {
-		return tabWidget.get();
+		return getTabHost().getTabWidget();
 	}
 
 	public ViewGroup getTabContent() {
-		return tabContent.get();
+		return getTabHost().getTabContentView();
 	}
+
+	public static TabHolder get(View container) {
+		Logger.check(container != null, "Parameter container cannot be null!");
+		final WeakReference<View> refContainer = new WeakReference<View>(
+				container);
+		return new TabHolder() {
+			
+			@Override
+			public TabHost getTabHost() {
+				Logger.check(refContainer.get() != null,
+						"The TabHost container has not been available!");
+				View container = refContainer.get();
+				return (TabHost) (container instanceof TabHost ? container
+						: container.findViewById(android.R.id.tabhost));
+			}
+
+		};
+	}
+
+	public static TabHolder get(View container, final int realTabContentId) {
+		Logger.check(container != null, "Parameter container cannot be null!");
+		final WeakReference<View> refContainer = new WeakReference<View>(
+				container);
+		return new TabHolder() {
+			protected WeakReference<ViewGroup> tabContent = null;
+
+			@Override
+			public ViewGroup getTabContent() {
+				if (tabContent == null || tabContent.get() == null)
+					tabContent = new WeakReference<ViewGroup>((ViewGroup) getTabHost()
+							.findViewById(realTabContentId));
+				return tabContent.get();
+			}
+
+			@Override
+			public TabHost getTabHost() {
+				Logger.check(refContainer.get() != null,
+						"The TabHost container has not been available!");
+				View container = refContainer.get();
+				return (TabHost) (container instanceof TabHost ? container
+						: container.findViewById(android.R.id.tabhost));
+			}
+
+		};
+	}
+
+	public static TabHolder get(Activity activity) {
+		Logger.check(activity != null, "Parameter activity cannot be null!");
+		final WeakReference<Activity> refActivity = new WeakReference<Activity>(activity);
+		return new TabHolder() {
+			
+			@Override
+			public TabHost getTabHost() {
+				Logger.check(refActivity.get() != null,
+						"The activity of TabHost has not been available!");
+				return (TabHost) refActivity.get().findViewById(android.R.id.tabhost);
+			}
+
+		};
+	}
+
+	public static TabHolder get(Activity activity, final int realTabContentId) {
+		Logger.check(activity != null, "Parameter activity cannot be null!");
+		final WeakReference<Activity> refActivity = new WeakReference<Activity>(activity);
+		return new TabHolder() {
+			protected WeakReference<ViewGroup> tabContent = null;
+
+			@Override
+			public ViewGroup getTabContent() {
+				if (tabContent == null || tabContent.get() == null)
+					tabContent = new WeakReference<ViewGroup>((ViewGroup) getTabHost()
+							.findViewById(realTabContentId));
+				return tabContent.get();
+			}
+			
+			@Override
+			public TabHost getTabHost() {
+				Logger.check(refActivity.get() != null,
+						"The activity of TabHost has not been available!");
+				return (TabHost) refActivity.get().findViewById(android.R.id.tabhost);
+			}
+
+		};
+	}
+
+	public static TabHolder get(Fragment container) {
+		return get(container.getView());
+	}
+
+	public static TabHolder get(Fragment container, int realTabContentId) {
+		return get(container.getView(), realTabContentId);
+	}
+
 }

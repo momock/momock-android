@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.momock.binder;
 
-import junit.framework.Assert;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -28,6 +27,7 @@ import com.momock.event.EventArgs;
 import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 import com.momock.holder.ViewHolder;
+import com.momock.util.Logger;
 
 public class ListViewBinder {
 	public static class ItemClickedEventArgs extends EventArgs {
@@ -73,7 +73,7 @@ public class ListViewBinder {
 		this.binder = binder;
 	}
 	public void bind(ViewHolder view, IDataList<?> list) {
-		Assert.assertTrue(view.getView() instanceof ListView);
+		Logger.check(view.getView() instanceof ListView, "Parameter view must be a ViewHolder of ListView!");		
 		bind((ListView) view.getView(), list);
 	}
 

@@ -17,28 +17,85 @@ package com.momock.holder;
 
 import java.lang.ref.WeakReference;
 
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
-public class FragmentContainerHolder implements IComponentHolder{
-	int fragmentContainerId;
-	WeakReference<FragmentManager> refFragmentManager;
-	public int getFragmentContainerId()	{
-		return fragmentContainerId;
-	}
-	public FragmentManager getFragmentManager(){
-		return refFragmentManager.get();
-	}
+import com.momock.app.ICase;
+
+public abstract class FragmentContainerHolder implements IComponentHolder{
+	public abstract int getFragmentContainerId();
+	public abstract FragmentManager getFragmentManager();
 	
-	public FragmentContainerHolder(FragmentActivity activity, int fragmentContainerId)
+	public static FragmentContainerHolder get(FragmentActivity activity, final int id)
 	{
-		this.fragmentContainerId = fragmentContainerId;
-		refFragmentManager = new WeakReference<FragmentManager>(activity.getSupportFragmentManager());
+		final WeakReference<FragmentActivity> refActivity = new WeakReference<FragmentActivity>(activity);
+		return new FragmentContainerHolder(){
+
+			@Override
+			public int getFragmentContainerId() {
+				return id;
+			}
+
+			@Override
+			public FragmentManager getFragmentManager() {
+				return refActivity.get().getSupportFragmentManager();
+			}
+	
+		};
+	}
+	public static FragmentContainerHolder get(FragmentManager fm, final int id)
+	{
+		final WeakReference<FragmentManager> refFragmentManager = new WeakReference<FragmentManager>(fm);
+		return new FragmentContainerHolder(){
+
+			@Override
+			public int getFragmentContainerId() {
+				return id;
+			}
+
+			@Override
+			public FragmentManager getFragmentManager() {
+				return refFragmentManager.get();
+			}
+	
+		};
+	}
+	public static FragmentContainerHolder get(final Fragment fragment, final int id)
+	{
+		return new FragmentContainerHolder(){
+
+			@Override
+			public int getFragmentContainerId() {
+				return id;
+			}
+
+			@Override
+			public FragmentManager getFragmentManager() {
+				return fragment.getFragmentManager();
+			}
+	
+		};
 	}
 
-	public FragmentContainerHolder(FragmentManager fm, int fragmentContainerId)
+	public static FragmentContainerHolder get(final ICase<?> kase, final int id)
 	{
-		this.fragmentContainerId = fragmentContainerId;
-		refFragmentManager = new WeakReference<FragmentManager>(fm);
+		return new FragmentContainerHolder(){
+
+			@Override
+			public int getFragmentContainerId() {
+				return id;
+			}
+
+			@Override
+			public FragmentManager getFragmentManager() {
+				if (kase.getAttachedObject() instanceof FragmentActivity)
+					return ((FragmentActivity)kase.getAttachedObject()).getSupportFragmentManager();
+				else if (kase.getAttachedObject() instanceof Fragment)
+					return ((Fragment)kase.getAttachedObject()).getFragmentManager();
+				return null;
+			}
+	
+		};
 	}
 }

@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import junit.framework.Assert;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
@@ -40,6 +39,42 @@ public abstract class App extends android.app.Application implements IApplicatio
 		return app;
 	}
 
+	public String buildCaseFullName(Object ... names){
+		String fullname = "";
+		for(int i = 0; i < names.length; i++){
+			String name = null;
+			Object n = names[i];
+			Logger.check(n instanceof String || n instanceof Class<?>, "Only String or Class are allows to build full case name!");
+			if (n instanceof CharSequence)
+				name = n.toString();
+			else if (n instanceof Class<?>)
+				name = ((Class<?>)n).getName();					
+			fullname += "/" + name; 
+		}
+		return fullname;
+	}
+
+	public ICase<?> getCase(Object ... names){
+		ICase<?> kase = null;
+		for(int i = 0; i < names.length; i++){
+			String name = null;
+			Object n = names[i];
+			Logger.check(n instanceof String || n instanceof Class<?>, "Only String or Class are allows to build full case name!");
+			if (n instanceof CharSequence)
+				name = n.toString();
+			else if (n instanceof Class<?>)
+				name = ((Class<?>)n).getName();					
+			if (i == 0)
+				kase = getCase(name);
+			else{
+				if (kase == null) 
+					return null;
+				else
+					kase = kase.getCase(name);
+			}				
+		}
+		return kase;
+	}
 	protected int getLogLevel() {
 		return Logger.LEVEL_DEBUG;
 	}
@@ -102,16 +137,16 @@ public abstract class App extends android.app.Application implements IApplicatio
 	}
 
 	// Implementation for IApplication interface
-	protected ICase activeCase = null;
-	protected HashMap<String, ICase> cases = new HashMap<String, ICase>();
+	protected ICase<?> activeCase = null;
+	protected HashMap<String, ICase<?>> cases = new HashMap<String, ICase<?>>();
 
 	@Override
-	public ICase getActiveCase() {
+	public ICase<?> getActiveCase() {
 		return activeCase;
 	}
 
 	@Override
-	public void setActiveCase(ICase kase) {
+	public void setActiveCase(ICase<?> kase) {
 		if (activeCase != kase) {
 			if (activeCase != null)
 				activeCase.onDeactivate();
@@ -122,9 +157,9 @@ public abstract class App extends android.app.Application implements IApplicatio
 	}
 	
 	@Override
-	public ICase getCase(String name) {
-		Assert.assertNotNull(name);
-		ICase kase = null;
+	public ICase<?> getCase(String name) {
+		Logger.check(name != null, "Parameter name cannot be null!");
+		ICase<?> kase = null;
 		int pos = name.indexOf('/');
 		if (pos == -1){
 			kase = cases.get(name);
@@ -144,7 +179,7 @@ public abstract class App extends android.app.Application implements IApplicatio
 	}
 
 	@Override
-	public void addCase(ICase kase){
+	public void addCase(ICase<?> kase){
 		if (!cases.containsKey(kase.getName()))
 		{
 			cases.put(kase.getName(), kase);
@@ -196,5 +231,16 @@ public abstract class App extends android.app.Application implements IApplicatio
 		{
 			outlets.remove(name);
 		}
+	}
+
+	Map<String, IPlug> namedPlugs = new HashMap<String, IPlug>();
+	@Override
+	public void addNamedPlug(String name, IPlug plug) {
+		namedPlugs.put(name, plug);
+	}
+
+	@Override
+	public IPlug getNamedPlug(String name) {
+		return namedPlugs.get(name);
 	}
 }

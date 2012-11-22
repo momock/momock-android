@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.momock.outlet.tab;
 
-import junit.framework.Assert;
 import android.view.View;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
@@ -24,12 +23,13 @@ import com.momock.data.IDataList;
 import com.momock.holder.TabHolder;
 import com.momock.holder.ViewHolder;
 import com.momock.outlet.Outlet;
+import com.momock.util.Logger;
 
 public class TabOutlet extends Outlet<ITabPlug, TabHolder> {
 
 	@Override
 	public void onAttach(TabHolder target) {
-		Assert.assertNotNull(target);
+		Logger.check(target != null, "Parameter target cannot be null!");
 		final TabHost tabHost = target.getTabHost();
 		tabHost.setup();
 		IDataList<ITabPlug> plugs = getAllPlugs();

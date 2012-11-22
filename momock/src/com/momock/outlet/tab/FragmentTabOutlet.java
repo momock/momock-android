@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.momock.outlet.tab;
 
-import junit.framework.Assert;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -27,13 +26,13 @@ import com.momock.data.IDataList;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.FragmentTabHolder;
 import com.momock.outlet.Outlet;
-import com.momock.util.Convert;
+import com.momock.util.Logger;
 
 public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> {
-	
+	Fragment lastFragment = null;
 	@Override
 	public void onAttach(final FragmentTabHolder target) {
-		Assert.assertNotNull(target);
+		Logger.check(target != null, "Parameter target cannot be null!");
 		final TabHost tabHost = target.getTabHost();
 		final IDataList<ITabPlug> plugs = getAllPlugs();
 		tabHost.setup();
@@ -41,27 +40,29 @@ public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> {
 			
 			@Override
 			public void onTabChanged(String tabId) {
-				int index = Convert.toInteger(tabId);
+				int index = tabHost.getCurrentTab();
 				int id = target.getTabContentId();
 				ITabPlug plug = plugs.getItem(index);
 				FragmentManager fm = getAttachedObject().getFragmentManager();
-				Fragment fragment = fm.findFragmentById(id);
 				FragmentTransaction ft = fm.beginTransaction();
+
+				if (lastFragment != null) {
+					ft.detach(lastFragment);
+				}
+
 				if (plug.getContent() instanceof FragmentHolder)
 				{
 					FragmentHolder fh = (FragmentHolder)plug.getContent();
-					if (fragment == null)
+					if (!fh.isCreated())
 						ft.add(id, fh.getFragment());
 					else 
-						ft.replace(id, fh.getFragment());							
-					ft.commit();
+						ft.attach(fh.getFragment());	
+					lastFragment = fh.getFragment();
 				} else {
-					if (fragment != null) {
-						ft.remove(fragment);
-						ft.commit();
-					}
+					lastFragment = null;
 				}
-				//fm.executePendingTransactions();
+				ft.commit();
+				fm.executePendingTransactions();
 			}
 		});
 		for(int i = 0; i < plugs.getItemCount(); i++)
