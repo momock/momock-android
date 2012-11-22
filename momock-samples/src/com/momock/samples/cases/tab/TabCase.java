@@ -22,6 +22,7 @@ import com.momock.app.ICase;
 import com.momock.event.IEventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.FragmentHolder;
+import com.momock.holder.ImageHolder;
 import com.momock.holder.TabHolder;
 import com.momock.holder.TextHolder;
 import com.momock.holder.ViewHolder;
@@ -34,34 +35,45 @@ import com.momock.outlet.tab.TabPlug;
 import com.momock.samples.Outlets;
 import com.momock.samples.R;
 
-public class TabCase extends Case<Fragment>{
+public class TabCase extends Case<Fragment> {
 
 	public TabCase(ICase<?> parent) {
 		super(parent);
 	}
 
 	TabOutlet tabs = new TabOutlet();
-	ICardPlug plug = CardPlug.get(FragmentHolder.get(R.layout.case_tab, this));
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void onCreate() {	
+	public void onCreate() {
 		IOutlet outlet = getParent().getOutlet(Outlets.SAMPLES);
-		outlet.addPlug(ActionPlug.get(TextHolder.get("Tab Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
-			@Override
-			public void process(Object sender, IEventArgs args) {
-				run();
-			}			
-		}));
+		outlet.addPlug(ActionPlug.get(TextHolder.get("Tab Sample"))
+				.addExecuteEventHandler(new IEventHandler<IEventArgs>() {
+					@Override
+					public void process(Object sender, IEventArgs args) {
+						run();
+					}
+				}));
 
-		tabs.addPlug(TabPlug.get(TextHolder.get("Tab 1"), null, ViewHolder.get(R.layout.tab_one)));
-		tabs.addPlug(TabPlug.get(TextHolder.get("Tab 2"), null, ViewHolder.get(R.layout.tab_two)));
-		tabs.addPlug(TabPlug.get(TextHolder.get("Tab 3"), null, ViewHolder.get(R.layout.tab_three)));
-		tabs.addPlug(TabPlug.get(TextHolder.get("Tab 4"), null, ViewHolder.get(R.layout.tab_four)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Tab 1"),
+				ImageHolder.get(R.drawable.ic_action_alarm_2),
+				ViewHolder.get(R.layout.tab_one)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Tab 2"),
+				ImageHolder.get(R.drawable.ic_action_calculator),
+				ViewHolder.get(R.layout.tab_two)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Tab 3"),
+				ImageHolder.get(R.drawable.ic_action_google_play),
+				ViewHolder.get(R.layout.tab_three)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Tab 4"),
+				ImageHolder.get(R.drawable.ic_action_line_chart),
+				ViewHolder.get(R.layout.tab_four)));
 	}
+
+	ICardPlug self = CardPlug.get(FragmentHolder.get(R.layout.case_tab, this));
 
 	@Override
 	public void run(Object... args) {
-		getParent().getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(plug);
+		getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(self);
 	}
 
 	@Override

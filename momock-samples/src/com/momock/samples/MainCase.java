@@ -22,9 +22,12 @@ import com.momock.app.Case;
 import com.momock.outlet.action.MenuActionOutlet;
 import com.momock.outlet.card.FragmentCardOutlet;
 import com.momock.samples.cases.action.ActionCase;
+import com.momock.samples.cases.card.CardCase;
+import com.momock.samples.cases.card.PagerCardCase;
 import com.momock.samples.cases.mainmenu.MainMenuCase;
-import com.momock.samples.cases.tab.FragmentTabCase;
 import com.momock.samples.cases.tab.FragmentPagerTabCase;
+import com.momock.samples.cases.tab.FragmentTabCase;
+import com.momock.samples.cases.tab.PagerTabCase;
 import com.momock.samples.cases.tab.TabCase;
 
 public class MainCase extends Case<Activity>{
@@ -42,8 +45,11 @@ public class MainCase extends Case<Activity>{
 		addCase(new MainMenuCase(this));
 		addCase(new ActionCase(this));
 		addCase(new TabCase(this));
+		addCase(new PagerTabCase(this));
 		addCase(new FragmentTabCase(this));
 		addCase(new FragmentPagerTabCase(this));
+		addCase(new CardCase(this));
+		addCase(new PagerCardCase(this));
 	}
 
 }

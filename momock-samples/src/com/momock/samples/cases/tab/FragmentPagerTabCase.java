@@ -24,6 +24,7 @@ import com.momock.event.IEventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.FragmentTabHolder;
+import com.momock.holder.ImageHolder;
 import com.momock.holder.TextHolder;
 import com.momock.holder.ViewHolder;
 import com.momock.outlet.IOutlet;
@@ -36,44 +37,57 @@ import com.momock.outlet.tab.TabPlug;
 import com.momock.samples.Outlets;
 import com.momock.samples.R;
 
-public class FragmentPagerTabCase extends Case<Fragment>{
+public class FragmentPagerTabCase extends Case<Fragment> {
 
 	public FragmentPagerTabCase(ICase<?> parent) {
 		super(parent);
 	}
 
 	FragmentPagerTabOutlet tabs = new FragmentPagerTabOutlet();
-	ICardPlug plug = CardPlug.get(FragmentHolder.get(R.layout.case_pager_tab, this));
-	@Override
-	public void onCreate() {	
-		IOutlet<IActionPlug, ViewHolder> outlet = getOutlet(Outlets.SAMPLES);
-		outlet.addPlug(ActionPlug.get(TextHolder.get("Pager Tab Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
-			@Override
-			public void process(Object sender, IEventArgs args) {
-				run();
-			}			
-		}));
 
-		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 1"), null, FragmentHolder.get(R.layout.tab_one)));
-		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 2"), null, FragmentHolder.get(R.layout.tab_two)));
-		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 3"), null, FragmentHolder.get(R.layout.tab_three)));
-		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 4"), null, FragmentHolder.get(R.layout.tab_four)));
+	@Override
+	public void onCreate() {
+		IOutlet<IActionPlug, ViewHolder> outlet = getOutlet(Outlets.SAMPLES);
+		outlet.addPlug(ActionPlug.get(
+				TextHolder.get("Fragment Pager Tab Sample"))
+				.addExecuteEventHandler(new IEventHandler<IEventArgs>() {
+					@Override
+					public void process(Object sender, IEventArgs args) {
+						run();
+					}
+				}));
+
+		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 1"),
+				ImageHolder.get(R.drawable.ic_action_alarm_2),
+				FragmentHolder.get(R.layout.tab_one)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 2"),
+				ImageHolder.get(R.drawable.ic_action_calculator),
+				FragmentHolder.get(R.layout.tab_two)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 3"),
+				ImageHolder.get(R.drawable.ic_action_google_play),
+				FragmentHolder.get(R.layout.tab_three)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 4"),
+				ImageHolder.get(R.drawable.ic_action_line_chart),
+				FragmentHolder.get(R.layout.tab_four)));
 	}
+
+	ICardPlug self = CardPlug.get(FragmentHolder.get(R.layout.case_pager_tab,
+			this));
 
 	@Override
 	public void run(Object... args) {
-		getParent().getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(plug);
+		getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(self);
 	}
 
 	@Override
-	public void onAttach(final Fragment target) {		
-		new Handler().post(new Runnable(){
+	public void onAttach(final Fragment target) {
+		new Handler().post(new Runnable() {
 
 			@Override
 			public void run() {
 				tabs.attach(FragmentTabHolder.get(target, R.id.pager));
 			}
-			
+
 		});
 	}
 }

@@ -34,15 +34,15 @@ public class SettingsCase extends Case<Activity> {
 
 	@Override
 	public void onCreate() {
-		ActionPlug plug = ActionPlug.get(TextHolder.get("Settings"),
+		ActionPlug self = ActionPlug.get(TextHolder.get("Settings"),
 				new IEventHandler<IEventArgs>() {
 					@Override
 					public void process(Object sender, IEventArgs args) {
 						run();
 					}
 				});
-		getOutlet(Outlets.MAIN_MENU).addPlug(plug);
-		App.get().getCase(Cases.MAIN).getOutlet(Outlets.SAMPLES).addPlug(plug);
+		getOutlet(Outlets.MAIN_MENU).addPlug(self);
+		App.get().getCase(Cases.MAIN).getOutlet(Outlets.SAMPLES).addPlug(self);
 	}
 
 	@Override

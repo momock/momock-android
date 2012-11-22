@@ -13,42 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.samples.cases.tab;
+package com.momock.samples.cases.card;
 
-import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.view.View;
+import android.widget.Button;
 
 import com.momock.app.Case;
 import com.momock.app.ICase;
+import com.momock.data.IDataList;
 import com.momock.event.IEventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.FragmentHolder;
-import com.momock.holder.FragmentTabHolder;
-import com.momock.holder.ImageHolder;
 import com.momock.holder.TextHolder;
 import com.momock.holder.ViewHolder;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.action.ActionPlug;
-import com.momock.outlet.action.IActionPlug;
+import com.momock.outlet.card.CardOutlet;
 import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
-import com.momock.outlet.tab.FragmentTabOutlet;
-import com.momock.outlet.tab.TabPlug;
 import com.momock.samples.Outlets;
 import com.momock.samples.R;
 
-public class FragmentTabCase extends Case<Fragment> {
+public class CardCase extends Case<Fragment> implements View.OnClickListener {
 
-	public FragmentTabCase(ICase<?> parent) {
+	public CardCase(ICase<?> parent) {
 		super(parent);
 	}
 
-	FragmentTabOutlet tabs = new FragmentTabOutlet();
+	CardOutlet cards = new CardOutlet();
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void onCreate() {
-		IOutlet<IActionPlug, ViewHolder> outlet = getOutlet(Outlets.SAMPLES);
-		outlet.addPlug(ActionPlug.get(TextHolder.get("Fragment Tab Sample"))
+		IOutlet outlet = getParent().getOutlet(Outlets.SAMPLES);
+		outlet.addPlug(ActionPlug.get(TextHolder.get("Card Sample"))
 				.addExecuteEventHandler(new IEventHandler<IEventArgs>() {
 					@Override
 					public void process(Object sender, IEventArgs args) {
@@ -56,22 +55,23 @@ public class FragmentTabCase extends Case<Fragment> {
 					}
 				}));
 
-		tabs.addPlug(TabPlug.get(TextHolder.get("Fragment Tab 1"),
-				ImageHolder.get(R.drawable.ic_action_alarm_2),
-				FragmentHolder.get(R.layout.tab_one)));
-		tabs.addPlug(TabPlug.get(TextHolder.get("Fragment Tab 2"),
-				ImageHolder.get(R.drawable.ic_action_calculator),
-				FragmentHolder.get(R.layout.tab_two)));
-		tabs.addPlug(TabPlug.get(TextHolder.get("Fragment Tab 3"),
-				ImageHolder.get(R.drawable.ic_action_google_play),
-				FragmentHolder.get(R.layout.tab_three)));
-		tabs.addPlug(TabPlug.get(TextHolder.get("Fragment Tab 4"),
-				ImageHolder.get(R.drawable.ic_action_line_chart),
-				FragmentHolder.get(R.layout.tab_four)));
+		cards.addPlug(CardPlug.get(ViewHolder.get(R.layout.tab_one)));
+		cards.addPlug(CardPlug.get(ViewHolder.get(R.layout.tab_two)));
+		cards.addPlug(CardPlug.get(ViewHolder.get(R.layout.tab_three)));
 	}
 
-	ICardPlug self = CardPlug.get(FragmentHolder.get(
-			R.layout.case_fragment_tab, this));
+	@Override
+	public void onAttach(Fragment target) {
+		cards.attach(ViewHolder.get(target, R.id.cards));
+		Button btn1 = (Button) ViewHolder.get(target, R.id.button1).getView();		
+		Button btn2 = (Button) ViewHolder.get(target, R.id.button2).getView();
+		Button btn3 = (Button) ViewHolder.get(target, R.id.button3).getView();
+		btn1.setOnClickListener(this);
+		btn2.setOnClickListener(this);
+		btn3.setOnClickListener(this);
+	}
+
+	ICardPlug self = CardPlug.get(FragmentHolder.get(R.layout.case_card, this));
 
 	@Override
 	public void run(Object... args) {
@@ -79,15 +79,20 @@ public class FragmentTabCase extends Case<Fragment> {
 	}
 
 	@Override
-	public void onAttach(final Fragment target) {
-		new Handler().post(new Runnable() {
+	public void onClick(View v) {
+		IDataList<ICardPlug> plugs = cards.getAllPlugs();
+		switch (v.getId()) {
+		case R.id.button1:
+			cards.setActivePlug(plugs.getItem(0));
+			break;
+		case R.id.button2:
+			cards.setActivePlug(plugs.getItem(1));
+			break;
+		case R.id.button3:
+			cards.setActivePlug(plugs.getItem(2));
+			break;
+		}
 
-			@Override
-			public void run() {
-				tabs.attach(FragmentTabHolder.get(target, R.id.realtabcontent));
-			}
-
-		});
 	}
 
 }

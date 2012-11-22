@@ -37,4 +37,10 @@ public class SampleApplication extends App{
 	protected void onAddServices() {
 	}
 
+	@Override
+	protected int getLogLevel() {
+		//return Logger.LEVEL_ERROR;
+		return Logger.LEVEL_DEBUG;
+	}
+
 }

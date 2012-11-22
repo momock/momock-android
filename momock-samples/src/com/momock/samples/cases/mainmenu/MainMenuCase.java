@@ -30,7 +30,7 @@ import com.momock.samples.Outlets;
 import com.momock.samples.R;
 
 public class MainMenuCase extends Case<Fragment> {
-	ICardPlug plug;
+	
 	public MainMenuCase(ICase<?> parent) {
 		super(parent);
 	}
@@ -38,20 +38,20 @@ public class MainMenuCase extends Case<Fragment> {
 	@Override
 	public void onCreate() {
 		getParent().addOutlet(Outlets.SAMPLES, ListViewActionOutlet.getSimple());
-		plug = CardPlug.get(FragmentHolder.get(R.layout.case_mainmenu, this));
-		App.get().addNamedPlug(NamedPlugs.MAIN_MENU, plug);
+		
+		App.get().addNamedPlug(NamedPlugs.MAIN_MENU, self);
 		run();
 	}
 
+	ICardPlug self = CardPlug.get(FragmentHolder.get(R.layout.case_mainmenu, this));
 	@Override
 	public void run(Object... args) {
-		getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(plug);
+		getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(self);
 	}
 
 	@Override
 	public void onAttach(Fragment target) {
-        getOutlet(Outlets.SAMPLES).attach(ViewHolder.get(target, R.id.lvMainMenu));      
-
+        getOutlet(Outlets.SAMPLES).attach(ViewHolder.get(target, R.id.lvMainMenu)); 
 	}
 
 }

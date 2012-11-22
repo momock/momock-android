@@ -38,7 +38,6 @@ public class ActionCase extends Case<Fragment>{
 		super(parent);
 	}
 
-	ICardPlug plug = CardPlug.get(FragmentHolder.get(R.layout.case_action, this));
 	@Override
 	public void onCreate() {	
 		getOutlet(Outlets.SAMPLES).addPlug(ActionPlug.get(TextHolder.get("Action Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
@@ -48,11 +47,12 @@ public class ActionCase extends Case<Fragment>{
 			}			
 		}));
 	}
+	
+	ICardPlug self = CardPlug.get(FragmentHolder.get(R.layout.case_action, this));
 
 	@Override
 	public void run(Object... args) {
-		getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(plug);
-		super.run();
+		getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(self);
 	}
 
 	@Override
