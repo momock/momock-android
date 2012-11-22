@@ -15,18 +15,18 @@
  ******************************************************************************/
 package com.momock.samples.cases.settings;
 
+import android.app.Activity;
+
 import com.momock.app.App;
 import com.momock.app.Case;
 import com.momock.event.IEventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.TextHolder;
-import com.momock.holder.ViewHolder;
-import com.momock.outlet.IOutlet;
 import com.momock.outlet.action.ActionPlug;
-import com.momock.outlet.action.IActionPlug;
+import com.momock.samples.Cases;
 import com.momock.samples.Outlets;
 
-public class SettingsCase extends Case {
+public class SettingsCase extends Case<Activity> {
 
 	public SettingsCase(String name) {
 		super(name);
@@ -34,14 +34,15 @@ public class SettingsCase extends Case {
 
 	@Override
 	public void onCreate() {
-		IOutlet<IActionPlug, ViewHolder> outlet = App.get().getOutlet(Outlets.MAIN_MENU);
-		outlet.addPlug(ActionPlug.get(new TextHolder("Settings"),
+		ActionPlug plug = ActionPlug.get(TextHolder.get("Settings"),
 				new IEventHandler<IEventArgs>() {
 					@Override
 					public void process(Object sender, IEventArgs args) {
 						run();
 					}
-				}));
+				});
+		getOutlet(Outlets.MAIN_MENU).addPlug(plug);
+		App.get().getCase(Cases.MAIN).getOutlet(Outlets.SAMPLES).addPlug(plug);
 	}
 
 	@Override

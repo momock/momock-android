@@ -20,3 +20,4 @@ public interface Cases {
 	public static final String SETTINGS = "SETTINGS";
 	public static final String SAMPLE_ACTION = "SAMPLE_ACTION";
 }
+ 

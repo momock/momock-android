@@ -15,6 +15,65 @@
  ******************************************************************************/
 package com.momock.samples.cases.tab;
 
-public class FragmentPagerTabCase {
+import android.os.Handler;
+import android.support.v4.app.Fragment;
 
+import com.momock.app.Case;
+import com.momock.app.ICase;
+import com.momock.event.IEventArgs;
+import com.momock.event.IEventHandler;
+import com.momock.holder.FragmentHolder;
+import com.momock.holder.FragmentTabHolder;
+import com.momock.holder.TextHolder;
+import com.momock.holder.ViewHolder;
+import com.momock.outlet.IOutlet;
+import com.momock.outlet.action.ActionPlug;
+import com.momock.outlet.action.IActionPlug;
+import com.momock.outlet.card.CardPlug;
+import com.momock.outlet.card.ICardPlug;
+import com.momock.outlet.tab.FragmentPagerTabOutlet;
+import com.momock.outlet.tab.TabPlug;
+import com.momock.samples.Outlets;
+import com.momock.samples.R;
+
+public class FragmentPagerTabCase extends Case<Fragment>{
+
+	public FragmentPagerTabCase(ICase<?> parent) {
+		super(parent);
+	}
+
+	FragmentPagerTabOutlet tabs = new FragmentPagerTabOutlet();
+	ICardPlug plug = CardPlug.get(FragmentHolder.get(R.layout.case_pager_tab, this));
+	@Override
+	public void onCreate() {	
+		IOutlet<IActionPlug, ViewHolder> outlet = getOutlet(Outlets.SAMPLES);
+		outlet.addPlug(ActionPlug.get(TextHolder.get("Pager Tab Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
+			@Override
+			public void process(Object sender, IEventArgs args) {
+				run();
+			}			
+		}));
+
+		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 1"), null, FragmentHolder.get(R.layout.tab_one)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 2"), null, FragmentHolder.get(R.layout.tab_two)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 3"), null, FragmentHolder.get(R.layout.tab_three)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 4"), null, FragmentHolder.get(R.layout.tab_four)));
+	}
+
+	@Override
+	public void run(Object... args) {
+		getParent().getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(plug);
+	}
+
+	@Override
+	public void onAttach(final Fragment target) {		
+		new Handler().post(new Runnable(){
+
+			@Override
+			public void run() {
+				tabs.attach(FragmentTabHolder.get(target, R.id.pager));
+			}
+			
+		});
+	}
 }

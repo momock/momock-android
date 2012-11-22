@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.momock.samples.cases.tab;
 
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 
 import com.momock.app.Case;
@@ -35,9 +36,9 @@ import com.momock.outlet.tab.TabPlug;
 import com.momock.samples.Outlets;
 import com.momock.samples.R;
 
-public class FragmentTabCase extends Case {
+public class FragmentTabCase extends Case<Fragment> {
 
-	public FragmentTabCase(ICase parent) {
+	public FragmentTabCase(ICase<?> parent) {
 		super(parent);
 	}
 
@@ -45,18 +46,18 @@ public class FragmentTabCase extends Case {
 	ICardPlug plug = CardPlug.get(FragmentHolder.get(R.layout.case_fragment_tab, this));
 	@Override
 	public void onCreate() {	
-		IOutlet<IActionPlug, ViewHolder> outlet = getParent().getOutlet(Outlets.SAMPLES);
-		outlet.addPlug(ActionPlug.get(new TextHolder("Fragment Tab Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
+		IOutlet<IActionPlug, ViewHolder> outlet = getOutlet(Outlets.SAMPLES);
+		outlet.addPlug(ActionPlug.get(TextHolder.get("Fragment Tab Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
 			@Override
 			public void process(Object sender, IEventArgs args) {
 				run();
 			}			
 		}));
 
-		tabs.addPlug(TabPlug.get(new TextHolder("Fragment Tab 1"), null, FragmentHolder.get(R.layout.tab_one)));
-		tabs.addPlug(TabPlug.get(new TextHolder("Fragment Tab 2"), null, FragmentHolder.get(R.layout.tab_two)));
-		tabs.addPlug(TabPlug.get(new TextHolder("Fragment Tab 3"), null, FragmentHolder.get(R.layout.tab_three)));
-		tabs.addPlug(TabPlug.get(new TextHolder("Fragment Tab 4"), null, FragmentHolder.get(R.layout.tab_four)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Fragment Tab 1"), null, FragmentHolder.get(R.layout.tab_one)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Fragment Tab 2"), null, FragmentHolder.get(R.layout.tab_two)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Fragment Tab 3"), null, FragmentHolder.get(R.layout.tab_three)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Fragment Tab 4"), null, FragmentHolder.get(R.layout.tab_four)));
 	}
 
 	@Override
@@ -65,8 +66,15 @@ public class FragmentTabCase extends Case {
 	}
 
 	@Override
-	public void onAttach(Object target) {		
-		tabs.attach(new FragmentTabHolder((Fragment)target, R.id.realtabcontent));
+	public void onAttach(final Fragment target) {	
+		new Handler().post(new Runnable(){
+
+			@Override
+			public void run() {
+				tabs.attach(FragmentTabHolder.get(target, R.id.realtabcontent));
+			}
+			
+		});
 	}
 
 }

@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.momock.samples;
 
+import android.app.Activity;
+
 import com.momock.app.App;
 import com.momock.app.Case;
 import com.momock.outlet.action.MenuActionOutlet;
@@ -22,9 +24,10 @@ import com.momock.outlet.card.FragmentCardOutlet;
 import com.momock.samples.cases.action.ActionCase;
 import com.momock.samples.cases.mainmenu.MainMenuCase;
 import com.momock.samples.cases.tab.FragmentTabCase;
+import com.momock.samples.cases.tab.FragmentPagerTabCase;
 import com.momock.samples.cases.tab.TabCase;
 
-public class MainCase extends Case{
+public class MainCase extends Case<Activity>{
 
 	public MainCase(String name) {
 		super(name);
@@ -40,6 +43,7 @@ public class MainCase extends Case{
 		addCase(new ActionCase(this));
 		addCase(new TabCase(this));
 		addCase(new FragmentTabCase(this));
+		addCase(new FragmentPagerTabCase(this));
 	}
 
 }

@@ -34,9 +34,9 @@ import com.momock.outlet.tab.TabPlug;
 import com.momock.samples.Outlets;
 import com.momock.samples.R;
 
-public class TabCase extends Case{
+public class TabCase extends Case<Fragment>{
 
-	public TabCase(ICase parent) {
+	public TabCase(ICase<?> parent) {
 		super(parent);
 	}
 
@@ -46,17 +46,17 @@ public class TabCase extends Case{
 	@Override
 	public void onCreate() {	
 		IOutlet outlet = getParent().getOutlet(Outlets.SAMPLES);
-		outlet.addPlug(ActionPlug.get(new TextHolder("Tab Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
+		outlet.addPlug(ActionPlug.get(TextHolder.get("Tab Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
 			@Override
 			public void process(Object sender, IEventArgs args) {
 				run();
 			}			
 		}));
 
-		tabs.addPlug(TabPlug.get(new TextHolder("Tab 1"), null, ViewHolder.get(R.layout.tab_one)));
-		tabs.addPlug(TabPlug.get(new TextHolder("Tab 2"), null, ViewHolder.get(R.layout.tab_two)));
-		tabs.addPlug(TabPlug.get(new TextHolder("Tab 3"), null, ViewHolder.get(R.layout.tab_three)));
-		tabs.addPlug(TabPlug.get(new TextHolder("Tab 4"), null, ViewHolder.get(R.layout.tab_four)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Tab 1"), null, ViewHolder.get(R.layout.tab_one)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Tab 2"), null, ViewHolder.get(R.layout.tab_two)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Tab 3"), null, ViewHolder.get(R.layout.tab_three)));
+		tabs.addPlug(TabPlug.get(TextHolder.get("Tab 4"), null, ViewHolder.get(R.layout.tab_four)));
 	}
 
 	@Override
@@ -65,8 +65,8 @@ public class TabCase extends Case{
 	}
 
 	@Override
-	public void onAttach(Object target) {
-		tabs.attach(new TabHolder((Fragment)target));
+	public void onAttach(Fragment target) {
+		tabs.attach(TabHolder.get(target));
 	}
 
 }

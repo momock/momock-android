@@ -18,6 +18,7 @@ package com.momock.samples;
 import android.os.Bundle;
 import android.view.Menu;
 
+import com.momock.app.App;
 import com.momock.app.CaseActivity;
 import com.momock.app.ICase;
 import com.momock.holder.FragmentContainerHolder;
@@ -30,7 +31,7 @@ public class MainActivity extends CaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.case_main);
         
-        getCase().getOutlet(Outlets.MAIN_CONTAINER).attach(new FragmentContainerHolder(this, R.id.fragment_content));
+        getCase().getOutlet(Outlets.MAIN_CONTAINER).attach(FragmentContainerHolder.get(this, R.id.fragment_content));
     }
 
     @Override
@@ -46,10 +47,9 @@ public class MainActivity extends CaseActivity {
 
 	@Override
 	public void onBackPressed() {
-        ICase mainmenu = getCase().getCase(MainMenuCase.class.getName());
-		if (getCase().getOutlet(Outlets.MAIN_CONTAINER).getActivePlug() == mainmenu)
+		if (getCase().getOutlet(Outlets.MAIN_CONTAINER).getActivePlug() == App.get().getNamedPlug(NamedPlugs.MAIN_MENU))
 			super.onBackPressed();
 		else
-			mainmenu.run();
+			getCase().getCase(MainMenuCase.class.getName()).run();
 	}
 }

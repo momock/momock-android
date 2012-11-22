@@ -33,15 +33,15 @@ import com.momock.outlet.card.ICardPlug;
 import com.momock.samples.Outlets;
 import com.momock.samples.R;
 
-public class ActionCase extends Case{
-	public ActionCase(ICase parent) {
+public class ActionCase extends Case<Fragment>{
+	public ActionCase(ICase<?> parent) {
 		super(parent);
 	}
 
 	ICardPlug plug = CardPlug.get(FragmentHolder.get(R.layout.case_action, this));
 	@Override
 	public void onCreate() {	
-		getOutlet(Outlets.SAMPLES).addPlug(ActionPlug.get(new TextHolder("Action Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
+		getOutlet(Outlets.SAMPLES).addPlug(ActionPlug.get(TextHolder.get("Action Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
 			@Override
 			public void process(Object sender, IEventArgs args) {
 				run();
@@ -56,8 +56,8 @@ public class ActionCase extends Case{
 	}
 
 	@Override
-	public void onAttach(Object target) {
-		View view = ((Fragment)target).getView();
+	public void onAttach(Fragment target) {
+		View view = target.getView();
 		Button btn = (Button)ViewHolder.get(view, R.id.button1).getView();
 		btn.setOnClickListener(new View.OnClickListener() {
 			
