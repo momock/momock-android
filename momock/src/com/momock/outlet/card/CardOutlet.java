@@ -42,7 +42,7 @@ public class CardOutlet extends Outlet<ICardPlug, ViewHolder>{
 	@Override
 	public void onAttach(ViewHolder target) {
 		Logger.check(target.getView() instanceof FrameLayout, "The CardOutlet must be used with a FrameLayout!");
-		IDataList<ICardPlug> plugs = getAllPlugs();
+		IDataList<ICardPlug> plugs = getPlugs();
 		for(int i = 0; i < plugs.getItemCount(); i++){
 			ICardPlug plug = plugs.getItem(i);
 			Logger.check(plug.getComponent() instanceof ViewHolder, "The plug of CardOutlet must include a ViewHolder!");

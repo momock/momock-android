@@ -36,7 +36,7 @@ public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> {
 	public void onAttach(final FragmentTabHolder target) {
 		Logger.check(target != null, "Parameter target cannot be null!");
 		final TabHost tabHost = target.getTabHost();
-		plugs = getAllPlugs();
+		plugs = getPlugs();
 		tabHost.setup();
 		tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
 			

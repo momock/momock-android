@@ -37,7 +37,7 @@ public class PagerTabOutlet extends Outlet<ITabPlug, TabHolder>{
 		Logger.check(target.getTabContent() instanceof ViewPager, "The PagerTabOutlet must contains a ViewPager content!");
 		final TabHost tabHost = target.getTabHost();
 		final ViewPager tabContent = (ViewPager) target.getTabContent();
-		plugs = getAllPlugs();
+		plugs = getPlugs();
 		
 		ViewPager pager = (ViewPager)target.getTabContent();
 		for(int i = 0; i < plugs.getItemCount(); i++){

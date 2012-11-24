@@ -32,7 +32,7 @@ public class TabOutlet extends Outlet<ITabPlug, TabHolder> {
 		Logger.check(target != null, "Parameter target cannot be null!");
 		final TabHost tabHost = target.getTabHost();
 		tabHost.setup();
-		plugs = getAllPlugs();
+		plugs = getPlugs();
 		for(int i = 0; i < plugs.getItemCount(); i++)
 		{
 			final ITabPlug plug = plugs.getItem(i);

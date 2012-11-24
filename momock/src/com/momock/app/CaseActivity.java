@@ -35,7 +35,7 @@ public abstract class CaseActivity extends FragmentActivity {
 	}
 
 	protected void log(String msg){
-		Logger.debug((getCase() == null ? getClass().getName() : getCase().getFullName()) + " : " + msg);
+		Logger.info((getCase() == null ? getClass().getName() : getCase().getFullName()) + " : " + msg);
 	}
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,12 +83,6 @@ public abstract class CaseActivity extends FragmentActivity {
 	}
 
 	@Override
-	protected void onPostResume() {
-		log("onPostResume");
-		super.onPostResume();
-	}
-
-	@Override
 	protected void onResumeFragments() {
 		log("onResumeFragments");
 		super.onResumeFragments();
@@ -110,12 +104,6 @@ public abstract class CaseActivity extends FragmentActivity {
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		log("onRestoreInstanceState");
 		super.onRestoreInstanceState(savedInstanceState);
-	}
-
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		log("onPostCreate");
-		super.onPostCreate(savedInstanceState);
 	}
 
 	@Override

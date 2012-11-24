@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
@@ -78,12 +79,13 @@ public abstract class App extends android.app.Application implements IApplicatio
 	protected int getLogLevel() {
 		return Logger.LEVEL_DEBUG;
 	}
-	
+/*	
 	public LayoutInflater getLayoutInflater()
 	{
 		return getLayoutInflater(this);
 	}
 	
+*/
 	public LayoutInflater getLayoutInflater(Context context)
 	{		
 		if (cachedLayoutInflater.containsKey(context))
@@ -92,7 +94,7 @@ public abstract class App extends android.app.Application implements IApplicatio
 		cachedLayoutInflater.put(context, layoutInflater);
 		return layoutInflater;
 	}
-
+	
 	@Override
 	public void onCreate() {
 		Logger.open(this.getClass().getName().toLowerCase() + ".log",
@@ -114,14 +116,14 @@ public abstract class App extends android.app.Application implements IApplicatio
 	protected abstract void onAddServices();
 
 	// Helper methods
-	public Context getCurrentContext() {
+	public Activity getCurrentActivity() {
 		Object ao = App.get().getActiveCase().getAttachedObject();
 		if (ao == null)
 			return null;
-		if (ao instanceof Context)
-			return (Context) ao;
+		if (ao instanceof Activity)
+			return (Activity) ao;
 		if (ao instanceof View)
-			return ((View) ao).getContext();
+			return (Activity)((View) ao).getContext();
 		if (ao instanceof Fragment)
 			return ((Fragment) ao).getActivity();
 		return null;
@@ -132,7 +134,7 @@ public abstract class App extends android.app.Application implements IApplicatio
 	}
 
 	public void startActivity(Class<?> activityClass) {
-		Context currContext = getCurrentContext();
+		Context currContext = getCurrentActivity();
 		currContext.startActivity(new Intent(currContext, activityClass));
 	}
 
@@ -195,23 +197,23 @@ public abstract class App extends android.app.Application implements IApplicatio
 
 	@SuppressWarnings("rawtypes")
 	HashMap<String, IOutlet> outlets = new HashMap<String, IOutlet>(); 
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public <P extends IPlug, T> IOutlet<P, T> getOutlet(String name) {
-		IOutlet<P, T> outlet = null;
+	public <P extends IPlug, H, T extends IOutlet<P, H>> T getOutlet(String name) {
+		T outlet = null;
 		if (outlets.containsKey(name))
-			outlet = outlets.get(name);
+			outlet = (T)outlets.get(name);
 		else
 		{
-			outlet = new PlaceholderOutlet();
+			outlet = (T)new PlaceholderOutlet();
 			outlets.put(name, outlet);
 		}
 		return outlet;
 	}
 
 	@Override
-	public  <P extends IPlug, T> void addOutlet(String name, IOutlet<P, T> outlet) {
+	public <P extends IPlug, H, T extends IOutlet<P, H>> void addOutlet(String name, T outlet) {
 		Logger.debug("addOutlet : " + name);
 		if (outlets.containsKey(name) && outlet != null)
 		{

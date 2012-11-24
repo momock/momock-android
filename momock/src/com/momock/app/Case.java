@@ -164,24 +164,24 @@ public abstract class Case<A> implements ICase<A> {
 	@SuppressWarnings("rawtypes")
 	HashMap<String, IOutlet> outlets = new HashMap<String, IOutlet>(); 
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public <P extends IPlug, T> IOutlet<P, T> getOutlet(String name) {
-		IOutlet<P, T> outlet = null;
+	public <P extends IPlug, H, T extends IOutlet<P, H>> T getOutlet(String name) {
+		T outlet = null;
 		if (outlets.containsKey(name))
-			outlet = outlets.get(name);
+			outlet = (T)outlets.get(name);
 		if (outlet == null)
-			outlet = (IOutlet<P, T>)(getParent() == null ? App.get().getOutlet(name) : getParent().getOutlet(name));
+			outlet = (T)(getParent() == null ? App.get().getOutlet(name) : getParent().getOutlet(name));
 		if (outlet == null)
 		{
-			outlet = new PlaceholderOutlet<P, T>();
+			outlet = (T)new PlaceholderOutlet();
 			outlets.put(name, outlet);
 		}
 		return outlet;
 	}
 
 	@Override
-	public  <P extends IPlug, T> void addOutlet(String name, IOutlet<P, T> outlet) {
+	public  <P extends IPlug, H, T extends IOutlet<P, H>> void addOutlet(String name, T outlet) {
 		Logger.debug("addOutlet : " + name);
 		if (outlets.containsKey(name) && outlet != null)
 		{

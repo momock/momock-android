@@ -21,7 +21,7 @@ import com.momock.event.IEventHandler;
 import com.momock.holder.ViewHolder;
 import com.momock.outlet.Outlet;
 
-public class ListViewActionOutlet extends Outlet<IActionPlug, ViewHolder> {
+public class ListViewActionOutlet extends Outlet<IActionPlug, ViewHolder> implements IActionOutlet<ViewHolder>{
 
 	public static ListViewActionOutlet getSimple() {
 		return new ListViewActionOutlet() {
@@ -37,7 +37,7 @@ public class ListViewActionOutlet extends Outlet<IActionPlug, ViewHolder> {
 					}
 
 				});
-				binder.bind(target, getAllPlugs());
+				binder.bind(target, getPlugs());
 			}
 		};
 	}

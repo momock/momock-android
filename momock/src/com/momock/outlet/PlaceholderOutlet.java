@@ -35,8 +35,8 @@ public class PlaceholderOutlet<P extends IPlug, T> implements IOutlet<P, T> {
 	}
 
 	@Override
-	public IDataList<P> getAllPlugs() {
-		return plugs;
+	public IDataList<P> getPlugs() {
+		return provider == null ? plugs : provider.getPlugs();
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -90,6 +90,18 @@ public class PlaceholderOutlet<P extends IPlug, T> implements IOutlet<P, T> {
 	@Override
 	public void onDeactivate(P plug) {
 		Logger.check(false, "PlaceholderOutlet.onDeactivate should not be called!");
+	}
+
+
+	IPlugProvider<P> provider = null;
+	@Override
+	public IPlugProvider<P> getPlugProvider() {
+		return provider == null ? this : provider;
+	}
+
+	@Override
+	public void setPlugProvider(IPlugProvider<P> provider) {
+		this.provider = provider;		
 	}
 
 }

@@ -146,6 +146,12 @@ public class DataNode implements IDataNode {
 		return list.getItem(index);
 	}
 	@Override
+	public void removeAllItems() {
+		DataList<Object> list = getList();
+		if (list == null) return;
+		list.removeAllItems();
+	}
+	@Override
 	public int getItemCount() {
 		DataList<Object> list = getList();
 		if (list == null) return 0;

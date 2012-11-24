@@ -15,14 +15,14 @@
  ******************************************************************************/
 package com.momock.outlet;
 
-import com.momock.data.IDataList;
+public interface IOutlet<P extends IPlug, T> extends IPlugProvider<P> {
+	IPlugProvider<P> getPlugProvider();
 
-public interface IOutlet<P extends IPlug, T> {
+	void setPlugProvider(IPlugProvider<P> provider);
+
 	P addPlug(P plug);
 
 	void removePlug(P plug);
-
-	IDataList<P> getAllPlugs();
 
 	T getAttachedObject();
 

@@ -33,9 +33,9 @@ public interface ICase<A> {
 
 	void removeCase(String name);
 
-	<P extends IPlug, T> IOutlet<P, T> getOutlet(String name);
+	<P extends IPlug, H, T extends IOutlet<P, H>> T getOutlet(String name);
 
-	<P extends IPlug, T> void addOutlet(String name, IOutlet<P, T> outlet);
+	<P extends IPlug, H, T extends IOutlet<P, H>> void addOutlet(String name, T outlet);
 
 	void removeOutlet(String name);
 

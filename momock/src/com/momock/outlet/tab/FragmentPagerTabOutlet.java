@@ -39,7 +39,7 @@ public class FragmentPagerTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> 
 	public void onAttach(final FragmentTabHolder target) {
 		Logger.check(target != null, "Parameter target cannot be null!");
 		final TabHost tabHost = target.getTabHost();
-		plugs = getAllPlugs();
+		plugs = getPlugs();
 		Logger.check(target.getTabContent() instanceof ViewPager,
 				"The tab content container must be a ViewPager!");
 		final ViewPager tabContent = (ViewPager) target.getTabContent();

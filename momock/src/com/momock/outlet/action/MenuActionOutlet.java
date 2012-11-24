@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.momock.outlet.action;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -23,16 +25,22 @@ import com.momock.event.IEvent;
 import com.momock.event.IEventArgs;
 import com.momock.outlet.Outlet;
 
-public class MenuActionOutlet extends Outlet<IActionPlug, Menu> {
+public class MenuActionOutlet extends Outlet<IActionPlug, Menu> implements IActionOutlet<Menu>{
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	void enableShowAsAction(final MenuItem mi){
+		mi.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);		
+	}
 	@Override
 	public void onAttach(Menu menu)
 	{
-		IDataList<IActionPlug> plugs = getAllPlugs();
+		IDataList<IActionPlug> plugs = getPlugs();
 		for(int i = 0; i < plugs.getItemCount(); i++)
 		{
 			final IActionPlug plug = plugs.getItem(i);
 			String text = plug.getText() == null ? null : plug.getText().getText();
 			final MenuItem mi = menu.add(text == null ? "" : text);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				enableShowAsAction(mi);
 			if (plug.getIcon() != null)
 			{
 				mi.setIcon(plug.getIcon().getAsDrawable());

@@ -31,7 +31,7 @@ public class PagerCardOutlet extends Outlet<ICardPlug, ViewHolder>{
 	public void onAttach(ViewHolder target) {
 		Logger.check(target.getView() instanceof ViewPager, "The PagerCardOutlet must be attached to a ViewPager!");
 		ViewPager pager = (ViewPager)target.getView();
-		plugs = getAllPlugs();
+		plugs = getPlugs();
 		for(int i = 0; i < plugs.getItemCount(); i++){
 			ICardPlug plug = plugs.getItem(i);
 			Logger.check(plug.getComponent() instanceof ViewHolder, "The plug of PagerCardOutlet must include a ViewHolder!");

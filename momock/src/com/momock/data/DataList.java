@@ -98,4 +98,9 @@ public class DataList<T> implements IDataMutableList<T>, IDataChangedAware{
 	public boolean hasItem(T item) {
 		return list.contains(item);
 	}
+
+	@Override
+	public void removeAllItems() {
+		list.clear();
+	}
 }

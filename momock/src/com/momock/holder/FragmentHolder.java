@@ -37,7 +37,7 @@ public abstract class FragmentHolder implements IComponentHolder{
 				Bundle savedInstanceState) {
 			int resourceId = getArguments().getInt(RID);
 			Logger.debug("Create SimpleFragment RID=" + resourceId + " CASE ID=" + getArguments().getString(CASE_ID));
-			return ViewHolder.get(resourceId).getView();
+			return ViewHolder.get(container.getContext(), resourceId, null).getView();
 		}
 		@Override
 		protected String getCaseName() {

@@ -21,4 +21,5 @@ public interface IDataMutableList<T> extends IDataList<T>{
 	void setItem(int index, T val);
 	void removeItem(T val);
 	void removeItemAt(int index);
+	void removeAllItems();
 }
