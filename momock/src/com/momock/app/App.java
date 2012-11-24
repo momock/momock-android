@@ -29,6 +29,9 @@ import android.view.View;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
+import com.momock.service.IImageService;
+import com.momock.service.IService;
+import com.momock.service.ImageService;
 import com.momock.util.Logger;
 
 public abstract class App extends android.app.Application implements IApplication {
@@ -101,6 +104,7 @@ public abstract class App extends android.app.Application implements IApplicatio
 				getLogLevel());
 		app = this;
 		super.onCreate();
+		addService(IImageService.class, new ImageService(getContentResolver()));
 		onAddServices();
 		onAddCases();
 	}
@@ -244,5 +248,21 @@ public abstract class App extends android.app.Application implements IApplicatio
 	@Override
 	public IPlug getNamedPlug(String name) {
 		return namedPlugs.get(name);
+	}
+
+	Map<Class<?>, IService> services = new HashMap<Class<?>, IService>();
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends IService> T getService(Class<?> klass) {		
+		return (T)services.get(klass);
+	}
+
+	@Override
+	public void addService(Class<?> klass, IService service) {
+		services.put(klass, service);		
+	}
+	
+	public IImageService getImageService(){
+		return getService(IImageService.class);
 	}
 }

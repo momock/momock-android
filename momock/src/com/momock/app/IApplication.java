@@ -17,6 +17,7 @@ package com.momock.app;
 
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
+import com.momock.service.IService;
 
 public interface IApplication {
 	ICase<?> getActiveCase();
@@ -38,4 +39,8 @@ public interface IApplication {
 	void addNamedPlug(String name, IPlug plug);
 	
 	IPlug getNamedPlug(String name);
+	
+	<T extends IService> T getService(Class<?> klass);
+	
+	void addService(Class<?> klass, IService service);
 }

@@ -17,7 +17,7 @@ package com.momock.holder;
 
 import com.momock.app.App;
 
-public abstract class TextHolder implements IGraphicsHolder {
+public abstract class TextHolder {
 	public abstract String getText();
 	
 	public static TextHolder get(final String text)
