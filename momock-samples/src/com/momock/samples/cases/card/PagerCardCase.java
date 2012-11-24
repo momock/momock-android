@@ -80,7 +80,7 @@ public class PagerCardCase extends Case<Fragment> implements View.OnClickListene
 
 	@Override
 	public void onClick(View v) {
-		IDataList<ICardPlug> plugs = cards.getAllPlugs();
+		IDataList<ICardPlug> plugs = cards.getPlugs();
 		switch (v.getId()) {
 		case R.id.button1:
 			cards.setActivePlug(plugs.getItem(0));

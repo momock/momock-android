@@ -20,8 +20,8 @@ import android.view.Menu;
 
 import com.momock.app.App;
 import com.momock.app.CaseActivity;
-import com.momock.app.ICase;
 import com.momock.holder.FragmentContainerHolder;
+import com.momock.outlet.action.IActionOutlet;
 import com.momock.samples.cases.mainmenu.MainMenuCase;
 
 public class MainActivity extends CaseActivity {
@@ -36,7 +36,8 @@ public class MainActivity extends CaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-    	getCase().getOutlet(Outlets.MAIN_MENU).attach(menu);
+    	IActionOutlet<Menu> outlet = getCase().getOutlet(Outlets.MAIN_MENU);
+    	outlet.attach(menu);
         return true;
     }
 

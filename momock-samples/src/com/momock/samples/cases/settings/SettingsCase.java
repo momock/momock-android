@@ -21,10 +21,12 @@ import com.momock.app.App;
 import com.momock.app.Case;
 import com.momock.event.IEventArgs;
 import com.momock.event.IEventHandler;
+import com.momock.holder.ImageHolder;
 import com.momock.holder.TextHolder;
 import com.momock.outlet.action.ActionPlug;
 import com.momock.samples.Cases;
 import com.momock.samples.Outlets;
+import com.momock.samples.R;
 
 public class SettingsCase extends Case<Activity> {
 
@@ -35,6 +37,7 @@ public class SettingsCase extends Case<Activity> {
 	@Override
 	public void onCreate() {
 		ActionPlug self = ActionPlug.get(TextHolder.get("Settings"),
+				ImageHolder.get(R.drawable.ic_action_google_play),
 				new IEventHandler<IEventArgs>() {
 					@Override
 					public void process(Object sender, IEventArgs args) {

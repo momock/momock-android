@@ -41,7 +41,7 @@ public class MainCase extends Case<Activity>{
 		App.get().addOutlet(Outlets.MAIN_MENU, new MenuActionOutlet());
 			
 		addOutlet(Outlets.MAIN_CONTAINER, new FragmentCardOutlet());
-		
+
 		addCase(new MainMenuCase(this));
 		addCase(new ActionCase(this));
 		addCase(new TabCase(this));
