@@ -23,6 +23,7 @@ import com.momock.outlet.action.MenuActionOutlet;
 import com.momock.outlet.card.FragmentCardOutlet;
 import com.momock.samples.OutletNames;
 import com.momock.samples.cases.action.ActionCase;
+import com.momock.samples.cases.binder.GridViewCase;
 import com.momock.samples.cases.binder.ListViewCase;
 import com.momock.samples.cases.card.CardCase;
 import com.momock.samples.cases.card.PagerCardCase;
@@ -46,6 +47,7 @@ public class MainCase extends Case<Activity>{
 
 		addCase(new MainMenuCase(this));
 		addCase(new ListViewCase(this));
+		addCase(new GridViewCase(this));
 		addCase(new ActionCase(this));
 		addCase(new TabCase(this));
 		addCase(new PagerTabCase(this));

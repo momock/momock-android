@@ -40,7 +40,6 @@ public class MainMenuCase extends Case<Fragment> {
 		getParent().addOutlet(OutletNames.SAMPLES, ListViewActionOutlet.getSimple());
 		
 		App.get().addPlug(PlugNames.MAIN_MENU, self);
-		run();
 	}
 
 	ICardPlug self = CardPlug.get(FragmentHolder.get(R.layout.case_mainmenu, this));

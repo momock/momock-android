@@ -15,6 +15,55 @@
  ******************************************************************************/
 package com.momock.samples.cases.binder;
 
-public class GridViewCase {
+import android.support.v4.app.Fragment;
 
+import com.momock.app.App;
+import com.momock.app.Case;
+import com.momock.app.ICase;
+import com.momock.binder.GridViewBinder;
+import com.momock.binder.SimpleItemViewBinder;
+import com.momock.event.IEventArgs;
+import com.momock.event.IEventHandler;
+import com.momock.holder.FragmentHolder;
+import com.momock.holder.TextHolder;
+import com.momock.holder.ViewHolder;
+import com.momock.outlet.action.ActionPlug;
+import com.momock.outlet.action.IActionOutlet;
+import com.momock.outlet.card.CardPlug;
+import com.momock.outlet.card.ICardPlug;
+import com.momock.samples.OutletNames;
+import com.momock.samples.R;
+import com.momock.samples.services.IDataService;
+
+public class GridViewCase  extends Case<Fragment>{
+
+	public GridViewCase(ICase<?> parent) {
+		super(parent);
+	}
+	
+	@Override
+	public void onCreate() {
+		IActionOutlet<?> outlet = getParent().getOutlet(OutletNames.SAMPLES);
+		outlet.addPlug(ActionPlug.get(TextHolder.get("GridView Sample"))
+				.addExecuteEventHandler(new IEventHandler<IEventArgs>() {
+					@Override
+					public void process(Object sender, IEventArgs args) {
+						run();
+					}
+				}));
+	}
+
+	ICardPlug self = CardPlug.get(FragmentHolder.get(R.layout.case_gridview, this));
+
+	@Override
+	public void run(Object... args) {
+		getOutlet(OutletNames.MAIN_CONTAINER).setActivePlug(self);
+	}	
+
+	@Override
+	public void onAttach(Fragment target) {
+		IDataService ds = App.get().getService(IDataService.class);
+		GridViewBinder binder = new GridViewBinder(new SimpleItemViewBinder(R.layout.grid_item, new int[] {R.id.ivIcon, R.id.tvName}, new String[]{"IconUri", "Name"}));
+		binder.bind(ViewHolder.get(target, R.id.gvCategories), ds.getAllCategories());
+	}
 }

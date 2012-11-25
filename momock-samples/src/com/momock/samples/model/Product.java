@@ -17,21 +17,24 @@ package com.momock.samples.model;
 
 import com.momock.data.DataMap;
 
-public class Product extends DataMap<String, Object>{
+public class Product extends DataMap<String, Object> {
 	public static final String Id = "Id";
 	public static final String Name = "Name";
 	public static final String Description = "Description";
 	public static final String CategoryId = "CategoryId";
-	
+
 	public Integer getId() {
-		return (Integer)this.getProperty(Id);
+		return (Integer) this.getProperty(Id);
 	}
+
 	public void setId(int id) {
 		this.setProperty(Id, id);
 	}
+
 	public Integer getCategoryId() {
-		return (Integer)this.getProperty(CategoryId);
+		return (Integer) this.getProperty(CategoryId);
 	}
+
 	public void setCategoryId(int categoryId) {
 		this.setProperty(CategoryId, categoryId);
 	}
@@ -43,10 +46,16 @@ public class Product extends DataMap<String, Object>{
 	public void setName(String name) {
 		this.setProperty(Name, name);
 	}
+
 	public String getDescription() {
-		return (String)this.getProperty(Description);
+		return (String) this.getProperty(Description);
 	}
+
 	public void setDescription(String description) {
 		this.setProperty(Description, description);
+	}
+
+	public String getIconUri() {
+		return "file:///android_asset/icons/product/" + (getId() % 8) + ".png";
 	}
 }

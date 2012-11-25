@@ -16,6 +16,7 @@
 package com.momock.samples.model;
 
 import com.momock.data.DataMap;
+import com.momock.util.Convert;
 
 public class Category extends DataMap<String, Object> {
 
@@ -23,7 +24,7 @@ public class Category extends DataMap<String, Object> {
 	public static final String Name = "Name";
 
 	public Integer getId() {
-		return (Integer) this.getProperty(Id);
+		return Convert.toInteger(this.getProperty(Id));
 	}
 
 	public void setId(int id) {
@@ -36,5 +37,12 @@ public class Category extends DataMap<String, Object> {
 
 	public void setName(String name) {
 		this.setProperty(Name, name);
+	}
+	
+	public String getIconUri(){
+		//String uri = "file:///android_asset/icons/category/" + (getId() % 5) + ".png";
+		String uri = "assets://icons/category/" + (getId() % 5) + ".png";
+		uri = "https://www.google.com/images/srpr/logo3w.png";
+		return uri;
 	}
 }

@@ -38,6 +38,8 @@ public class MainActivity extends CaseActivity {
         setContentView(R.layout.case_main);
         
         getCase().getOutlet(OutletNames.MAIN_CONTAINER).attach(FragmentContainerHolder.get(this, R.id.fragment_content));
+        
+        getCase().getCase(MainMenuCase.class.getName()).run();
     }
 
     @Override
