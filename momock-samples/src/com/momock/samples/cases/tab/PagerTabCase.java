@@ -33,7 +33,7 @@ import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
 import com.momock.outlet.tab.PagerTabOutlet;
 import com.momock.outlet.tab.TabPlug;
-import com.momock.samples.Outlets;
+import com.momock.samples.OutletNames;
 import com.momock.samples.R;
 
 public class PagerTabCase extends Case<Fragment> {
@@ -46,7 +46,7 @@ public class PagerTabCase extends Case<Fragment> {
 
 	@Override
 	public void onCreate() {
-		IOutlet<IActionPlug, ViewHolder> outlet = getOutlet(Outlets.SAMPLES);
+		IOutlet<IActionPlug, ViewHolder> outlet = getOutlet(OutletNames.SAMPLES);
 		outlet.addPlug(ActionPlug.get(TextHolder.get("Pager Tab Sample"))
 				.addExecuteEventHandler(new IEventHandler<IEventArgs>() {
 					@Override
@@ -74,7 +74,7 @@ public class PagerTabCase extends Case<Fragment> {
 
 	@Override
 	public void run(Object... args) {
-		getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(self);
+		getOutlet(OutletNames.MAIN_CONTAINER).setActivePlug(self);
 	}
 
 	@Override

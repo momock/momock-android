@@ -13,10 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.samples;
+package com.momock.samples.model;
 
-public interface Outlets {
-	public static final String MAIN_MENU = "MAIN_MENU";
-	public static final String SAMPLES = "SAMPLES";
-	public static final String MAIN_CONTAINER = "MAIN_CONTAINER";
+import com.momock.data.DataMap;
+
+public class Category extends DataMap<String, Object> {
+
+	public static final String Id = "Id";
+	public static final String Name = "Name";
+
+	public Integer getId() {
+		return (Integer) this.getProperty(Id);
+	}
+
+	public void setId(int id) {
+		this.setProperty(Id, id);
+	}
+
+	public String getName() {
+		return (String) this.getProperty(Name);
+	}
+
+	public void setName(String name) {
+		this.setProperty(Name, name);
+	}
 }

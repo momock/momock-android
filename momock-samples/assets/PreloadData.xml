@@ -13,9 +13,15 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_settings"
-        android:title="@string/menu_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
-</menu>
+<DataSet>
+    <Categories>
+        <Category Id="1" Name="Featured" />
+        <Category Id="2" Name="Games" />
+    </Categories>
+    <Products>
+        <Product Id="1" CategoryId="1" Name="Game1.1" Description="Game1.1 Desc" />
+        <Product Id="2" CategoryId="1" Name="Game1.2" Description="Game1.2 Desc" />
+        <Product Id="3" CategoryId="2" Name="Game2.1" Description="Game2.1 Desc" />
+        <Product Id="4" CategoryId="2" Name="Game2.2" Description="Game2.2 Desc" />
+    </Products>
+</DataSet>

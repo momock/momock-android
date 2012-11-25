@@ -30,7 +30,7 @@ import com.momock.holder.ViewHolder;
 import com.momock.outlet.action.ActionPlug;
 import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
-import com.momock.samples.Outlets;
+import com.momock.samples.OutletNames;
 import com.momock.samples.R;
 
 public class ActionCase extends Case<Fragment>{
@@ -40,7 +40,7 @@ public class ActionCase extends Case<Fragment>{
 
 	@Override
 	public void onCreate() {	
-		getOutlet(Outlets.SAMPLES).addPlug(ActionPlug.get(TextHolder.get("Action Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
+		getOutlet(OutletNames.SAMPLES).addPlug(ActionPlug.get(TextHolder.get("Action Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
 			@Override
 			public void process(Object sender, IEventArgs args) {
 				run();
@@ -52,7 +52,7 @@ public class ActionCase extends Case<Fragment>{
 
 	@Override
 	public void run(Object... args) {
-		getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(self);
+		getOutlet(OutletNames.MAIN_CONTAINER).setActivePlug(self);
 	}
 
 	@Override

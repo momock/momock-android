@@ -32,7 +32,7 @@ import com.momock.outlet.action.ActionPlug;
 import com.momock.outlet.card.CardOutlet;
 import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
-import com.momock.samples.Outlets;
+import com.momock.samples.OutletNames;
 import com.momock.samples.R;
 
 public class CardCase extends Case<Fragment> implements View.OnClickListener {
@@ -46,7 +46,7 @@ public class CardCase extends Case<Fragment> implements View.OnClickListener {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void onCreate() {
-		IOutlet outlet = getParent().getOutlet(Outlets.SAMPLES);
+		IOutlet outlet = getParent().getOutlet(OutletNames.SAMPLES);
 		outlet.addPlug(ActionPlug.get(TextHolder.get("Card Sample"))
 				.addExecuteEventHandler(new IEventHandler<IEventArgs>() {
 					@Override
@@ -75,7 +75,7 @@ public class CardCase extends Case<Fragment> implements View.OnClickListener {
 
 	@Override
 	public void run(Object... args) {
-		getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(self);
+		getOutlet(OutletNames.MAIN_CONTAINER).setActivePlug(self);
 	}
 
 	@Override

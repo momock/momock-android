@@ -13,31 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.samples.cases.holo;
+package com.momock.samples.services;
 
-import android.os.Bundle;
-import android.view.Menu;
+import com.momock.data.IDataList;
+import com.momock.samples.model.Category;
+import com.momock.samples.model.Product;
+import com.momock.service.IService;
 
-import com.momock.app.CaseActivity;
-import com.momock.samples.CaseNames;
-import com.momock.samples.R;
+public interface IDataService extends IService{
+	Product getProductById(int id);
 
-public class HoloActionBarActivity extends CaseActivity {
+	Category getCategoryById(int id);
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_holo_action_bar);
-    }
+	IDataList<Category> getAllCategories();
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_holo_action_bar, menu);
-        return true;
-    }
+	IDataList<Product> getProductsInCategory(int cid);
 
-	@Override
-	protected String getCaseName() {
-		return CaseNames.HOLO;
-	}
+	IDataList<Product> getAllProducts();
 }

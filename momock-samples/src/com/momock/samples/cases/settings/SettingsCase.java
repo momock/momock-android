@@ -24,8 +24,8 @@ import com.momock.event.IEventHandler;
 import com.momock.holder.ImageHolder;
 import com.momock.holder.TextHolder;
 import com.momock.outlet.action.ActionPlug;
-import com.momock.samples.Cases;
-import com.momock.samples.Outlets;
+import com.momock.samples.CaseNames;
+import com.momock.samples.OutletNames;
 import com.momock.samples.R;
 
 public class SettingsCase extends Case<Activity> {
@@ -44,8 +44,8 @@ public class SettingsCase extends Case<Activity> {
 						run();
 					}
 				});
-		getOutlet(Outlets.MAIN_MENU).addPlug(self);
-		App.get().getCase(Cases.MAIN).getOutlet(Outlets.SAMPLES).addPlug(self);
+		getOutlet(OutletNames.MAIN_MENU).addPlug(self);
+		App.get().getCase(CaseNames.MAIN).getOutlet(OutletNames.SAMPLES).addPlug(self);
 	}
 
 	@Override

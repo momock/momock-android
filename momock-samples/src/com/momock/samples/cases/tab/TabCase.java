@@ -32,7 +32,7 @@ import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
 import com.momock.outlet.tab.TabOutlet;
 import com.momock.outlet.tab.TabPlug;
-import com.momock.samples.Outlets;
+import com.momock.samples.OutletNames;
 import com.momock.samples.R;
 
 public class TabCase extends Case<Fragment> {
@@ -46,7 +46,7 @@ public class TabCase extends Case<Fragment> {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void onCreate() {
-		IOutlet outlet = getParent().getOutlet(Outlets.SAMPLES);
+		IOutlet outlet = getParent().getOutlet(OutletNames.SAMPLES);
 		outlet.addPlug(ActionPlug.get(TextHolder.get("Tab Sample"))
 				.addExecuteEventHandler(new IEventHandler<IEventArgs>() {
 					@Override
@@ -73,7 +73,7 @@ public class TabCase extends Case<Fragment> {
 
 	@Override
 	public void run(Object... args) {
-		getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(self);
+		getOutlet(OutletNames.MAIN_CONTAINER).setActivePlug(self);
 	}
 
 	@Override

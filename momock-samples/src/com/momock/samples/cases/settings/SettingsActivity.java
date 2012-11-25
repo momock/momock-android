@@ -18,7 +18,7 @@ package com.momock.samples.cases.settings;
 import android.os.Bundle;
 
 import com.momock.app.CaseActivity;
-import com.momock.samples.Cases;
+import com.momock.samples.CaseNames;
 import com.momock.samples.R;
 
 public class SettingsActivity extends CaseActivity {
@@ -31,6 +31,6 @@ public class SettingsActivity extends CaseActivity {
 
 	@Override
 	protected String getCaseName() {
-		return Cases.SETTINGS;
+		return CaseNames.SETTINGS;
 	}
 }

@@ -25,8 +25,8 @@ import com.momock.holder.ViewHolder;
 import com.momock.outlet.action.ListViewActionOutlet;
 import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
-import com.momock.samples.NamedPlugs;
-import com.momock.samples.Outlets;
+import com.momock.samples.PlugNames;
+import com.momock.samples.OutletNames;
 import com.momock.samples.R;
 
 public class MainMenuCase extends Case<Fragment> {
@@ -37,21 +37,21 @@ public class MainMenuCase extends Case<Fragment> {
 
 	@Override
 	public void onCreate() {
-		getParent().addOutlet(Outlets.SAMPLES, ListViewActionOutlet.getSimple());
+		getParent().addOutlet(OutletNames.SAMPLES, ListViewActionOutlet.getSimple());
 		
-		App.get().addNamedPlug(NamedPlugs.MAIN_MENU, self);
+		App.get().addPlug(PlugNames.MAIN_MENU, self);
 		run();
 	}
 
 	ICardPlug self = CardPlug.get(FragmentHolder.get(R.layout.case_mainmenu, this));
 	@Override
 	public void run(Object... args) {
-		getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(self);
+		getOutlet(OutletNames.MAIN_CONTAINER).setActivePlug(self);
 	}
 
 	@Override
 	public void onAttach(Fragment target) {
-        getOutlet(Outlets.SAMPLES).attach(ViewHolder.get(target, R.id.lvMainMenu)); 
+        getOutlet(OutletNames.SAMPLES).attach(ViewHolder.get(target, R.id.lvMainMenu)); 
 	}
 
 }

@@ -32,7 +32,7 @@ import com.momock.outlet.action.ActionPlug;
 import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
 import com.momock.outlet.card.PagerCardOutlet;
-import com.momock.samples.Outlets;
+import com.momock.samples.OutletNames;
 import com.momock.samples.R;
 
 public class PagerCardCase extends Case<Fragment> implements View.OnClickListener {
@@ -46,7 +46,7 @@ public class PagerCardCase extends Case<Fragment> implements View.OnClickListene
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void onCreate() {
-		IOutlet outlet = getParent().getOutlet(Outlets.SAMPLES);
+		IOutlet outlet = getParent().getOutlet(OutletNames.SAMPLES);
 		outlet.addPlug(ActionPlug.get(TextHolder.get("Pager Card Sample"))
 				.addExecuteEventHandler(new IEventHandler<IEventArgs>() {
 					@Override
@@ -75,7 +75,7 @@ public class PagerCardCase extends Case<Fragment> implements View.OnClickListene
 
 	@Override
 	public void run(Object... args) {
-		getOutlet(Outlets.MAIN_CONTAINER).setActivePlug(self);
+		getOutlet(OutletNames.MAIN_CONTAINER).setActivePlug(self);
 	}
 
 	@Override

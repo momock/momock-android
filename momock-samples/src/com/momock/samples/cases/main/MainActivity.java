@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.samples;
+package com.momock.samples.cases.main;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,6 +22,12 @@ import com.momock.app.App;
 import com.momock.app.CaseActivity;
 import com.momock.holder.FragmentContainerHolder;
 import com.momock.outlet.action.IActionOutlet;
+import com.momock.samples.CaseNames;
+import com.momock.samples.OutletNames;
+import com.momock.samples.PlugNames;
+import com.momock.samples.R;
+import com.momock.samples.R.id;
+import com.momock.samples.R.layout;
 import com.momock.samples.cases.mainmenu.MainMenuCase;
 
 public class MainActivity extends CaseActivity {
@@ -31,24 +37,24 @@ public class MainActivity extends CaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.case_main);
         
-        getCase().getOutlet(Outlets.MAIN_CONTAINER).attach(FragmentContainerHolder.get(this, R.id.fragment_content));
+        getCase().getOutlet(OutletNames.MAIN_CONTAINER).attach(FragmentContainerHolder.get(this, R.id.fragment_content));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-    	IActionOutlet<Menu> outlet = getCase().getOutlet(Outlets.MAIN_MENU);
+    	IActionOutlet<Menu> outlet = getCase().getOutlet(OutletNames.MAIN_MENU);
     	outlet.attach(menu);
         return true;
     }
 
 	@Override
 	protected String getCaseName() {
-		return Cases.MAIN;
+		return CaseNames.MAIN;
 	}
 
 	@Override
 	public void onBackPressed() {
-		if (getCase().getOutlet(Outlets.MAIN_CONTAINER).getActivePlug() == App.get().getNamedPlug(NamedPlugs.MAIN_MENU))
+		if (getCase().getOutlet(OutletNames.MAIN_CONTAINER).getActivePlug() == App.get().getPlug(PlugNames.MAIN_MENU))
 			super.onBackPressed();
 		else
 			getCase().getCase(MainMenuCase.class.getName()).run();

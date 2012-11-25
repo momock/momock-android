@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.samples;
+package com.momock.samples.cases.main;
 
 import android.app.Activity;
 
@@ -21,7 +21,9 @@ import com.momock.app.App;
 import com.momock.app.Case;
 import com.momock.outlet.action.MenuActionOutlet;
 import com.momock.outlet.card.FragmentCardOutlet;
+import com.momock.samples.OutletNames;
 import com.momock.samples.cases.action.ActionCase;
+import com.momock.samples.cases.binder.ListViewCase;
 import com.momock.samples.cases.card.CardCase;
 import com.momock.samples.cases.card.PagerCardCase;
 import com.momock.samples.cases.mainmenu.MainMenuCase;
@@ -38,11 +40,12 @@ public class MainCase extends Case<Activity>{
 
 	@Override
 	public void onCreate() {		
-		App.get().addOutlet(Outlets.MAIN_MENU, new MenuActionOutlet());
+		App.get().addOutlet(OutletNames.MAIN_MENU, new MenuActionOutlet());
 			
-		addOutlet(Outlets.MAIN_CONTAINER, new FragmentCardOutlet());
+		addOutlet(OutletNames.MAIN_CONTAINER, new FragmentCardOutlet());
 
 		addCase(new MainMenuCase(this));
+		addCase(new ListViewCase(this));
 		addCase(new ActionCase(this));
 		addCase(new TabCase(this));
 		addCase(new PagerTabCase(this));

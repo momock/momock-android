@@ -13,31 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.samples.cases.holo;
+package com.momock.samples;
 
-import android.os.Bundle;
-import android.view.Menu;
-
-import com.momock.app.CaseActivity;
-import com.momock.samples.CaseNames;
-import com.momock.samples.R;
-
-public class HoloActionBarActivity extends CaseActivity {
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_holo_action_bar);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_holo_action_bar, menu);
-        return true;
-    }
-
-	@Override
-	protected String getCaseName() {
-		return CaseNames.HOLO;
-	}
+public interface CaseNames {
+	public static final String MAIN = "MAIN";
+	public static final String HOLO = "HOLO";
+	public static final String SETTINGS = "SETTINGS";
 }
+ 

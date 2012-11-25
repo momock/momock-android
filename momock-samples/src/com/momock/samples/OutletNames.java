@@ -15,9 +15,8 @@
  ******************************************************************************/
 package com.momock.samples;
 
-public interface Cases {
-	public static final String MAIN = "MAIN";
-	public static final String HOLO = "HOLO";
-	public static final String SETTINGS = "SETTINGS";
+public interface OutletNames {
+	public static final String MAIN_MENU = "MAIN_MENU";
+	public static final String SAMPLES = "SAMPLES";
+	public static final String MAIN_CONTAINER = "MAIN_CONTAINER";
 }
- 
