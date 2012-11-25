@@ -48,6 +48,13 @@ public class DataMap<K, V> implements IDataMutableMap<K, V>, IDataChangedAware {
 		return map.containsKey(name);
 	}
 
+	@Override
+	public void copyPropertiesFrom(IDataMap<K, V> srouce) {
+		for(K name : srouce.getPropertyNames()){
+			setProperty(name, srouce.getProperty(name));
+		}
+	}
+	
 	// IDataChangedAware implementation
 	IEvent<DataChangedEventArgs> dataChanged = null;
 

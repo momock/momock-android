@@ -16,5 +16,6 @@
 package com.momock.data;
 
 public interface IDataSet {
-
+	void addData(String name, Object data);
+	<T> T getData(String name);
 }

@@ -26,6 +26,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.momock.data.DataSet;
+import com.momock.data.IDataSet;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
@@ -239,17 +241,22 @@ public abstract class App extends android.app.Application implements IApplicatio
 		}
 	}
 
-	Map<String, IPlug> namedPlugs = new HashMap<String, IPlug>();
+	Map<String, IPlug> plugs = new HashMap<String, IPlug>();
 	@Override
-	public void addNamedPlug(String name, IPlug plug) {
-		namedPlugs.put(name, plug);
+	public void addPlug(String name, IPlug plug) {
+		plugs.put(name, plug);
 	}
 
 	@Override
-	public IPlug getNamedPlug(String name) {
-		return namedPlugs.get(name);
+	public IPlug getPlug(String name) {
+		return plugs.get(name);
 	}
 
+	@Override
+	public void removePlug(String name){
+		plugs.remove(name);
+	}
+	
 	Map<Class<?>, IService> services = new HashMap<Class<?>, IService>();
 	@SuppressWarnings("unchecked")
 	@Override
@@ -264,5 +271,13 @@ public abstract class App extends android.app.Application implements IApplicatio
 	
 	public IImageService getImageService(){
 		return getService(IImageService.class);
+	}
+
+	IDataSet ds = null;
+	@Override
+	public IDataSet getDataSet() {
+		if (ds == null)
+			ds = new DataSet();
+		return ds;
 	}
 }

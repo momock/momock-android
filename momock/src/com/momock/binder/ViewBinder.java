@@ -43,7 +43,7 @@ public class ViewBinder {
 		addGlobalSetter(new Setter(){
 			@Override
 			public boolean onSet(View view, String viewProp, Object val) {
-				if (view instanceof TextView && ("Text".equals(viewProp) || viewProp == null && val instanceof TextHolder)){
+				if (view instanceof TextView && ("Text".equals(viewProp) || viewProp == null)){
 					((TextView)view).setText(val instanceof TextHolder ? ((TextHolder)val).getText() : Convert.toString(val));
 					return true;
 				}
@@ -114,7 +114,7 @@ public class ViewBinder {
 	@SuppressWarnings("unchecked")
 	public void bind(View view, Object target){
 		IDataMap<String, Object> map = null;
-		if (map instanceof IDataMap)
+		if (target instanceof IDataMap)
 			map = (IDataMap<String, Object>)target;
 		for(PropView pv : relations){
 			String name = pv.propName;

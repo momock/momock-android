@@ -23,25 +23,37 @@ import com.momock.event.IEventHandler;
 import com.momock.util.Logger;
 
 public class DataNode implements IDataNode {
-	private class MapAndList
-	{
+	private class MapAndList {
 		public DataMap<String, Object> map = null;
 		public DataList<Object> list = null;
 	}
+
 	protected String name = null;
 	protected Object value = null;
 	protected IDataNode parent = null;
-	protected MapAndList getMapAndList()
-	{
+
+	public DataNode() {
+
+	}
+
+	public DataNode(String name) {
+		this.name = name;
+	}
+
+	public DataNode(String name, IDataNode parent) {
+		this.name = name;
+		this.parent = parent;
+	}
+
+	protected MapAndList getMapAndList() {
 		if (value == null)
 			value = new MapAndList();
-		return value instanceof MapAndList ? (MapAndList)value : null;
+		return value instanceof MapAndList ? (MapAndList) value : null;
 	}
-	protected DataMap<String, Object> getMap()
-	{
+
+	protected DataMap<String, Object> getMap() {
 		MapAndList ml = getMapAndList();
-		if (ml == null) 
-		{
+		if (ml == null) {
 			Logger.warn("Try to access property in a value node!");
 			return null;
 		}
@@ -49,141 +61,185 @@ public class DataNode implements IDataNode {
 			ml.map = new DataMap<String, Object>();
 		return ml.map;
 	}
-	protected DataList<Object> getList()
-	{
+
+	protected DataList<Object> getList() {
 		MapAndList ml = getMapAndList();
-		if (ml == null)
-		{
+		if (ml == null) {
 			Logger.warn("Try to access child item in a value node!");
 			return null;
 		}
 		if (ml.list == null)
 			ml.list = new DataList<Object>();
-		return ml.list;		
+		return ml.list;
 	}
+
 	@Override
-	public boolean isValueNode()
-	{
+	public boolean isValueNode() {
 		return !(value instanceof MapAndList);
 	}
+
 	@Override
 	public Object getValue() {
-		if (!isValueNode()) return null;
+		if (!isValueNode())
+			return null;
 		return value;
 	}
+
 	@Override
 	public void setValue(Object value) {
 		this.value = value;
 	}
+
 	@Override
 	public IDataNode getParent() {
 		return parent;
 	}
+
 	@Override
 	public String getName() {
 		return name;
-	}	
+	}
+
 	// IDataMutableMap implementation
 	@Override
 	public void setProperty(String name, Object val) {
 		DataMap<String, Object> map = getMap();
-		if (map == null) return;
-		map.setProperty(name, val);		
+		if (map == null)
+			return;
+		map.setProperty(name, val);
 	}
+
 	@Override
 	public boolean hasProperty(String name) {
 		DataMap<String, Object> map = getMap();
-		if (map == null) return false;
+		if (map == null)
+			return false;
 		return map.hasProperty(name);
 	}
+
 	@Override
 	public Object getProperty(String name) {
 		DataMap<String, Object> map = getMap();
-		if (map == null) return false;
+		if (map == null)
+			return false;
 		return map.getProperty(name);
 	}
+
 	@Override
 	public List<String> getPropertyNames() {
 		DataMap<String, Object> map = getMap();
-		if (map == null) return null;
+		if (map == null)
+			return null;
 		return map.getPropertyNames();
 	}
+
+	@Override
+	public void copyPropertiesFrom(IDataMap<String, Object> source) {
+		DataMap<String, Object> map = getMap();
+		if (map == null)
+			return;
+		map.copyPropertiesFrom(source);
+	}
+
 	// IDataMutableList implementation
 	@Override
 	public void addItem(Object val) {
 		DataList<Object> list = getList();
-		if (list == null) return;
+		if (list == null)
+			return;
 		list.addItem(val);
 	}
+
 	@Override
 	public void insertItem(int index, Object val) {
 		DataList<Object> list = getList();
-		if (list == null) return;
+		if (list == null)
+			return;
 		list.insertItem(index, val);
 	}
+
 	@Override
 	public void setItem(int index, Object val) {
 		DataList<Object> list = getList();
-		if (list == null) return;
+		if (list == null)
+			return;
 		list.setItem(index, val);
 	}
+
 	@Override
 	public void removeItem(Object val) {
 		DataList<Object> list = getList();
-		if (list == null) return;
+		if (list == null)
+			return;
 		list.removeItem(val);
 	}
+
 	@Override
 	public void removeItemAt(int index) {
 		DataList<Object> list = getList();
-		if (list == null) return;
+		if (list == null)
+			return;
 		list.removeItemAt(index);
 	}
+
 	@Override
 	public Object getItem(int index) {
 		DataList<Object> list = getList();
-		if (list == null) return null;
+		if (list == null)
+			return null;
 		return list.getItem(index);
 	}
+
 	@Override
 	public void removeAllItems() {
 		DataList<Object> list = getList();
-		if (list == null) return;
+		if (list == null)
+			return;
 		list.removeAllItems();
 	}
+
 	@Override
 	public int getItemCount() {
 		DataList<Object> list = getList();
-		if (list == null) return 0;
+		if (list == null)
+			return 0;
 		return list.getItemCount();
 	}
+
 	// IDataChangedAware implementation
 	IEvent<DataChangedEventArgs> dataChanged = null;
+
 	@Override
 	public void fireDataChangedEvent(Object sender, DataChangedEventArgs args) {
-		if (sender == null) sender = this;
+		if (sender == null)
+			sender = this;
 		if (dataChanged != null)
 			dataChanged.fireEvent(sender, args);
 		if (parent != null)
 			parent.fireDataChangedEvent(sender, args);
 	}
+
 	@Override
 	public void addDataChangedHandler(
 			IEventHandler<DataChangedEventArgs> handler) {
-		if (dataChanged == null) 
+		if (dataChanged == null)
 			dataChanged = new Event<DataChangedEventArgs>();
 		dataChanged.addEventHandler(handler);
 	}
+
 	@Override
 	public void removeDataChangedHandler(
 			IEventHandler<DataChangedEventArgs> handler) {
-		if (dataChanged == null) return;
+		if (dataChanged == null)
+			return;
 		dataChanged.removeEventHandler(handler);
 	}
+
 	@Override
 	public boolean hasItem(Object item) {
 		DataList<Object> list = getList();
-		if (list == null) return false;
+		if (list == null)
+			return false;
 		return list.hasItem(item);
 	}
 }

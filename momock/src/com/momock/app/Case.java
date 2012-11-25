@@ -16,7 +16,9 @@
 package com.momock.app;
 
 import java.util.HashMap;
+import java.util.Map;
 
+import com.momock.data.IDataSet;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
@@ -201,5 +203,29 @@ public abstract class Case<A> implements ICase<A> {
 		{
 			outlets.remove(name);
 		}
+	}
+	
+	IDataSet ds = null;
+	@Override
+	public IDataSet getDataSet() {
+		if (ds == null)
+			ds = new CaseDataSet(this);
+		return ds;
+	}
+	
+	Map<String, IPlug> plugs = new HashMap<String, IPlug>();
+	@Override
+	public void addPlug(String name, IPlug plug) {
+		plugs.put(name, plug);
+	}
+
+	@Override
+	public IPlug getPlug(String name) {
+		return plugs.get(name);
+	}
+
+	@Override
+	public void removePlug(String name){
+		plugs.remove(name);
 	}
 }

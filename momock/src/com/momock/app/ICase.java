@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.momock.app;
 
+import com.momock.data.IDataSet;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 
@@ -39,6 +40,12 @@ public interface ICase<A> {
 
 	void removeOutlet(String name);
 
+	void addPlug(String name, IPlug plug);
+	
+	IPlug getPlug(String name);
+	
+	void removePlug(String name);
+	
 	void run(Object... args);
 
 	ICase<?> getActiveCase();
@@ -58,4 +65,6 @@ public interface ICase<A> {
 	void onAttach(A target);
 
 	void onDetach(A target);
+	
+	IDataSet getDataSet();
 }

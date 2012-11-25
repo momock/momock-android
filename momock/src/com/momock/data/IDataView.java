@@ -15,6 +15,23 @@
  ******************************************************************************/
 package com.momock.data;
 
-public interface IDataView extends IDataList<IDataRow>{
+import java.util.Comparator;
 
+public interface IDataView<T> extends IDataList<T> {
+	public static interface IFilter<T> {
+		boolean check(T item);
+	}
+
+	public static interface IOrder<T> extends Comparator<T> {
+	}
+
+	IFilter<T> getFilter();
+
+	void setFilter(IFilter<T> filter);
+
+	IOrder<T> getOrder();
+
+	void setOrder(IOrder<T> order);
+
+	void refresh();
 }

@@ -13,10 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.outlet;
+package com.momock.app;
 
-import com.momock.data.IDataList;
+import com.momock.data.DataSet;
 
-public interface IPlugProvider<P extends IPlug> {
-	IDataList<P> getPlugs();
+public class CaseDataSet extends DataSet{
+	ICase<?> kase;
+	public CaseDataSet(ICase<?> kase){
+		this.kase = kase;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getData(String name) {
+		Object data = super.getData(name);
+		if (data == null)
+			data = kase.getParent() == null ? App.get().getDataSet().getData(name) : kase.getParent().getDataSet().getData(name);
+		return (T)data;
+	}
 }

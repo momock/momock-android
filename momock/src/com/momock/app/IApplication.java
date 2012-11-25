@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.momock.app;
 
+import com.momock.data.IDataSet;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.service.IService;
@@ -36,11 +37,15 @@ public interface IApplication {
 
 	void removeOutlet(String name);
 	
-	void addNamedPlug(String name, IPlug plug);
+	void addPlug(String name, IPlug plug);
 	
-	IPlug getNamedPlug(String name);
+	IPlug getPlug(String name);
+	
+	void removePlug(String name);
 	
 	<T extends IService> T getService(Class<?> klass);
 	
 	void addService(Class<?> klass, IService service);
+	
+	IDataSet getDataSet();
 }

@@ -19,6 +19,11 @@ import com.momock.app.App;
 
 public abstract class TextHolder {
 	public abstract String getText();
+
+	@Override
+	public String toString() {
+		return getText();
+	}
 	
 	public static TextHolder get(final String text)
 	{

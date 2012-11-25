@@ -18,6 +18,7 @@ package com.momock.outlet;
 import java.util.List;
 
 import com.momock.data.DataMap;
+import com.momock.data.IDataMap;
 
 public class Plug implements IPlug{
 	protected DataMap<String, Object> properties = null;
@@ -45,6 +46,11 @@ public class Plug implements IPlug{
 	}
 
 	@Override
+	public void copyPropertiesFrom(IDataMap<String, Object> source) {
+		properties.copyPropertiesFrom(source);
+	}
+	
+	@Override
 	public void onActivate() {
 		
 	}
@@ -53,4 +59,5 @@ public class Plug implements IPlug{
 	public void onDeactivate() {
 		
 	}
+
 }

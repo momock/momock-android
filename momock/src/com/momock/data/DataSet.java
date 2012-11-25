@@ -13,10 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.outlet;
+package com.momock.data;
 
-import com.momock.data.IDataList;
+import java.util.HashMap;
+import java.util.Map;
 
-public interface IPlugProvider<P extends IPlug> {
-	IDataList<P> getPlugs();
+public class DataSet implements IDataSet{
+	Map<String, Object> dataSet = new HashMap<String, Object>();
+	@Override
+	public void addData(String name, Object data) {
+		dataSet.put(name, data);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getData(String name) {
+		return (T)dataSet.get(name);
+	}
+
 }
