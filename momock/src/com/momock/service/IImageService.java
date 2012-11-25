@@ -15,9 +15,11 @@
  ******************************************************************************/
 package com.momock.service;
 
-import com.momock.holder.ImageHolder;
-
 import android.graphics.Bitmap;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+
+import com.momock.holder.ImageHolder;
 
 public interface IImageService extends IService{
 
@@ -26,4 +28,8 @@ public interface IImageService extends IService{
 	}
 	
 	void load(ImageHolder holder, ImageSetter setter);
+	
+	void load(BaseAdapter adapter, ImageView view, String url);
+	
+	void load(ImageView view, String url);
 }

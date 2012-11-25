@@ -21,6 +21,8 @@ import java.net.URLStreamHandlerFactory;
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.os.Handler;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
 
 import com.google.android.imageloader.ImageLoader;
 import com.momock.holder.ImageHolder;
@@ -85,4 +87,12 @@ public class ImageService extends ImageLoader implements IImageService{
             }
         }
     }
+	@Override
+	public void load(BaseAdapter adapter, ImageView view, String url) {
+		bind(adapter, view, url);
+	}
+	@Override
+	public void load(ImageView view, String url) {
+		bind(view, url, null);
+	}
 }

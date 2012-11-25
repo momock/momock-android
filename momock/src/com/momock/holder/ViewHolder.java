@@ -29,7 +29,7 @@ public abstract class ViewHolder implements IComponentHolder{
 	{
 		void onViewCreated(View view);
 	}
-	public abstract View getView();
+	public abstract <T extends View> T getView();
 	public abstract void reset();
 
 	public static ViewHolder get(Fragment fragment)	{
@@ -45,9 +45,10 @@ public abstract class ViewHolder implements IComponentHolder{
 		return new ViewHolder()
 		{
 
+			@SuppressWarnings("unchecked")
 			@Override
-			public View getView() {
-				return refView.get();
+			public <T extends View> T getView() {
+				return (T)refView.get();
 			}
 
 			@Override
@@ -63,12 +64,13 @@ public abstract class ViewHolder implements IComponentHolder{
 		return new ViewHolder()
 		{
 			WeakReference<View> refChild = null;
+			@SuppressWarnings("unchecked")
 			@Override
-			public View getView() {
+			public <T extends View> T getView() {
 				if (refView.get() != null && refChild == null){
 					refChild = new WeakReference<View>(refView.get().findViewById(id));
 				}
-				return refChild == null ? null : refChild.get();
+				return (T)(refChild == null ? null : refChild.get());
 			}
 
 			@Override
@@ -84,12 +86,13 @@ public abstract class ViewHolder implements IComponentHolder{
 		return new ViewHolder()
 		{
 			WeakReference<View> refChild = null;
+			@SuppressWarnings("unchecked")
 			@Override
-			public View getView() {
+			public <T extends View> T getView() {
 				if (refView.get() != null && refChild == null){
 					refChild = new WeakReference<View>(refView.get().findViewWithTag(tag));
 				}
-				return refChild == null ? null : refChild.get();
+				return (T)(refChild == null ? null : refChild.get());
 			}
 			
 			@Override
@@ -108,8 +111,9 @@ public abstract class ViewHolder implements IComponentHolder{
 		return new ViewHolder()
 		{
 			WeakReference<View> ref = null;
+			@SuppressWarnings("unchecked")
 			@Override
-			public View getView() {
+			public <T extends View> T getView() {
 				if (ref == null || ref.get() == null)
 				{
 					LayoutInflater inflater = App.get().getLayoutInflater(App.get().getCurrentActivity());
@@ -117,7 +121,7 @@ public abstract class ViewHolder implements IComponentHolder{
 					if (handler != null)
 						handler.onViewCreated(ref.get());
 				}
-				return ref.get();
+				return (T)ref.get();
 			}
 			
 			@Override
@@ -132,8 +136,9 @@ public abstract class ViewHolder implements IComponentHolder{
 		return new ViewHolder()
 		{
 			WeakReference<View> ref = null;
+			@SuppressWarnings("unchecked")
 			@Override
-			public View getView() {				
+			public <T extends View> T getView() {				
 				if (ref == null || ref.get() == null)
 				{
 					LayoutInflater inflater = App.get().getLayoutInflater(refContext.get());
@@ -141,7 +146,7 @@ public abstract class ViewHolder implements IComponentHolder{
 					if (handler != null)
 						handler.onViewCreated(ref.get());
 				}
-				return ref.get();
+				return (T)ref.get();
 			}
 			
 			@Override

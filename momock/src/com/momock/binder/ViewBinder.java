@@ -24,9 +24,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.momock.app.App;
 import com.momock.data.IDataMap;
 import com.momock.holder.ImageHolder;
-import com.momock.holder.TextHolder;
 import com.momock.holder.ViewHolder;
 import com.momock.util.BeanHelper;
 import com.momock.util.Convert;
@@ -44,7 +44,7 @@ public class ViewBinder {
 			@Override
 			public boolean onSet(View view, String viewProp, Object val) {
 				if (view instanceof TextView && ("Text".equals(viewProp) || viewProp == null)){
-					((TextView)view).setText(val instanceof TextHolder ? ((TextHolder)val).getText() : Convert.toString(val));
+					((TextView)view).setText(Convert.toString(val));
 					return true;
 				}
 				return false;
@@ -54,13 +54,17 @@ public class ViewBinder {
 			@Override
 			public boolean onSet(View view, String viewProp, Object val) {
 				if (view instanceof ImageView){
-					if ("ImageDrawable".equals(viewProp) || viewProp == null && val instanceof ImageHolder)
-					{
+					if (viewProp == null){
+						if (val instanceof CharSequence){
+							App.get().getImageService().load((ImageView)view, val.toString());
+						} else {
+							((ImageView)view).setImageBitmap(val instanceof ImageHolder ? ((ImageHolder)val).getAsBitmap() : (Bitmap)val);						
+						}
+						return true;
+					} else if ("ImageDrawable".equals(viewProp)) {
 						((ImageView)view).setImageDrawable(val instanceof ImageHolder ? ((ImageHolder)val).getAsDrawable() : (Drawable)val);	
 						return true;
-					}
-					if ("ImageBitmap".equals(viewProp))
-					{
+					} else if ("ImageBitmap".equals(viewProp)) {
 						((ImageView)view).setImageBitmap(val instanceof ImageHolder ? ((ImageHolder)val).getAsBitmap() : (Bitmap)val);	
 						return true;
 					}
@@ -73,6 +77,9 @@ public class ViewBinder {
 	public void addSetter(Setter setter){
 		customSetters.add(0, setter);
 	}
+	public void removeSetter(Setter setter){
+		customSetters.remove(setter);
+	}
 	class PropView
 	{
 		public String propName;
@@ -84,9 +91,6 @@ public class ViewBinder {
 			this.viewIdOrTag = viewIdOrTag;
 			this.viewProp = viewProp;
 		}
-	}
-	public ViewBinder()	{
-		onCreate();
 	}
 	List<PropView> relations = new ArrayList<PropView>();
 	public ViewBinder link(String name, int resourceId){
@@ -107,9 +111,6 @@ public class ViewBinder {
 	}
 	public void bind(ViewHolder view, Object target){
 		bind(view.getView(), target);
-	}
-	protected void onCreate(){
-		
 	}
 	@SuppressWarnings("unchecked")
 	public void bind(View view, Object target){

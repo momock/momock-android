@@ -106,9 +106,6 @@ public abstract class App extends android.app.Application implements IApplicatio
 				getLogLevel());
 		app = this;
 		super.onCreate();
-		addService(IImageService.class, new ImageService(getContentResolver()));
-		onAddServices();
-		onAddCases();
 	}
 
 	@Override
@@ -279,5 +276,25 @@ public abstract class App extends android.app.Application implements IApplicatio
 		if (ds == null)
 			ds = new DataSet();
 		return ds;
+	}
+
+	@Override
+	public void onCreateEnvironment() {
+		Logger.debug("onCreateEnvironment");
+		addService(IImageService.class, new ImageService(getContentResolver()));
+		onAddServices();
+		onAddCases();
+	}
+
+	@Override
+	public void onDestroyEnvironment() {
+		Logger.debug("onDestroyEnvironment");
+		activeCase = null;
+		cachedLayoutInflater.clear();
+		cases.clear();
+		outlets.clear();
+		plugs.clear();
+		services.clear();
+		ds = null;
 	}
 }

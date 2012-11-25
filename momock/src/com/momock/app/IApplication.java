@@ -48,4 +48,8 @@ public interface IApplication {
 	void addService(Class<?> klass, IService service);
 	
 	IDataSet getDataSet();
+	
+	void onCreateEnvironment();
+	
+	void onDestroyEnvironment();
 }

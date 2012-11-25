@@ -37,10 +37,7 @@ public class Convert {
 		} else if (value instanceof Number) {
 			return ((Number) value).doubleValue();
 		} else if (value instanceof String) {
-			try {
-				return Double.valueOf((String) value);
-			} catch (NumberFormatException ignored) {
-			}
+			return Double.valueOf((String) value);
 		}
 		return null;
 	}
@@ -51,10 +48,7 @@ public class Convert {
 		} else if (value instanceof Number) {
 			return ((Number) value).intValue();
 		} else if (value instanceof String) {
-			try {
-				return (int) Double.parseDouble((String) value);
-			} catch (NumberFormatException ignored) {
-			}
+			return Integer.valueOf((String) value);
 		}
 		return null;
 	}
@@ -65,10 +59,7 @@ public class Convert {
 		} else if (value instanceof Number) {
 			return ((Number) value).longValue();
 		} else if (value instanceof String) {
-			try {
-				return (long) Double.parseDouble((String) value);
-			} catch (NumberFormatException ignored) {
-			}
+			return Long.valueOf((String) value);
 		}
 		return null;
 	}

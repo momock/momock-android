@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.momock.holder;
 
+import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -32,15 +33,14 @@ import com.momock.event.EventArgs;
 import com.momock.event.IEvent;
 import com.momock.service.IImageService;
 import com.momock.service.IImageService.ImageSetter;
-import com.momock.util.Convert;
 import com.momock.util.ImageHelper;
+import com.momock.util.Logger;
 
 public class ImageHolder{
-	public static final String PREFIX_ID = "id://";
 	public static final String PREFIX_FILE = "file://";
 	public static final String PREFIX_RES = "res://";
-	public static final String PREFIX_HTTP = "http://";
-	public static final String PREFIX_HTTPS = "https://";
+	public static final String PREFIX_RAW = "raw://";
+	public static final String PREFIX_ASSETS = "assets://";
 	
 	public static class ImageLoadEventArgs extends EventArgs{
 		
@@ -88,13 +88,27 @@ public class ImageHolder{
 
 	static final Map<String, SoftReference<ImageHolder>> imageCache = new HashMap<String, SoftReference<ImageHolder>>(); 
 	public static ImageHolder get(final int id) {
-		//return get(PREFIX_ID + id);
-		return get("android.resource://" + App.get().getPackageName() + "/" + id);
+		final String uri = "android.resource://" + App.get().getPackageName() + "/" + id;
+		return new ImageHolder() {
+
+			@Override
+			public String getUri() {
+				return uri;
+			}
+			
+			@Override
+			public Drawable getAsDrawable() {
+				if (drawable == null)
+					drawable = App.get().getResources().getDrawable(id);
+				return drawable;
+			}
+
+		};
 	}
-	public static ImageHolder get(final String uri){
-		return get(uri, -1, -1);
+	public static ImageHolder getAsync(final String uri){
+		return getAsync(uri, -1, -1);
 	}
-	public static ImageHolder get(final String uri, final int expectedWidth, final int expectedHeight){
+	public static ImageHolder getAsync(final String uri, final int expectedWidth, final int expectedHeight){
 		final IImageService is = App.get().getImageService();
 		if (imageCache.containsKey(uri)){
 			SoftReference<ImageHolder> ih = imageCache.get(uri);
@@ -134,7 +148,10 @@ public class ImageHolder{
 		imageCache.put(uri, new SoftReference<ImageHolder>(holder));
 		return holder;
 	}
-	public static ImageHolder get1(final String uri, final int expectedWidth, final int expectedHeight){
+	public static ImageHolder get(final String uri){
+		return get(uri, -1, -1);
+	}
+	public static ImageHolder get(final String uri, final int expectedWidth, final int expectedHeight){
 		if (imageCache.containsKey(uri)){
 			SoftReference<ImageHolder> ih = imageCache.get(uri);
 			if (ih.get() != null)
@@ -142,24 +159,7 @@ public class ImageHolder{
 			else
 				imageCache.remove(uri);
 		}
-		if (uri.startsWith(PREFIX_ID)){
-			final int id = Convert.toInteger(uri.substring(PREFIX_ID.length()));
-			return new ImageHolder() {
-
-				@Override
-				public String getUri() {
-					return uri;
-				}
-				
-				@Override
-				public Drawable getAsDrawable() {
-					if (drawable == null)
-						drawable = App.get().getResources().getDrawable(id);
-					return drawable;
-				}
-
-			};
-		} else if (uri.startsWith(PREFIX_FILE)) {
+		if (uri.startsWith(PREFIX_FILE)) {
 			return new ImageHolder() {				
 				@Override
 				public String getUri() {
@@ -187,7 +187,7 @@ public class ImageHolder{
 					return bitmap;
 				}
 			};			
-		} else {
+		} else if (uri.startsWith(PREFIX_RAW)) {
 			return new ImageHolder() {				
 				@Override
 				public String getUri() {
@@ -200,8 +200,27 @@ public class ImageHolder{
 						bitmap = ImageHelper.fromStream(ImageHolder.class.getResourceAsStream(uri.substring(PREFIX_RES.length())), expectedWidth, expectedHeight);
 					return bitmap;
 				}
-			};		
-		}
+			};			
+		} else if (uri.startsWith(PREFIX_ASSETS)) {
+			return new ImageHolder() {				
+				@Override
+				public String getUri() {
+					return uri;
+				}
+
+				@Override
+				public Bitmap getAsBitmap() {
+					if (bitmap == null)
+						try {
+							bitmap = ImageHelper.fromStream(App.get().getResources().getAssets().open(uri.substring(PREFIX_ASSETS.length())), expectedWidth, expectedHeight);
+						} catch (IOException e) {
+							Logger.error(e.getMessage());
+						}
+					return bitmap;
+				}
+			};			
+		} 
+		return null;
 	}
 	public static ImageHolder get(final Bitmap bitmap){
 		return new ImageHolder() {

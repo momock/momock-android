@@ -40,6 +40,8 @@ public abstract class CaseActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		log("onCreate");
+		if (App.get().getActiveCase() == null)
+			App.get().onCreateEnvironment();
 		super.onCreate(savedInstanceState);
 		getCase().attach(this);
 	}
@@ -62,6 +64,8 @@ public abstract class CaseActivity extends FragmentActivity {
 		log("onDestroy");
 		super.onDestroy();
 		getCase().detach();
+		if (App.get().getActiveCase() == getCase())
+			App.get().onDestroyEnvironment();	
 	}
 
 	@Override
