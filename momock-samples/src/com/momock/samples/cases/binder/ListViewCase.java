@@ -61,7 +61,7 @@ public class ListViewCase extends Case<Fragment>{
 
 	@Override
 	public void onAttach(Fragment target) {
-		IDataService ds = App.get().getService(IDataService.class);
+		IDataService ds = getService(IDataService.class);
 		ListViewBinder binder = ListViewBinder.getSimple("Name");
 		binder.bind(ViewHolder.get(target, R.id.lvproducts), ds.getAllProducts());
 	}

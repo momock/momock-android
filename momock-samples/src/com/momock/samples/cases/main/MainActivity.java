@@ -26,8 +26,6 @@ import com.momock.samples.CaseNames;
 import com.momock.samples.OutletNames;
 import com.momock.samples.PlugNames;
 import com.momock.samples.R;
-import com.momock.samples.R.id;
-import com.momock.samples.R.layout;
 import com.momock.samples.cases.mainmenu.MainMenuCase;
 
 public class MainActivity extends CaseActivity {
@@ -35,11 +33,7 @@ public class MainActivity extends CaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.case_main);
-        
-        getCase().getOutlet(OutletNames.MAIN_CONTAINER).attach(FragmentContainerHolder.get(this, R.id.fragment_content));
-        
-        getCase().getCase(MainMenuCase.class.getName()).run();
+        setContentView(R.layout.case_main);        
     }
 
     @Override

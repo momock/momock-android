@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.momock.samples.cases.tab;
 
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 
 import com.momock.app.Case;
@@ -80,14 +79,7 @@ public class FragmentTabCase extends Case<Fragment> {
 
 	@Override
 	public void onAttach(final Fragment target) {
-		new Handler().post(new Runnable() {
-
-			@Override
-			public void run() {
-				tabs.attach(FragmentTabHolder.get(target, R.id.realtabcontent));
-			}
-
-		});
+		tabs.attach(FragmentTabHolder.get(target, R.id.realtabcontent));			
 	}
 
 }

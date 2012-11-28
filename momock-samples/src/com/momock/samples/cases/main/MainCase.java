@@ -15,13 +15,14 @@
  ******************************************************************************/
 package com.momock.samples.cases.main;
 
-import android.app.Activity;
-
 import com.momock.app.App;
 import com.momock.app.Case;
+import com.momock.app.CaseActivity;
+import com.momock.holder.FragmentContainerHolder;
 import com.momock.outlet.action.MenuActionOutlet;
 import com.momock.outlet.card.FragmentCardOutlet;
 import com.momock.samples.OutletNames;
+import com.momock.samples.R;
 import com.momock.samples.cases.action.ActionCase;
 import com.momock.samples.cases.binder.GridViewCase;
 import com.momock.samples.cases.binder.ListViewCase;
@@ -33,7 +34,7 @@ import com.momock.samples.cases.tab.FragmentTabCase;
 import com.momock.samples.cases.tab.PagerTabCase;
 import com.momock.samples.cases.tab.TabCase;
 
-public class MainCase extends Case<Activity>{
+public class MainCase extends Case<CaseActivity>{
 
 	public MainCase(String name) {
 		super(name);
@@ -55,6 +56,12 @@ public class MainCase extends Case<Activity>{
 		addCase(new FragmentPagerTabCase(this));
 		addCase(new CardCase(this));
 		addCase(new PagerCardCase(this));
+	}
+
+	@Override
+	public void onAttach(CaseActivity target) {
+        getOutlet(OutletNames.MAIN_CONTAINER).attach(FragmentContainerHolder.get(this, R.id.fragment_content));
+        getCase(MainMenuCase.class.getName()).run();
 	}
 
 }

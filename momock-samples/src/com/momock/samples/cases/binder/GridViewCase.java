@@ -62,7 +62,7 @@ public class GridViewCase  extends Case<Fragment>{
 
 	@Override
 	public void onAttach(Fragment target) {
-		IDataService ds = App.get().getService(IDataService.class);
+		IDataService ds = getService(IDataService.class);
 		GridViewBinder binder = new GridViewBinder(new SimpleItemViewBinder(R.layout.grid_item, new int[] {R.id.ivIcon, R.id.tvName}, new String[]{"IconUri", "Name"}));
 		binder.bind(ViewHolder.get(target, R.id.gvCategories), ds.getAllCategories());
 	}
