@@ -25,7 +25,7 @@ import com.momock.holder.ViewHolder;
 import com.momock.outlet.Outlet;
 import com.momock.util.Logger;
 
-public class TabOutlet extends Outlet<ITabPlug, TabHolder> {
+public class TabOutlet extends Outlet<ITabPlug, TabHolder> implements ITabOutlet<TabHolder>{
 	IDataList<ITabPlug> plugs;
 	@Override
 	public void onAttach(TabHolder target) {
@@ -51,17 +51,17 @@ public class TabOutlet extends Outlet<ITabPlug, TabHolder> {
 	        	
 	        });
 	        tabHost.addTab(spec);	
+	        if (getActivePlug() == plug)
+	        	tabHost.setCurrentTab(i);
 		}
 	}
 	@Override
 	public void onActivate(ITabPlug plug) {
-		Logger.check(plug.getContent() instanceof ViewHolder, "The plug of TabOutlet must include a ViewHolder!");
-		TabHost tabHost = getAttachedObject().getTabHost();
-		for(int i = 0; i < plugs.getItemCount(); i++){
-			if (plugs.getItem(i) == plug){
-				tabHost.setCurrentTab(i);
-				break;				
-			}
-		}		
+		if (plug.getContent() != null){
+			TabHost tabHost = getAttachedObject().getTabHost();
+			tabHost.setCurrentTab(getIndexOf(plug));
+		} else {
+			Logger.debug("The plug of TabOutlet has not been attached !");			
+		}
 	}
 }

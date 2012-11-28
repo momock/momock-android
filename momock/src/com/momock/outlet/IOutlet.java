@@ -41,4 +41,6 @@ public interface IOutlet<P extends IPlug, T> extends IPlugProvider<P> {
 	void onActivate(P plug);
 
 	void onDeactivate(P plug);
+	
+	int getIndexOf(P plug);
 }

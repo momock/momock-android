@@ -25,7 +25,7 @@ import com.momock.holder.ViewHolder;
 import com.momock.outlet.Outlet;
 import com.momock.util.Logger;
 
-public class PagerCardOutlet extends Outlet<ICardPlug, ViewHolder>{
+public class PagerCardOutlet extends Outlet<ICardPlug, ViewHolder> implements ICardOutlet<ViewHolder>{
 	IDataList<ICardPlug> plugs;
 	@Override
 	public void onAttach(ViewHolder target) {

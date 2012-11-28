@@ -23,21 +23,28 @@ import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TabHost;
+import android.widget.TabWidget;
 
 import com.momock.util.Logger;
 
-public abstract class FragmentTabHolder extends TabHolder {
+public abstract class FragmentTabHolder implements IComponentHolder {
+	public abstract TabHost getTabHost();
+
+	public TabWidget getTabWidget() {
+		return getTabHost().getTabWidget();
+	}
+
+	public ViewGroup getTabContent() {
+		return getTabHost().getTabContentView();
+	}
 
 	public abstract int getTabContentId();
 
 	public abstract FragmentManager getFragmentManager();
 
-	public static FragmentTabHolder get(FragmentManager fm, View container,
-			final int tabContentId) {
-		final WeakReference<FragmentManager> refFragmentManager = new WeakReference<FragmentManager>(
-				fm);
-		final WeakReference<View> refContainer = new WeakReference<View>(
-				container);
+	public static FragmentTabHolder get(FragmentActivity activity, final int tabContentId) {
+
+		final WeakReference<FragmentActivity> refActivity = new WeakReference<FragmentActivity>(activity);
 		return new FragmentTabHolder() {
 			protected WeakReference<ViewGroup> tabContent = null;
 
@@ -48,7 +55,8 @@ public abstract class FragmentTabHolder extends TabHolder {
 
 			@Override
 			public FragmentManager getFragmentManager() {
-				return refFragmentManager.get();
+				Logger.check(refActivity.get() != null, "The FragmentActivity is not available!");
+				return refActivity.get().getSupportFragmentManager();
 			}
 
 			@Override
@@ -61,21 +69,13 @@ public abstract class FragmentTabHolder extends TabHolder {
 
 			@Override
 			public TabHost getTabHost() {
-				Logger.check(refContainer.get() != null,
-						"The TabHost container has not been available!");
-				View container = refContainer.get();
-				return (TabHost) (container instanceof TabHost ? container
-						: container.findViewById(android.R.id.tabhost));
+				Logger.check(refActivity.get() != null, "The FragmentActivity is not available!");
+				return (TabHost)refActivity.get().findViewById(android.R.id.tabhost);
 			}
 
 		};
 	}
-
-	public static FragmentTabHolder get(FragmentActivity activity,
-			View container, int tabContentId) {
-		return get(activity.getSupportFragmentManager(), container,
-				tabContentId);
-	}
+	
 
 	public static FragmentTabHolder get(final Fragment containerFragment,
 			final int tabContentId) {

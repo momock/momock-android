@@ -29,14 +29,13 @@ import com.momock.holder.ViewHolder;
 import com.momock.outlet.Outlet;
 import com.momock.util.Logger;
 
-public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> {
-	Fragment lastFragment = null;
-	IDataList<ITabPlug> plugs;
+public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> implements ITabOutlet<FragmentTabHolder> {
+	Fragment lastFragment = null;	
 	@Override
 	public void onAttach(final FragmentTabHolder target) {
 		Logger.check(target != null, "Parameter target cannot be null!");
 		final TabHost tabHost = target.getTabHost();
-		plugs = getPlugs();
+		final IDataList<ITabPlug> plugs = getPlugs();
 		tabHost.setup();
 		tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
 			
@@ -86,20 +85,20 @@ public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> {
 					}
 		        	
 		        });
-		        tabHost.addTab(spec);		
+		        tabHost.addTab(spec);	
+		        if (getActivePlug() == plug)
+		        	tabHost.setCurrentTab(i);
 			}	
 		}
 	}
 
 	@Override
 	public void onActivate(ITabPlug plug) {
-		Logger.check(plug.getContent() instanceof ViewHolder, "The plug of FragmentTabOutlet must include a ViewHolder!");
-		TabHost tabHost = getAttachedObject().getTabHost();
-		for(int i = 0; i < plugs.getItemCount(); i++){
-			if (plugs.getItem(i) == plug){
-				tabHost.setCurrentTab(i);
-				break;				
-			}
-		}		
+		if (plug.getContent() != null){
+			TabHost tabHost = getAttachedObject().getTabHost();
+			tabHost.setCurrentTab(getIndexOf(plug));
+		} else {
+			Logger.debug("The plug of FragmentTabOutlet has not been attached !");			
+		}
 	}
 }

@@ -16,8 +16,10 @@
 package com.momock.app;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.view.LayoutInflater;
 
 import com.momock.util.Logger;
 
@@ -43,7 +45,14 @@ public abstract class CaseActivity extends FragmentActivity {
 		if (App.get().getActiveCase() == null)
 			App.get().onCreateEnvironment();
 		super.onCreate(savedInstanceState);
-		getCase().attach(this);
+		new Handler().post(new Runnable(){
+
+			@Override
+			public void run() {
+				getCase().attach(CaseActivity.this);
+			}
+			
+		});
 	}
 
 	@Override
@@ -115,4 +124,19 @@ public abstract class CaseActivity extends FragmentActivity {
 		log("onRestart");
 		super.onRestart();
 	}
+
+	@Override
+	public Object getSystemService(String name) {
+		Object service = super.getSystemService(name);
+		if (service instanceof LayoutInflater){
+			return App.get().getLayoutInflater((LayoutInflater)service);
+		}
+		return service;
+	}
+	
+	@Override
+	public LayoutInflater getLayoutInflater() {
+		return App.get().getLayoutInflater(this);
+	}
+
 }

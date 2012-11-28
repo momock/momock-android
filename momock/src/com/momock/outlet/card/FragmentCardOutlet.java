@@ -23,7 +23,7 @@ import com.momock.holder.FragmentContainerHolder;
 import com.momock.holder.FragmentHolder;
 import com.momock.outlet.Outlet;
 
-public class FragmentCardOutlet extends Outlet<ICardPlug, FragmentContainerHolder> {	
+public class FragmentCardOutlet extends Outlet<ICardPlug, FragmentContainerHolder> implements ICardOutlet<FragmentContainerHolder>{	
 	Fragment lastFragment = null;
 	@Override
 	public void onAttach(FragmentContainerHolder target) {

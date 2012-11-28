@@ -47,6 +47,8 @@ public interface IApplication {
 	
 	void addService(Class<?> klass, IService service);
 	
+	void registerShortName(String prefix, String... classess);
+	
 	IDataSet getDataSet();
 	
 	void onCreateEnvironment();

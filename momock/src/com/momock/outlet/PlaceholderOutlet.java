@@ -104,4 +104,13 @@ public class PlaceholderOutlet<P extends IPlug, T> implements IOutlet<P, T> {
 		this.provider = provider;		
 	}
 
+	@Override
+	public int getIndexOf(P plug) {
+		IDataList<P> plugs = getPlugs();
+		for(int i = 0; i < plugs.getItemCount(); i++){
+			if (plugs.getItem(i) == plug) return i;		
+		}		
+		return -1;
+	}
+
 }

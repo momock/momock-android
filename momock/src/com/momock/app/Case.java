@@ -18,10 +18,15 @@ package com.momock.app;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.os.Handler;
+import android.support.v4.app.Fragment;
+
 import com.momock.data.IDataSet;
+import com.momock.holder.FragmentHolder;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
+import com.momock.service.IService;
 import com.momock.util.Logger;
 
 
@@ -74,12 +79,23 @@ public abstract class Case<A> implements ICase<A> {
 	}
 
 	@Override
-	public void attach(A target) {
+	public void attach(final A target) {
 		detach();
 		if (target != null)
 		{
-			attachedObject = target;	
-			onAttach(target);
+			attachedObject = target;
+			if (target instanceof Fragment || target instanceof FragmentHolder){
+				new Handler().post(new Runnable() {
+
+					@Override
+					public void run() {
+						onAttach(target);	
+					}
+
+				});
+			} else {
+				onAttach(target);				
+			}
 		}
 	}
 	
@@ -227,5 +243,18 @@ public abstract class Case<A> implements ICase<A> {
 	@Override
 	public void removePlug(String name){
 		plugs.remove(name);
+	}
+
+	Map<Class<?>, IService> services = new HashMap<Class<?>, IService>();
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends IService> T getService(Class<?> klass) {
+		if (services.containsKey(klass))
+			return (T) services.get(klass);
+		return (T) (getParent() == null ? App.get().getService(klass) : getParent().getService(klass));
+	}
+	@Override
+	public void addService(Class<?> klass, IService service) {
+		services.put(klass, service);
 	}
 }

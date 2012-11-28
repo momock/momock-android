@@ -18,6 +18,7 @@ package com.momock.app;
 import com.momock.data.IDataSet;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
+import com.momock.service.IService;
 
 public interface ICase<A> {
 	String getName();
@@ -67,4 +68,8 @@ public interface ICase<A> {
 	void onDetach(A target);
 	
 	IDataSet getDataSet();
+
+	<T extends IService> T getService(Class<?> klass);
+	
+	void addService(Class<?> klass, IService service);
 }
