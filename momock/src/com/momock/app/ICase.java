@@ -72,4 +72,6 @@ public interface ICase<A> {
 	<T extends IService> T getService(Class<?> klass);
 	
 	void addService(Class<?> klass, IService service);
+	
+	boolean onBack();
 }

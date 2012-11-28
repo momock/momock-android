@@ -27,16 +27,19 @@ public class CardOutlet extends Outlet<ICardPlug, ViewHolder> implements ICardOu
 
 	@Override
 	public void onActivate(ICardPlug plug) {
-		Logger.check(plug.getComponent() instanceof ViewHolder, "The plug of CardOutlet must include a ViewHolder!");
-		FrameLayout container = ((FrameLayout)getAttachedObject().getView());
-		for(int i = 0; i < container.getChildCount(); i++){
-			container.getChildAt(i).setVisibility(View.GONE);
+		if (plug.getComponent() != null){
+			FrameLayout container = ((FrameLayout)getAttachedObject().getView());
+			for(int i = 0; i < container.getChildCount(); i++){
+				container.getChildAt(i).setVisibility(View.GONE);
+			}
+			View cv = ((ViewHolder)plug.getComponent()).getView();
+			if (cv.getParent() != container)
+				container.addView(cv);
+			cv.bringToFront();
+			cv.setVisibility(View.VISIBLE);
+		} else {
+			Logger.debug("The active plug in CardOutlet has not been attached!");
 		}
-		View cv = ((ViewHolder)plug.getComponent()).getView();
-		if (cv.getParent() != container)
-			container.addView(cv);
-		cv.bringToFront();
-		cv.setVisibility(View.VISIBLE);
 	}
 
 	@Override
@@ -47,6 +50,9 @@ public class CardOutlet extends Outlet<ICardPlug, ViewHolder> implements ICardOu
 			ICardPlug plug = plugs.getItem(i);
 			Logger.check(plug.getComponent() instanceof ViewHolder, "The plug of CardOutlet must include a ViewHolder!");
 			((ViewHolder)plug.getComponent()).reset(); 
+			if (plug == this.getActivePlug()){
+				onActivate(plug);
+			}
 		}
 	}
 

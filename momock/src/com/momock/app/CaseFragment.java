@@ -47,6 +47,8 @@ public abstract class CaseFragment extends Fragment{
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		log("onViewCreated");
 		super.onViewCreated(view, savedInstanceState);
+		if (getCase() != null)
+			getCase().attach(this);
 	}
 	@Override
 	public void onDestroyView() {
@@ -91,8 +93,8 @@ public abstract class CaseFragment extends Fragment{
 	public void onStart() {
 		log("onStart");
 		super.onStart();
-		if (getCase() != null)
-			getCase().attach(this);
+		if (getCase().getParent() != null)
+			getCase().getParent().setActiveCase(getCase());
 	}
 
 	@Override

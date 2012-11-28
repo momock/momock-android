@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.momock.outlet.tab;
 
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -29,12 +30,13 @@ import android.widget.TabWidget;
 import com.momock.data.IDataList;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.FragmentTabHolder;
-import com.momock.holder.ViewHolder;
 import com.momock.outlet.Outlet;
 import com.momock.util.Logger;
 
-public class FragmentPagerTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> implements ITabOutlet<FragmentTabHolder> {
+public class FragmentPagerTabOutlet extends Outlet<ITabPlug, FragmentTabHolder>
+		implements ITabOutlet<FragmentTabHolder> {
 	IDataList<ITabPlug> plugs;
+
 	@Override
 	public void onAttach(final FragmentTabHolder target) {
 		Logger.check(target != null, "Parameter target cannot be null!");
@@ -51,7 +53,7 @@ public class FragmentPagerTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> 
 			public int getCount() {
 				return plugs.getItemCount();
 			}
-			
+
 			@Override
 			public Object instantiateItem(ViewGroup container, int position) {
 				return (FragmentHolder) plugs.getItem(position).getContent();
@@ -65,35 +67,47 @@ public class FragmentPagerTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> 
 			}
 
 			@Override
-			public void setPrimaryItem(ViewGroup container, int position,
-					Object object) {
-				FragmentHolder fh = (FragmentHolder) object;
-				Logger.debug("setPrimaryItem (" + position + ")" + (fh != primary));
-				if (fh != primary) {
+			public void setPrimaryItem(ViewGroup container, final int position,
+					final Object object) {
 
-					FragmentManager fm = target.getFragmentManager();
-					FragmentTransaction ft = fm.beginTransaction();
+				new Handler().post(new Runnable() {
 
-					if (primary != null) {
-						ft.detach(primary.getFragment());
-					} else {
-						Fragment f = target.getFragmentManager().findFragmentById(target.getTabContentId());
-						if (f != null) ft.detach(f);
+					@Override
+					public void run() {
+						FragmentHolder fh = (FragmentHolder) object;
+						Logger.debug("setPrimaryItem (" + position + ")"
+								+ (fh != primary));
+						if (fh != primary) {
+
+							FragmentManager fm = target.getFragmentManager();
+							FragmentTransaction ft = fm.beginTransaction();
+
+							if (primary != null) {
+								ft.detach(primary.getFragment());
+							} else {
+								Fragment f = target.getFragmentManager()
+										.findFragmentById(
+												target.getTabContentId());
+								if (f != null)
+									ft.detach(f);
+							}
+
+							if (!fh.isCreated())
+								ft.add(target.getTabContentId(),
+										fh.getFragment());
+							else
+								ft.attach(fh.getFragment());
+							primary = fh;
+
+							ft.commit();
+						}
 					}
-
-					if (!fh.isCreated())
-						ft.add(target.getTabContentId(), fh.getFragment());
-					else
-						ft.attach(fh.getFragment());
-					primary = fh;
-
-					ft.commit();
-				}
-
+				});
 			}
 
 		});
-		tabContent.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+		tabContent
+				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
 					@Override
 					public void onPageSelected(int position) {
@@ -146,18 +160,18 @@ public class FragmentPagerTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> 
 
 			});
 			tabHost.addTab(spec);
-	        if (getActivePlug() == plug)
-	        	tabHost.setCurrentTab(i);
+			if (getActivePlug() == plug)
+				tabHost.setCurrentTab(i);
 		}
 	}
 
 	@Override
 	public void onActivate(ITabPlug plug) {
-		if (plug.getContent() != null){
+		if (plug.getContent() != null) {
 			TabHost tabHost = getAttachedObject().getTabHost();
 			tabHost.setCurrentTab(getIndexOf(plug));
 		} else {
-			Logger.debug("The plug of FragmentPagerTabOutlet has not been attached !");			
+			Logger.debug("The plug of FragmentPagerTabOutlet has not been attached !");
 		}
 	}
 }

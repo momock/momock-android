@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.momock.outlet.tab;
 
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -25,7 +26,6 @@ import android.widget.TabHost.TabContentFactory;
 import com.momock.data.IDataList;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.FragmentTabHolder;
-import com.momock.holder.ViewHolder;
 import com.momock.outlet.Outlet;
 import com.momock.util.Logger;
 
@@ -41,29 +41,36 @@ public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> imple
 			
 			@Override
 			public void onTabChanged(String tabId) {
-				int index = tabHost.getCurrentTab();
-				int id = target.getTabContentId();
-				ITabPlug plug = plugs.getItem(index);
-				FragmentManager fm = getAttachedObject().getFragmentManager();
-				FragmentTransaction ft = fm.beginTransaction();
+				new Handler().post(new Runnable(){
 
-				if (lastFragment != null) {
-					ft.detach(lastFragment);
-				}
+					@Override
+					public void run() {
+						int index = tabHost.getCurrentTab();
+						int id = target.getTabContentId();
+						ITabPlug plug = plugs.getItem(index);
+						FragmentManager fm = getAttachedObject().getFragmentManager();
+						FragmentTransaction ft = fm.beginTransaction();
 
-				if (plug.getContent() instanceof FragmentHolder)
-				{
-					FragmentHolder fh = (FragmentHolder)plug.getContent();
-					if (!fh.isCreated())
-						ft.add(id, fh.getFragment());
-					else 
-						ft.attach(fh.getFragment());	
-					lastFragment = fh.getFragment();
-				} else {
-					lastFragment = null;
-				}
-				ft.commit();
-				fm.executePendingTransactions();
+						if (lastFragment != null) {
+							ft.detach(lastFragment);
+						}
+
+						if (plug.getContent() instanceof FragmentHolder)
+						{
+							FragmentHolder fh = (FragmentHolder)plug.getContent();
+							if (!fh.isCreated())
+								ft.add(id, fh.getFragment());
+							else 
+								ft.attach(fh.getFragment());	
+							lastFragment = fh.getFragment();
+						} else {
+							lastFragment = null;
+						}
+						ft.commit();
+						fm.executePendingTransactions();
+					}
+					
+				});
 			}
 		});
 		for(int i = 0; i < plugs.getItemCount(); i++)
@@ -94,11 +101,9 @@ public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> imple
 
 	@Override
 	public void onActivate(ITabPlug plug) {
-		if (plug.getContent() != null){
+		if (plug.getContent() != null && getAttachedObject() != null){
 			TabHost tabHost = getAttachedObject().getTabHost();
 			tabHost.setCurrentTab(getIndexOf(plug));
-		} else {
-			Logger.debug("The plug of FragmentTabOutlet has not been attached !");			
-		}
+		} 
 	}
 }

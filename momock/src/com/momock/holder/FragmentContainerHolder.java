@@ -44,23 +44,6 @@ public abstract class FragmentContainerHolder implements IComponentHolder{
 	
 		};
 	}
-	public static FragmentContainerHolder get(FragmentManager fm, final int id)
-	{
-		final WeakReference<FragmentManager> refFragmentManager = new WeakReference<FragmentManager>(fm);
-		return new FragmentContainerHolder(){
-
-			@Override
-			public int getFragmentContainerId() {
-				return id;
-			}
-
-			@Override
-			public FragmentManager getFragmentManager() {
-				return refFragmentManager.get();
-			}
-	
-		};
-	}
 	public static FragmentContainerHolder get(final Fragment fragment, final int id)
 	{
 		return new FragmentContainerHolder(){

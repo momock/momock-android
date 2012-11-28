@@ -16,7 +16,6 @@
 package com.momock.app;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
@@ -26,6 +25,8 @@ import com.momock.util.Logger;
 public abstract class CaseActivity extends FragmentActivity {
 
 	protected abstract String getCaseName();
+	protected abstract void onCreate();
+	
 	protected ICase<FragmentActivity> kase = null;
 
 	@SuppressWarnings("unchecked")
@@ -45,14 +46,8 @@ public abstract class CaseActivity extends FragmentActivity {
 		if (App.get().getActiveCase() == null)
 			App.get().onCreateEnvironment();
 		super.onCreate(savedInstanceState);
-		new Handler().post(new Runnable(){
-
-			@Override
-			public void run() {
-				getCase().attach(CaseActivity.this);
-			}
-			
-		});
+		onCreate();
+		getCase().attach(CaseActivity.this);
 	}
 
 	@Override
@@ -137,6 +132,11 @@ public abstract class CaseActivity extends FragmentActivity {
 	@Override
 	public LayoutInflater getLayoutInflater() {
 		return App.get().getLayoutInflater(this);
+	}
+	@Override
+	public void onBackPressed() {
+		if (!getCase().onBack())
+			super.onBackPressed();
 	}
 
 }

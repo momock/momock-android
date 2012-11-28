@@ -30,13 +30,7 @@ public class PagerCardOutlet extends Outlet<ICardPlug, ViewHolder> implements IC
 	@Override
 	public void onAttach(ViewHolder target) {
 		Logger.check(target.getView() instanceof ViewPager, "The PagerCardOutlet must be attached to a ViewPager!");
-		ViewPager pager = (ViewPager)target.getView();
-		plugs = getPlugs();
-		for(int i = 0; i < plugs.getItemCount(); i++){
-			ICardPlug plug = plugs.getItem(i);
-			Logger.check(plug.getComponent() instanceof ViewHolder, "The plug of PagerCardOutlet must include a ViewHolder!");
-			((ViewHolder)plug.getComponent()).reset(); 
-		}
+		ViewPager pager = (ViewPager)target.getView();		
 		pager.setAdapter(new PagerAdapter(){
 
 			@Override
@@ -63,18 +57,25 @@ public class PagerCardOutlet extends Outlet<ICardPlug, ViewHolder> implements IC
 				container.removeView((View)object);
 			}
 		});
+		plugs = getPlugs();
+		for(int i = 0; i < plugs.getItemCount(); i++){
+			ICardPlug plug = plugs.getItem(i);
+			Logger.check(plug.getComponent() instanceof ViewHolder, "The plug of PagerCardOutlet must include a ViewHolder!");
+			((ViewHolder)plug.getComponent()).reset(); 
+			if (plug == this.getActivePlug()){
+				onActivate(plug);
+			}
+		}
 	}
 
 	@Override
 	public void onActivate(ICardPlug plug) {
-		Logger.check(plug.getComponent() instanceof ViewHolder, "The plug of PagerCardOutlet must include a ViewHolder!");
-		ViewPager pager = (ViewPager)getAttachedObject().getView();
-		for(int i = 0; i < plugs.getItemCount(); i++){
-			if (plugs.getItem(i) == plug){
-				pager.setCurrentItem(i, true);
-				break;				
-			}
-		}		
+		if (plug.getComponent() != null){
+			ViewPager pager = (ViewPager)getAttachedObject().getView();
+			pager.setCurrentItem(getIndexOf(plug), true);
+		} else {
+			Logger.debug("The active plug in PagerCardOutlet has not been attached!");
+		}
 	}
 	
 }

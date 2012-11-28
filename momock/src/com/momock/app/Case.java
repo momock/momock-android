@@ -18,11 +18,7 @@ package com.momock.app;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.os.Handler;
-import android.support.v4.app.Fragment;
-
 import com.momock.data.IDataSet;
-import com.momock.holder.FragmentHolder;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
@@ -84,18 +80,7 @@ public abstract class Case<A> implements ICase<A> {
 		if (target != null)
 		{
 			attachedObject = target;
-			if (target instanceof Fragment || target instanceof FragmentHolder){
-				new Handler().post(new Runnable() {
-
-					@Override
-					public void run() {
-						onAttach(target);	
-					}
-
-				});
-			} else {
-				onAttach(target);				
-			}
+			onAttach(target);	
 		}
 	}
 	
@@ -151,7 +136,9 @@ public abstract class Case<A> implements ICase<A> {
 		ICase<?> kase = null;
 		int pos = name.indexOf('/');
 		if (pos == -1){
-			kase = cases.get(name);			
+			kase = cases.get(name);	
+			if (kase == null)
+				return getParent() == null ? App.get().getCase(name) : getParent().getCase(name);
 		} else {
 			if (name.startsWith("/"))
 				kase = App.get().getCase(name);
@@ -256,5 +243,11 @@ public abstract class Case<A> implements ICase<A> {
 	@Override
 	public void addService(Class<?> klass, IService service) {
 		services.put(klass, service);
+	}
+	@Override
+	public boolean onBack() {
+		if (getActiveCase() != null)
+			return getActiveCase().onBack();
+		return false;
 	}
 }

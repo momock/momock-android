@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.momock.outlet.card;
 
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -31,29 +32,37 @@ public class FragmentCardOutlet extends Outlet<ICardPlug, FragmentContainerHolde
 	}
 	
 	@Override
-	public void setActivePlug(ICardPlug plug) {
+	public void setActivePlug(final ICardPlug plug) {
 		activePlug = plug;
-		if (getAttachedObject() != null)
+		if (getAttachedObject() != null && plug != null)
 		{
-			int id = getAttachedObject().getFragmentContainerId();
-			FragmentManager fm = getAttachedObject().getFragmentManager();
-			FragmentTransaction ft = fm.beginTransaction();
-			if (lastFragment != null) {
-				ft.detach(lastFragment);
-			}
-			if (plug != null && plug.getComponent() instanceof FragmentHolder)
-			{
-				FragmentHolder fh = (FragmentHolder)plug.getComponent();
-				if (!fh.isCreated())
-					ft.add(id, fh.getFragment());
-				else 
-					ft.attach(fh.getFragment());	
-				lastFragment = fh.getFragment();
-			} else {
-				lastFragment = null;
-			}
-			ft.commit();
-			fm.executePendingTransactions();
+			new Handler().post(new Runnable(){
+
+				@Override
+				public void run() {
+
+					int id = getAttachedObject().getFragmentContainerId();
+					FragmentManager fm = getAttachedObject().getFragmentManager();
+					FragmentTransaction ft = fm.beginTransaction();
+					if (lastFragment != null) {
+						ft.detach(lastFragment);
+					}
+					if (plug != null && plug.getComponent() instanceof FragmentHolder)
+					{
+						FragmentHolder fh = (FragmentHolder)plug.getComponent();
+						if (!fh.isCreated())
+							ft.add(id, fh.getFragment());
+						else 
+							ft.attach(fh.getFragment());	
+						lastFragment = fh.getFragment();
+					} else {
+						lastFragment = null;
+					}
+					ft.commit();
+					fm.executePendingTransactions();
+				}
+				
+			});
 		}
 	}
 
