@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.momock.samples.cases.holo;
 
-import android.os.Bundle;
 import android.view.Menu;
 
 import com.momock.app.CaseActivity;
@@ -25,8 +24,7 @@ import com.momock.samples.R;
 public class HoloActionBarActivity extends CaseActivity {
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreate() {
         setContentView(R.layout.activity_holo_action_bar);
     }
 

@@ -15,12 +15,10 @@
  ******************************************************************************/
 package com.momock.samples.cases.main;
 
-import android.os.Bundle;
 import android.view.Menu;
 
 import com.momock.app.App;
 import com.momock.app.CaseActivity;
-import com.momock.holder.FragmentContainerHolder;
 import com.momock.outlet.action.IActionOutlet;
 import com.momock.samples.CaseNames;
 import com.momock.samples.OutletNames;
@@ -31,8 +29,7 @@ import com.momock.samples.cases.mainmenu.MainMenuCase;
 public class MainActivity extends CaseActivity {
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreate() {
         setContentView(R.layout.case_main);        
     }
 

@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.momock.samples.cases.settings;
 
-import android.os.Bundle;
-
 import com.momock.app.CaseActivity;
 import com.momock.samples.CaseNames;
 import com.momock.samples.R;
@@ -24,8 +22,7 @@ import com.momock.samples.R;
 public class SettingsActivity extends CaseActivity {
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreate() {
         setContentView(R.layout.case_settings);
     }
 
