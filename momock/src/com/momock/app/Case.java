@@ -152,6 +152,17 @@ public abstract class Case<A> implements ICase<A> {
 	}
 
 	@Override
+	public ICase<?> findChildCase(String name){
+		ICase<?> kase = getCase(name);
+		if (kase == null){
+			for(Map.Entry<String, ICase<?>> e : cases.entrySet()){
+				kase = e.getValue().findChildCase(name);
+				if (kase != null) return kase;
+			}
+		}
+		return kase;
+	}
+	@Override
 	public void addCase(ICase<?> kase){
 		if (!cases.containsKey(kase.getName()))
 		{

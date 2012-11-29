@@ -96,8 +96,18 @@ public class DataNodeView extends DataViewBase<IDataNode> {
 					return order.compare(lhs, rhs);
 				}
 			});
-			for (int i = 0; i < count; i++) {
-				store.setItem(i, nodes[i]);
+			if (limit > 0){
+				store.removeAllItems();
+				for (int i = 0; i < limit; i++) {	
+					if (offset + i < count)
+						store.addItem(nodes[offset + i]);
+					else 
+						break;
+				}
+			} else {
+				for (int i = 0; i < count; i++) {
+					store.setItem(i, nodes[i]);
+				}
 			}
 		}
 	}

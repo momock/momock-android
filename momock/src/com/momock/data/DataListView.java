@@ -47,8 +47,19 @@ public class DataListView<T> extends DataViewBase<T> {
 					return order.compare((T)lhs, (T)rhs);
 				}
 			});
-			for (int i = 0; i < count; i++) {
-				store.setItem(i, (T)objs[i]);
+
+			if (limit > 0){
+				store.removeAllItems();
+				for (int i = 0; i < limit; i++) {	
+					if (offset + i < count)
+						store.addItem((T)objs[offset + i]);
+					else 
+						break;
+				}
+			} else {
+				for (int i = 0; i < count; i++) {
+					store.setItem(i, (T)objs[i]);
+				}
 			}
 		}
 	}

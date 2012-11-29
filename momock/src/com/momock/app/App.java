@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -159,6 +160,7 @@ public abstract class App extends android.app.Application implements
 		return inflater;
 	}
 
+	@SuppressLint("DefaultLocale")
 	@Override
 	public void onCreate() {
 		Logger.open(this.getClass().getName().toLowerCase() + ".log",
@@ -181,6 +183,7 @@ public abstract class App extends android.app.Application implements
 		registerShortName("android.support.v4.view", "ViewPager",
 				"PagerTitleStrip");
 		registerShortName("android.webkit", "WebView");
+		registerShortName("com.momock.widget", "PlainListView", "PlainGridView");
 	}
 
 	// Helper methods
@@ -246,8 +249,18 @@ public abstract class App extends android.app.Application implements
 			}
 		}
 		return kase;
+	}	
+	@Override
+	public ICase<?> findChildCase(String name){
+		ICase<?> kase = getCase(name);
+		if (kase == null){
+			for(Map.Entry<String, ICase<?>> e : cases.entrySet()){
+				kase = e.getValue().findChildCase(name);
+				if (kase != null) return kase;
+			}
+		}
+		return kase;
 	}
-
 	@Override
 	public void addCase(ICase<?> kase) {
 		if (!cases.containsKey(kase.getName())) {

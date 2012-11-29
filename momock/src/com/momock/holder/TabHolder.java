@@ -24,9 +24,26 @@ import android.view.ViewGroup;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 
+import com.momock.outlet.tab.ITabPlug;
 import com.momock.util.Logger;
 
 public abstract class TabHolder implements IComponentHolder {
+	public interface OnCreateTabIndicatorHandler{
+		View onCreateTabIndicator(ITabPlug plug);
+	}
+	OnCreateTabIndicatorHandler handler = null;
+	public void setOnCreateTabIndicatorHandler(OnCreateTabIndicatorHandler handler){
+		this.handler = handler;
+	}
+	public void setTabIndicator(TabHost.TabSpec spec, ITabPlug plug){
+		if (this.handler != null)
+			spec.setIndicator(handler.onCreateTabIndicator(plug));
+		else if (plug.getIcon() == null)
+			spec.setIndicator(plug.getText().getText());
+		else
+			spec.setIndicator(plug.getText().getText(), plug.getIcon().getAsDrawable());
+	}
+	
 	public abstract TabHost getTabHost();
 
 	public TabWidget getTabWidget() {

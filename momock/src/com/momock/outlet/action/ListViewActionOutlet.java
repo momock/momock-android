@@ -16,7 +16,7 @@
 package com.momock.outlet.action;
 
 import com.momock.binder.AdapterViewBinder;
-import com.momock.binder.AdapterViewBinder.ItemClickedEventArgs;
+import com.momock.binder.AdapterViewBinder.ItemEventArgs;
 import com.momock.binder.ListViewBinder;
 import com.momock.event.IEventHandler;
 import com.momock.holder.ViewHolder;
@@ -29,10 +29,10 @@ public class ListViewActionOutlet extends Outlet<IActionPlug, ViewHolder> implem
 			@Override
 			public void onAttach(ViewHolder target) {
 				ListViewBinder binder = ListViewBinder.getSimple("Text");
-				binder.addItemClickedEventHandler(new IEventHandler<AdapterViewBinder.ItemClickedEventArgs>() {
+				binder.addItemClickedEventHandler(new IEventHandler<AdapterViewBinder.ItemEventArgs>() {
 
 					@Override
-					public void process(Object sender, ItemClickedEventArgs args) {
+					public void process(Object sender, ItemEventArgs args) {
 						IActionPlug plug = (IActionPlug) args.getItem();
 						plug.getExecuteEvent().fireEvent(plug, null);
 					}

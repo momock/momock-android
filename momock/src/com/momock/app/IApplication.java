@@ -27,6 +27,8 @@ public interface IApplication {
 
 	ICase<?> getCase(String name);
 
+	ICase<?> findChildCase(String name);
+
 	void addCase(ICase<?> kase);
 
 	void removeCase(String name);
@@ -54,4 +56,5 @@ public interface IApplication {
 	void onCreateEnvironment();
 	
 	void onDestroyEnvironment();
+	
 }

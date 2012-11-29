@@ -39,8 +39,7 @@ public class TabOutlet extends Outlet<ITabPlug, TabHolder> implements ITabOutlet
 			Logger.check(plug.getContent() instanceof ViewHolder, "TabOutlet could only contains ViewHolder content");
 			((ViewHolder)plug.getContent()).reset();
 	        TabHost.TabSpec spec = tabHost.newTabSpec("");
-	        spec.setIndicator(plug.getText() == null ? null : plug.getText().getText(),
-	        		plug.getIcon() == null ? null : plug.getIcon().getAsDrawable());        
+	        target.setTabIndicator(spec, plug);
 	        spec.setContent(new TabContentFactory(){
 
 				@Override

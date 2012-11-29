@@ -30,6 +30,8 @@ public interface ICase<A> {
 	ICase<?> getParent();
 
 	ICase<?> getCase(String name);
+	
+	ICase<?> findChildCase(String name);
 
 	void addCase(ICase<?> kase);
 

@@ -130,6 +130,9 @@ public abstract class ViewHolder implements IComponentHolder{
 			}
 		};
 	}
+	public static ViewHolder get(Context context, int resourceId) {
+		return get(context, resourceId, null);
+	}
 	public static ViewHolder get(Context context, final int resourceId, final OnViewCreatedHandler handler)
 	{
 		final WeakReference<Context> refContext = new WeakReference<Context>(context);

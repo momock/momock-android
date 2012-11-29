@@ -79,8 +79,7 @@ public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> imple
 			if (plug.getContent() instanceof FragmentHolder)
 			{
 		        TabHost.TabSpec spec = tabHost.newTabSpec("" + i);
-		        spec.setIndicator(plug.getText() == null ? null : plug.getText().getText(),
-		        		plug.getIcon() == null ? null : plug.getIcon().getAsDrawable());        
+		        target.setTabIndicator(spec, plug);
 		        spec.setContent(new TabContentFactory(){
 
 					@Override

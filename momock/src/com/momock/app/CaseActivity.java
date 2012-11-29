@@ -32,7 +32,7 @@ public abstract class CaseActivity extends FragmentActivity {
 	@SuppressWarnings("unchecked")
 	public ICase<FragmentActivity> getCase() {
 		if (kase == null) {
-			kase = (ICase<FragmentActivity>)App.get().getCase(getCaseName());
+			kase = (ICase<FragmentActivity>)App.get().findChildCase(getCaseName());
 		}
 		return kase;
 	}

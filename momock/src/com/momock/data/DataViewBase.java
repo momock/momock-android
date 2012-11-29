@@ -15,8 +15,12 @@
  ******************************************************************************/
 package com.momock.data;
 
+import com.momock.util.Logger;
+
 public abstract class DataViewBase<T> implements IDataView<T>{
 	protected IDataMutableList<T> store = new DataList<T>();
+	protected int offset = 0;
+	protected int limit = -1;
 	@Override
 	public boolean hasItem(T item) {
 		return store.hasItem(item);
@@ -52,6 +56,27 @@ public abstract class DataViewBase<T> implements IDataView<T>{
 	@Override
 	public void setOrder(IOrder<T> order) {
 		this.order = order;
+	}
+
+	@Override
+	public int getOffset() {
+		return offset;
+	}
+
+	@Override
+	public void setOffset(int offset) {
+		Logger.check(offset >= 0, "Offset must be positive!");
+		this.offset = offset;		
+	}
+
+	@Override
+	public int getLimit() {
+		return limit;
+	}
+
+	@Override
+	public void setLimit(int limit) {
+		this.limit = limit;
 	}
 
 }

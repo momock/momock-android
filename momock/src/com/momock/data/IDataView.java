@@ -33,5 +33,13 @@ public interface IDataView<T> extends IDataList<T> {
 
 	void setOrder(IOrder<T> order);
 
+	int getOffset();
+
+	void setOffset(int offset);
+
+	int getLimit();
+
+	void setLimit(int limit);
+
 	void refresh();
 }

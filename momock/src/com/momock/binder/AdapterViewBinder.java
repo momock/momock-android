@@ -32,12 +32,12 @@ import com.momock.holder.ImageHolder;
 import com.momock.holder.ViewHolder;
 
 public class AdapterViewBinder<T extends AdapterView<?>> {
-	public static class ItemClickedEventArgs extends EventArgs {
+	public static class ItemEventArgs extends EventArgs {
 		int index;
 		Object item;
 		View view;
 
-		public ItemClickedEventArgs(View view, int index, Object item) {
+		public ItemEventArgs(View view, int index, Object item) {
 			this.view = view;
 			this.index = index;
 			this.item = item;
@@ -56,26 +56,36 @@ public class AdapterViewBinder<T extends AdapterView<?>> {
 		}
 	}
 
-	IEvent<ItemClickedEventArgs> itemClickedEvent = new Event<ItemClickedEventArgs>();
+	IEvent<ItemEventArgs> itemClickedEvent = new Event<ItemEventArgs>();
+	IEvent<ItemEventArgs> itemSelectedEvent = new Event<ItemEventArgs>();
 
-	public IEvent<ItemClickedEventArgs> getItemClickedEvent() {
+	public IEvent<ItemEventArgs> getItemClickedEvent() {
 		return itemClickedEvent;
 	}
 
-	public AdapterViewBinder<T> addItemClickedEventHandler(IEventHandler<ItemClickedEventArgs> handler){
+	public IEvent<ItemEventArgs> getItemSelectedEvent() {
+		return itemSelectedEvent;
+	}
+
+	public AdapterViewBinder<T> addItemClickedEventHandler(
+			IEventHandler<ItemEventArgs> handler) {
 		itemClickedEvent.addEventHandler(handler);
 		return this;
 	}
+
 	protected ItemViewBinder binder;
-	public AdapterViewBinder(ItemViewBinder binder){
+
+	public AdapterViewBinder(ItemViewBinder binder) {
 		this.binder = binder;
 	}
+
 	@SuppressWarnings("unchecked")
 	public void bind(ViewHolder view, IDataList<?> list) {
 		bind((T) view.getView(), list);
 	}
 
 	Setter imageSetter = null;
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void bind(T view, final IDataList<?> list) {
 		if (view != null) {
@@ -83,9 +93,25 @@ public class AdapterViewBinder<T extends AdapterView<?>> {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int position, long id) {
-					ItemClickedEventArgs args = new ItemClickedEventArgs(
-							parent, position, list.getItem(position));
+					ItemEventArgs args = new ItemEventArgs(parent, position,
+							list.getItem(position));
 					itemClickedEvent.fireEvent(view, args);
+				}
+			});
+			view.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+				@Override
+				public void onItemSelected(AdapterView<?> parent, View view,
+						int position, long id) {
+					ItemEventArgs args = new ItemEventArgs(parent, position,
+							list.getItem(position));
+					itemSelectedEvent.fireEvent(view, args);
+				}
+
+				@Override
+				public void onNothingSelected(AdapterView<?> parent) {
+					// TODO Auto-generated method stub
+
 				}
 			});
 			final BaseAdapter adapter = new BaseAdapter() {
@@ -115,19 +141,24 @@ public class AdapterViewBinder<T extends AdapterView<?>> {
 			};
 			if (imageSetter != null)
 				binder.removeSetter(imageSetter);
-			imageSetter = new Setter(){
+			imageSetter = new Setter() {
 
 				@Override
 				public boolean onSet(View view, String viewProp, Object val) {
-					if (view instanceof ImageView){
-						if (viewProp == null){
-							if (val instanceof CharSequence){
-								ImageHolder ih = ImageHolder.get(val.toString());
+					if (view instanceof ImageView) {
+						if (viewProp == null) {
+							if (val instanceof CharSequence) {
+								ImageHolder ih = ImageHolder
+										.get(val.toString());
 								if (ih != null && ih.getAsBitmap() != null) {
-									((ImageView)view).setImageBitmap(ih.getAsBitmap());
+									((ImageView) view).setImageBitmap(ih
+											.getAsBitmap());
 									return true;
 								} else {
-									App.get().getImageService().load(adapter, (ImageView)view, val.toString());
+									App.get()
+											.getImageService()
+											.load(adapter, (ImageView) view,
+													val.toString());
 									return true;
 								}
 							}
@@ -135,10 +166,10 @@ public class AdapterViewBinder<T extends AdapterView<?>> {
 					}
 					return false;
 				}
-				
+
 			};
 			binder.addSetter(imageSetter);
-			((AdapterView)view).setAdapter(adapter);
+			((AdapterView) view).setAdapter(adapter);
 		}
 	}
 }
