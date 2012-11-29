@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 public class PlainListView extends LinearLayout implements IPlainAdapterView{
 	Adapter adapter;
 	Observer observer = new Observer(this);
-
+	OnItemClickListener listener;
 	public PlainListView(Context context) {
 		super(context);
 		init();
@@ -35,6 +35,9 @@ public class PlainListView extends LinearLayout implements IPlainAdapterView{
 
 	void init(){
 		this.setOrientation(LinearLayout.VERTICAL);
+	}
+	public void setOnItemClickListener(OnItemClickListener listener){
+		this.listener = listener;
 	}
 	public void setAdapter(Adapter adapter) {
 		if (this.adapter != null)
@@ -64,10 +67,18 @@ public class PlainListView extends LinearLayout implements IPlainAdapterView{
 			context.removeAllViews();
 
 			for (int i = 0; i < context.adapter.getCount(); i++) {
+				final int index = i;
 				View convertView = iter.hasNext() ? iter.next() : null;
 				convertView = context.adapter.getView(i, convertView, context);
 				if (convertView.getParent() == null)
 					context.addView(convertView);
+				convertView.setOnClickListener(new View.OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						listener.onItemClick(PlainListView.this, v, index);
+					}
+				});
 			}
 			super.onChanged();
 		}

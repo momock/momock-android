@@ -8,16 +8,34 @@ import android.widget.ImageView;
 import com.momock.app.App;
 import com.momock.binder.ViewBinder.Setter;
 import com.momock.data.IDataList;
+import com.momock.event.Event;
+import com.momock.event.IEvent;
+import com.momock.event.IEventHandler;
+import com.momock.event.ItemEventArgs;
 import com.momock.holder.ImageHolder;
 import com.momock.holder.ViewHolder;
 import com.momock.widget.IPlainAdapterView;
 
 public class PlainAdapterViewBinder<T extends IPlainAdapterView> {
 
+	IEvent<ItemEventArgs> itemClickedEvent = new Event<ItemEventArgs>();
+
+	public IEvent<ItemEventArgs> getItemClickedEvent() {
+		return itemClickedEvent;
+	}
+
+	public PlainAdapterViewBinder<T> addItemClickedEventHandler(
+			IEventHandler<ItemEventArgs> handler) {
+		itemClickedEvent.addEventHandler(handler);
+		return this;
+	}
+
 	protected ItemViewBinder binder;
-	public PlainAdapterViewBinder(ItemViewBinder binder){
+
+	public PlainAdapterViewBinder(ItemViewBinder binder) {
 		this.binder = binder;
 	}
+
 	Setter imageSetter = null;
 
 	@SuppressWarnings("unchecked")
@@ -25,8 +43,17 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> {
 		bind((T) view.getView(), list);
 	}
 
-	public void bind(T view, final IDataList<?> list) {
-		if (view != null) {			
+	public void bind(final T view, final IDataList<?> list) {
+		if (view != null) {
+			view.setOnItemClickListener(new IPlainAdapterView.OnItemClickListener() {
+				@Override
+				public void onItemClick(IPlainAdapterView parent, View v,
+						int index) {
+					ItemEventArgs args = new ItemEventArgs((View) view, index,
+							list.getItem(index));
+					itemClickedEvent.fireEvent(v, args);
+				}
+			});
 			final BaseAdapter adapter = new BaseAdapter() {
 
 				@Override
@@ -61,8 +88,8 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> {
 					if (view instanceof ImageView) {
 						if (viewProp == null) {
 							if (val instanceof CharSequence) {
-								ImageHolder ih = ImageHolder
-										.create(val.toString());
+								ImageHolder ih = ImageHolder.create(val
+										.toString());
 								if (ih != null && ih.getAsBitmap() != null) {
 									((ImageView) view).setImageBitmap(ih
 											.getAsBitmap());

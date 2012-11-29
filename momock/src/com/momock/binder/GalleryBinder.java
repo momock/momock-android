@@ -4,6 +4,7 @@ import android.widget.Gallery;
 
 import com.momock.data.IDataList;
 import com.momock.event.IEventHandler;
+import com.momock.event.ItemEventArgs;
 import com.momock.widget.IndexIndicator;
 
 @SuppressWarnings("deprecation")
@@ -15,7 +16,7 @@ public class GalleryBinder extends AdapterViewBinder<Gallery> {
 
 			@Override
 			public void process(Object sender,
-					com.momock.binder.AdapterViewBinder.ItemEventArgs args) {
+					ItemEventArgs args) {
 				if (indicator != null)
 					indicator.setCurrentIndex(args.getIndex());
 			}

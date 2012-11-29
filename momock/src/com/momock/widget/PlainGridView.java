@@ -18,7 +18,7 @@ public class PlainGridView extends LinearLayout implements IPlainAdapterView {
 	Observer observer = new Observer(this);
 	int columns = 2;
 	int rowHeight = 0;
-
+	OnItemClickListener listener;
 	public PlainGridView(Context context) {
 		super(context);
 		init();
@@ -48,6 +48,9 @@ public class PlainGridView extends LinearLayout implements IPlainAdapterView {
 		observer.onChanged();
 	}
 
+	public void setOnItemClickListener(OnItemClickListener listener){
+		this.listener = listener;
+	}
 	public void setAdapter(Adapter adapter) {
 		if (this.adapter != null)
 			this.adapter.unregisterDataSetObserver(observer);
@@ -88,6 +91,7 @@ public class PlainGridView extends LinearLayout implements IPlainAdapterView {
 			Iterator<View> iterItem = oldItems.iterator();
 			LinearLayout curr = null;
 			for (int i = 0; i < context.adapter.getCount(); i++) {
+				final int index = i;
 				int c = i % columns;
 				if (c == 0) {
 					curr = iterRow.hasNext() ? iterRow.next() : null;
@@ -115,6 +119,14 @@ public class PlainGridView extends LinearLayout implements IPlainAdapterView {
 					lp.height = rowHeight;
 				if (convertView.getParent() == null)
 					curr.addView(convertView);
+
+				convertView.setOnClickListener(new View.OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						listener.onItemClick(PlainGridView.this, v, index);
+					}
+				});
 			}
 			super.onChanged();
 		}

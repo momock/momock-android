@@ -25,37 +25,13 @@ import com.momock.app.App;
 import com.momock.binder.ViewBinder.Setter;
 import com.momock.data.IDataList;
 import com.momock.event.Event;
-import com.momock.event.EventArgs;
 import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
+import com.momock.event.ItemEventArgs;
 import com.momock.holder.ImageHolder;
 import com.momock.holder.ViewHolder;
 
 public class AdapterViewBinder<T extends AdapterView<?>> {
-	public static class ItemEventArgs extends EventArgs {
-		int index;
-		Object item;
-		View view;
-
-		public ItemEventArgs(View view, int index, Object item) {
-			this.view = view;
-			this.index = index;
-			this.item = item;
-		}
-
-		public int getIndex() {
-			return index;
-		}
-
-		public Object getItem() {
-			return item;
-		}
-
-		public View getView() {
-			return view;
-		}
-	}
-
 	IEvent<ItemEventArgs> itemClickedEvent = new Event<ItemEventArgs>();
 	IEvent<ItemEventArgs> itemSelectedEvent = new Event<ItemEventArgs>();
 
