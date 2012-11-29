@@ -24,7 +24,7 @@ import com.momock.outlet.Outlet;
 
 public class ListViewActionOutlet extends Outlet<IActionPlug, ViewHolder> implements IActionOutlet<ViewHolder>{
 
-	public static ListViewActionOutlet getSimple() {
+	public static ListViewActionOutlet createSimple() {
 		return new ListViewActionOutlet() {
 			@Override
 			public void onAttach(ViewHolder target) {

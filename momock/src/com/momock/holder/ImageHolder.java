@@ -105,10 +105,10 @@ public class ImageHolder{
 
 		};
 	}
-	public static ImageHolder getAsync(final String uri){
-		return getAsync(uri, -1, -1);
+	public static ImageHolder createAsync(final String uri){
+		return createAsync(uri, -1, -1);
 	}
-	public static ImageHolder getAsync(final String uri, final int expectedWidth, final int expectedHeight){
+	public static ImageHolder createAsync(final String uri, final int expectedWidth, final int expectedHeight){
 		final IImageService is = App.get().getImageService();
 		if (imageCache.containsKey(uri)){
 			SoftReference<ImageHolder> ih = imageCache.get(uri);
@@ -148,10 +148,10 @@ public class ImageHolder{
 		imageCache.put(uri, new SoftReference<ImageHolder>(holder));
 		return holder;
 	}
-	public static ImageHolder get(final String uri){
-		return get(uri, -1, -1);
+	public static ImageHolder create(final String uri){
+		return create(uri, -1, -1);
 	}
-	public static ImageHolder get(final String uri, final int expectedWidth, final int expectedHeight){
+	public static ImageHolder create(final String uri, final int expectedWidth, final int expectedHeight){
 		if (imageCache.containsKey(uri)){
 			SoftReference<ImageHolder> ih = imageCache.get(uri);
 			if (ih.get() != null)

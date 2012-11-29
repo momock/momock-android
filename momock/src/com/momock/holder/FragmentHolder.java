@@ -37,7 +37,7 @@ public abstract class FragmentHolder implements IComponentHolder{
 				Bundle savedInstanceState) {
 			int resourceId = getArguments().getInt(RID);
 			Logger.debug("Create SimpleFragment RID=" + resourceId + " CASE ID=" + getArguments().getString(CASE_ID));
-			return ViewHolder.get(container.getContext(), resourceId, null).getView();
+			return ViewHolder.create(container, resourceId).getView();
 		}
 		@Override
 		protected String getCaseName() {
@@ -61,7 +61,7 @@ public abstract class FragmentHolder implements IComponentHolder{
 			
 		};
 	}
-	public static <T extends Fragment> FragmentHolder get(final Class<T> fc)
+	public static <T extends Fragment> FragmentHolder create(final Class<T> fc)
 	{
 		return new FragmentHolder(){
 			Fragment fragment = null;
@@ -83,7 +83,7 @@ public abstract class FragmentHolder implements IComponentHolder{
 			}			
 		};
 	}
-	public static FragmentHolder get(final int resourceId){
+	public static FragmentHolder create(final int resourceId){
 		return new FragmentHolder(){
 			Fragment fragment = null;
 			@Override
@@ -103,7 +103,7 @@ public abstract class FragmentHolder implements IComponentHolder{
 		};
 	}
 
-	public static FragmentHolder get(final int resourceId, final ICase<Fragment> kase){
+	public static FragmentHolder create(final int resourceId, final ICase<Fragment> kase){
 		return new FragmentHolder(){
 			Fragment fragment = null;
 			@Override

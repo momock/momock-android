@@ -62,7 +62,7 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> {
 						if (viewProp == null) {
 							if (val instanceof CharSequence) {
 								ImageHolder ih = ImageHolder
-										.get(val.toString());
+										.create(val.toString());
 								if (ih != null && ih.getAsBitmap() != null) {
 									((ImageView) view).setImageBitmap(ih
 											.getAsBitmap());

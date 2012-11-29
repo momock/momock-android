@@ -21,6 +21,7 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.momock.app.App;
 
@@ -101,23 +102,21 @@ public abstract class ViewHolder implements IComponentHolder{
 			}			
 		};
 	}
-
-	public static ViewHolder get(int resourceId)
-	{
-		return get(resourceId, null);
+	public static ViewHolder create(ViewGroup parent, final int resourceId){
+		return create(parent, resourceId, null);
 	}
-	public static ViewHolder get(final int resourceId, final OnViewCreatedHandler handler)
-	{
+	public static ViewHolder create(ViewGroup parent, final int resourceId, final OnViewCreatedHandler handler){
+		final WeakReference<ViewGroup> refParent = new WeakReference<ViewGroup>(parent);
 		return new ViewHolder()
 		{
 			WeakReference<View> ref = null;
 			@SuppressWarnings("unchecked")
 			@Override
-			public <T extends View> T getView() {
+			public <T extends View> T getView() {				
 				if (ref == null || ref.get() == null)
 				{
-					LayoutInflater inflater = App.get().getLayoutInflater(App.get().getCurrentActivity());
-					ref = new WeakReference<View>(inflater.inflate(resourceId, null));
+					LayoutInflater inflater = App.get().getLayoutInflater(refParent.get().getContext());
+					ref = new WeakReference<View>(inflater.inflate(resourceId, refParent.get()));
 					if (handler != null)
 						handler.onViewCreated(ref.get());
 				}
@@ -130,11 +129,10 @@ public abstract class ViewHolder implements IComponentHolder{
 			}
 		};
 	}
-	public static ViewHolder get(Context context, int resourceId) {
-		return get(context, resourceId, null);
+	public static ViewHolder create(Context context, final int resourceId){
+		return create(context, resourceId, null);
 	}
-	public static ViewHolder get(Context context, final int resourceId, final OnViewCreatedHandler handler)
-	{
+	public static ViewHolder create(Context context, final int resourceId, final OnViewCreatedHandler handler){
 		final WeakReference<Context> refContext = new WeakReference<Context>(context);
 		return new ViewHolder()
 		{

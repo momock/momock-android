@@ -21,7 +21,7 @@ import com.momock.holder.ViewHolder;
 import com.momock.outlet.Plug;
 
 public abstract class CardPlug extends Plug implements ICardPlug{
-	public static CardPlug get(final ViewHolder vh){
+	public static CardPlug create(final ViewHolder vh){
 		return new CardPlug(){
 
 			@Override
@@ -30,7 +30,7 @@ public abstract class CardPlug extends Plug implements ICardPlug{
 			}
 		};
 	}
-	public static CardPlug get(final FragmentHolder fh){
+	public static CardPlug create(final FragmentHolder fh){
 		return new CardPlug(){
 
 			@Override

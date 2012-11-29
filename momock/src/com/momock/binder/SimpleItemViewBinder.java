@@ -20,7 +20,7 @@ public class SimpleItemViewBinder extends ItemViewBinder{
 			Object plug, ViewGroup parent) {
 		View view = convertView;
 		if (view == null) {
-			view = ViewHolder.get(parent.getContext(), itemViewId, null).getView();
+			view = ViewHolder.create(parent, itemViewId).getView();
 		}
 		bind(view, plug);
 		return view;

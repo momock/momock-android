@@ -85,22 +85,22 @@ public class ActionPlug extends Plug implements IActionPlug {
 		return this;
 	}
 	
-	public static ActionPlug get(TextHolder text)
+	public static ActionPlug create(TextHolder text)
 	{
 		ActionPlug plug = new ActionPlug();
 		return plug.setText(text);
 	}
-	public static ActionPlug get(TextHolder text, IEventHandler<IEventArgs> handler)
+	public static ActionPlug create(TextHolder text, IEventHandler<IEventArgs> handler)
 	{
 		ActionPlug plug = new ActionPlug();
 		return plug.setText(text).addExecuteEventHandler(handler);
 	}
-	public static ActionPlug get(TextHolder text, ImageHolder icon)
+	public static ActionPlug create(TextHolder text, ImageHolder icon)
 	{
 		ActionPlug plug = new ActionPlug();
 		return plug.setText(text).setIcon(icon);
 	}
-	public static ActionPlug get(TextHolder text, ImageHolder icon, IEventHandler<IEventArgs> handler)
+	public static ActionPlug create(TextHolder text, ImageHolder icon, IEventHandler<IEventArgs> handler)
 	{
 		ActionPlug plug = new ActionPlug();
 		return plug.setText(text).setIcon(icon).addExecuteEventHandler(handler);

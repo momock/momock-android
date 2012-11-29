@@ -36,7 +36,7 @@ public abstract class TabPlug extends Plug implements ITabPlug {
 		return this;
 	}
 	
-	public static TabPlug get(final TextHolder text, final ImageHolder icon, final ViewHolder content)
+	public static TabPlug create(final TextHolder text, final ImageHolder icon, final ViewHolder content)
 	{
 		return new TabPlug(){
 
@@ -70,7 +70,7 @@ public abstract class TabPlug extends Plug implements ITabPlug {
 		};
 	}
 
-	public static TabPlug get(final TextHolder text, final ImageHolder icon, final FragmentHolder content)
+	public static TabPlug create(final TextHolder text, final ImageHolder icon, final FragmentHolder content)
 	{
 		return new TabPlug(){
 
