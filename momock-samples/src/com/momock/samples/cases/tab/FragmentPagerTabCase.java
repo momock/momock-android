@@ -47,7 +47,7 @@ public class FragmentPagerTabCase extends Case<Fragment> {
 	@Override
 	public void onCreate() {
 		IOutlet<IActionPlug, ViewHolder> outlet = getOutlet(OutletNames.SAMPLES);
-		outlet.addPlug(ActionPlug.get(
+		outlet.addPlug(ActionPlug.create(
 				TextHolder.get("Fragment Pager Tab Sample"))
 				.addExecuteEventHandler(new IEventHandler<IEventArgs>() {
 					@Override
@@ -56,21 +56,21 @@ public class FragmentPagerTabCase extends Case<Fragment> {
 					}
 				}));
 
-		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 1"),
+		tabs.addPlug(TabPlug.create(TextHolder.get("Pager Tab 1"),
 				ImageHolder.get(R.drawable.ic_action_alarm_2),
-				FragmentHolder.get(R.layout.tab_one)));
-		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 2"),
+				FragmentHolder.create(R.layout.tab_one)));
+		tabs.addPlug(TabPlug.create(TextHolder.get("Pager Tab 2"),
 				ImageHolder.get(R.drawable.ic_action_calculator),
-				FragmentHolder.get(R.layout.tab_two)));
-		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 3"),
+				FragmentHolder.create(R.layout.tab_two)));
+		tabs.addPlug(TabPlug.create(TextHolder.get("Pager Tab 3"),
 				ImageHolder.get(R.drawable.ic_action_google_play),
-				FragmentHolder.get(R.layout.tab_three)));
-		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 4"),
+				FragmentHolder.create(R.layout.tab_three)));
+		tabs.addPlug(TabPlug.create(TextHolder.get("Pager Tab 4"),
 				ImageHolder.get(R.drawable.ic_action_line_chart),
-				FragmentHolder.get(R.layout.tab_four)));
+				FragmentHolder.create(R.layout.tab_four)));
 	}
 
-	ICardPlug self = CardPlug.get(FragmentHolder.get(R.layout.case_pager_tab,
+	ICardPlug self = CardPlug.create(FragmentHolder.create(R.layout.case_pager_tab,
 			this));
 
 	@Override

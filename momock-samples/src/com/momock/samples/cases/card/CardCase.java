@@ -19,6 +19,7 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.Button;
 
+import com.momock.app.App;
 import com.momock.app.Case;
 import com.momock.app.ICase;
 import com.momock.data.IDataList;
@@ -47,7 +48,7 @@ public class CardCase extends Case<Fragment> implements View.OnClickListener {
 	@Override
 	public void onCreate() {
 		IOutlet outlet = getParent().getOutlet(OutletNames.SAMPLES);
-		outlet.addPlug(ActionPlug.get(TextHolder.get("Card Sample"))
+		outlet.addPlug(ActionPlug.create(TextHolder.get("Card Sample"))
 				.addExecuteEventHandler(new IEventHandler<IEventArgs>() {
 					@Override
 					public void process(Object sender, IEventArgs args) {
@@ -55,9 +56,9 @@ public class CardCase extends Case<Fragment> implements View.OnClickListener {
 					}
 				}));
 
-		cards.addPlug(CardPlug.get(ViewHolder.get(R.layout.tab_one)));
-		cards.addPlug(CardPlug.get(ViewHolder.get(R.layout.tab_two)));
-		cards.addPlug(CardPlug.get(ViewHolder.get(R.layout.tab_three)));
+		cards.addPlug(CardPlug.create(ViewHolder.create(App.get(), R.layout.tab_one)));
+		cards.addPlug(CardPlug.create(ViewHolder.create(App.get(), R.layout.tab_two)));
+		cards.addPlug(CardPlug.create(ViewHolder.create(App.get(), R.layout.tab_three)));
 	}
 
 	@Override
@@ -71,7 +72,7 @@ public class CardCase extends Case<Fragment> implements View.OnClickListener {
 		btn3.setOnClickListener(this);
 	}
 
-	ICardPlug self = CardPlug.get(FragmentHolder.get(R.layout.case_card, this));
+	ICardPlug self = CardPlug.create(FragmentHolder.create(R.layout.case_card, this));
 
 	@Override
 	public void run(Object... args) {

@@ -37,12 +37,12 @@ public class MainMenuCase extends Case<Fragment> {
 
 	@Override
 	public void onCreate() {
-		getParent().addOutlet(OutletNames.SAMPLES, ListViewActionOutlet.getSimple());
+		getParent().addOutlet(OutletNames.SAMPLES, ListViewActionOutlet.createSimple());
 		
 		App.get().addPlug(PlugNames.MAIN_MENU, self);
 	}
 
-	ICardPlug self = CardPlug.get(FragmentHolder.get(R.layout.case_mainmenu, this));
+	ICardPlug self = CardPlug.create(FragmentHolder.create(R.layout.case_mainmenu, this));
 	@Override
 	public void run(Object... args) {
 		getOutlet(OutletNames.MAIN_CONTAINER).setActivePlug(self);

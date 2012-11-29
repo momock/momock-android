@@ -17,7 +17,6 @@ package com.momock.samples.cases.binder;
 
 import android.support.v4.app.Fragment;
 
-import com.momock.app.App;
 import com.momock.app.Case;
 import com.momock.app.ICase;
 import com.momock.binder.GridViewBinder;
@@ -44,7 +43,7 @@ public class GridViewCase  extends Case<Fragment>{
 	@Override
 	public void onCreate() {
 		IActionOutlet<?> outlet = getParent().getOutlet(OutletNames.SAMPLES);
-		outlet.addPlug(ActionPlug.get(TextHolder.get("GridView Sample"))
+		outlet.addPlug(ActionPlug.create(TextHolder.get("GridView Sample"))
 				.addExecuteEventHandler(new IEventHandler<IEventArgs>() {
 					@Override
 					public void process(Object sender, IEventArgs args) {
@@ -53,7 +52,7 @@ public class GridViewCase  extends Case<Fragment>{
 				}));
 	}
 
-	ICardPlug self = CardPlug.get(FragmentHolder.get(R.layout.case_gridview, this));
+	ICardPlug self = CardPlug.create(FragmentHolder.create(R.layout.case_gridview, this));
 
 	@Override
 	public void run(Object... args) {

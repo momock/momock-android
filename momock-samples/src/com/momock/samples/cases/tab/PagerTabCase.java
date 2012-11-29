@@ -17,6 +17,7 @@ package com.momock.samples.cases.tab;
 
 import android.support.v4.app.Fragment;
 
+import com.momock.app.App;
 import com.momock.app.Case;
 import com.momock.app.ICase;
 import com.momock.event.IEventArgs;
@@ -47,7 +48,7 @@ public class PagerTabCase extends Case<Fragment> {
 	@Override
 	public void onCreate() {
 		IOutlet<IActionPlug, ViewHolder> outlet = getOutlet(OutletNames.SAMPLES);
-		outlet.addPlug(ActionPlug.get(TextHolder.get("Pager Tab Sample"))
+		outlet.addPlug(ActionPlug.create(TextHolder.get("Pager Tab Sample"))
 				.addExecuteEventHandler(new IEventHandler<IEventArgs>() {
 					@Override
 					public void process(Object sender, IEventArgs args) {
@@ -55,21 +56,21 @@ public class PagerTabCase extends Case<Fragment> {
 					}
 				}));
 
-		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 1"),
+		tabs.addPlug(TabPlug.create(TextHolder.get("Pager Tab 1"),
 				ImageHolder.get(R.drawable.ic_action_alarm_2),
-				ViewHolder.get(R.layout.tab_one)));
-		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 2"),
+				ViewHolder.create(App.get(), R.layout.tab_one)));
+		tabs.addPlug(TabPlug.create(TextHolder.get("Pager Tab 2"),
 				ImageHolder.get(R.drawable.ic_action_calculator),
-				ViewHolder.get(R.layout.tab_two)));
-		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 3"),
+				ViewHolder.create(App.get(), R.layout.tab_two)));
+		tabs.addPlug(TabPlug.create(TextHolder.get("Pager Tab 3"),
 				ImageHolder.get(R.drawable.ic_action_google_play),
-				ViewHolder.get(R.layout.tab_three)));
-		tabs.addPlug(TabPlug.get(TextHolder.get("Pager Tab 4"),
+				ViewHolder.create(App.get(), R.layout.tab_three)));
+		tabs.addPlug(TabPlug.create(TextHolder.get("Pager Tab 4"),
 				ImageHolder.get(R.drawable.ic_action_line_chart),
-				ViewHolder.get(R.layout.tab_four)));
+				ViewHolder.create(App.get(), R.layout.tab_four)));
 	}
 
-	ICardPlug self = CardPlug.get(FragmentHolder.get(R.layout.case_pager_tab,
+	ICardPlug self = CardPlug.create(FragmentHolder.create(R.layout.case_pager_tab,
 			this));
 
 	@Override

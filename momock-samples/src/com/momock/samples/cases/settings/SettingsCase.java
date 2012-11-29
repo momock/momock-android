@@ -36,7 +36,7 @@ public class SettingsCase extends Case<Activity> {
 
 	@Override
 	public void onCreate() {
-		ActionPlug self = ActionPlug.get(TextHolder.get("Settings"),
+		ActionPlug self = ActionPlug.create(TextHolder.get("Settings"),
 				ImageHolder.get(R.drawable.ic_action_google_play),
 				new IEventHandler<IEventArgs>() {
 					@Override

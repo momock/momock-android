@@ -32,7 +32,7 @@ public class HoloCase extends Case<HoloActionBarActivity>{
 
 	@Override
 	public void onCreate() {
-		ActionPlug self = ActionPlug.get(TextHolder.get("I'm Holo"),
+		ActionPlug self = ActionPlug.create(TextHolder.get("I'm Holo"),
 				new IEventHandler<IEventArgs>() {
 					@Override
 					public void process(Object sender, IEventArgs args) {
