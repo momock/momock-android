@@ -103,10 +103,18 @@ public class PlainGridView extends LinearLayout implements IPlainAdapterView {
 				}
 				View convertView = iterItem.hasNext() ? iterItem.next() : null;
 				convertView = context.adapter.getView(i, convertView, curr);
-				convertView.setLayoutParams(new LinearLayout.LayoutParams(100,
-						rowHeight > 0 ? rowHeight
-								: LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-				curr.addView(convertView);
+				LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) convertView
+						.getLayoutParams();
+				if (lp == null) {
+					lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+					convertView.setLayoutParams(lp);
+				} else {
+					lp.weight = 1;
+				}
+				if (rowHeight > 0)
+					lp.height = rowHeight;
+				if (convertView.getParent() == null)
+					curr.addView(convertView);
 			}
 			super.onChanged();
 		}

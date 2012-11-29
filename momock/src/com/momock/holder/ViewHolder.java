@@ -116,7 +116,7 @@ public abstract class ViewHolder implements IComponentHolder{
 				if (ref == null || ref.get() == null)
 				{
 					LayoutInflater inflater = App.get().getLayoutInflater(refParent.get().getContext());
-					ref = new WeakReference<View>(inflater.inflate(resourceId, refParent.get()));
+					ref = new WeakReference<View>(inflater.inflate(resourceId, refParent.get(), false));
 					if (handler != null)
 						handler.onViewCreated(ref.get());
 				}

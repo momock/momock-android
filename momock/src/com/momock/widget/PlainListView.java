@@ -65,8 +65,9 @@ public class PlainListView extends LinearLayout implements IPlainAdapterView{
 
 			for (int i = 0; i < context.adapter.getCount(); i++) {
 				View convertView = iter.hasNext() ? iter.next() : null;
-				context.addView(context.adapter
-						.getView(i, convertView, context));
+				convertView = context.adapter.getView(i, convertView, context);
+				if (convertView.getParent() == null)
+					context.addView(convertView);
 			}
 			super.onChanged();
 		}
