@@ -15,6 +15,6 @@
  ******************************************************************************/
 package com.momock.message;
 
-public interface IMessage {
-
+public interface IMessageHandler {
+	void process(Object sender, Message msg);
 }

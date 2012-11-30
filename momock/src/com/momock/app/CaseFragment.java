@@ -101,12 +101,14 @@ public abstract class CaseFragment extends Fragment{
 	public void onResume() {
 		log("onResume");
 		super.onResume();
+		getCase().onShow();
 	}
 
 	@Override
 	public void onPause() {
 		log("onPause");
 		super.onPause();
+		getCase().onHide();
 	}
 
 	@Override

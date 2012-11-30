@@ -15,6 +15,35 @@
  ******************************************************************************/
 package com.momock.message;
 
-public interface IMessageRouter {
+
+public class Message {
+	boolean consumed = false;
+	String topic;
+	Object data = null;
+
+	public Message(String topic){
+		this.topic = topic;
+	}
+	
+	public Message(String topic, Object data){
+		this.topic = topic;
+		this.data = data;
+	}
+
+	public String getTopic() {
+		return topic;
+	}
+
+	public boolean isConsumed() {
+		return consumed;
+	}
+
+	public void setConsumed(boolean consumed) {
+		this.consumed = consumed;
+	}
+
+	public Object getData() {
+		return data;
+	}
 
 }

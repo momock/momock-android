@@ -17,6 +17,7 @@ package com.momock.holder;
 
 import java.lang.ref.WeakReference;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -70,6 +71,27 @@ public abstract class ViewHolder implements IComponentHolder{
 			public <T extends View> T getView() {
 				if (refView.get() != null && refChild == null){
 					refChild = new WeakReference<View>(refView.get().findViewById(id));
+				}
+				return (T)(refChild == null ? null : refChild.get());
+			}
+
+			@Override
+			public void reset() {
+				refChild = null;
+			}
+		};
+	}
+	public static ViewHolder get(Activity activity, final int id)
+	{
+		final WeakReference<Activity> refActivity = new WeakReference<Activity>(activity);
+		return new ViewHolder()
+		{
+			WeakReference<View> refChild = null;
+			@SuppressWarnings("unchecked")
+			@Override
+			public <T extends View> T getView() {
+				if (refActivity.get() != null && refChild == null){
+					refChild = new WeakReference<View>(refActivity.get().findViewById(id));
 				}
 				return (T)(refChild == null ? null : refChild.get());
 			}

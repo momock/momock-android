@@ -16,6 +16,7 @@
 package com.momock.app;
 
 import com.momock.data.IDataSet;
+import com.momock.message.MessageBox;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.service.IService;
@@ -57,4 +58,9 @@ public interface IApplication {
 	
 	void onDestroyEnvironment();
 	
+	void execute(Runnable task);
+	
+	void executeDelayed(Runnable task, int delayMillis);
+	
+	MessageBox getMessageBox();
 }

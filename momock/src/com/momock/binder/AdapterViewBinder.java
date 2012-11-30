@@ -30,6 +30,7 @@ import com.momock.event.IEventHandler;
 import com.momock.event.ItemEventArgs;
 import com.momock.holder.ImageHolder;
 import com.momock.holder.ViewHolder;
+import com.momock.util.Logger;
 
 public class AdapterViewBinder<T extends AdapterView<?>> {
 	IEvent<ItemEventArgs> itemClickedEvent = new Event<ItemEventArgs>();
@@ -86,8 +87,7 @@ public class AdapterViewBinder<T extends AdapterView<?>> {
 
 				@Override
 				public void onNothingSelected(AdapterView<?> parent) {
-					// TODO Auto-generated method stub
-
+					Logger.debug("onNothingSelected");
 				}
 			});
 			final BaseAdapter adapter = new BaseAdapter() {

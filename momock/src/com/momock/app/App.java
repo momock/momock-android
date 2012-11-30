@@ -25,6 +25,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -32,6 +33,7 @@ import android.view.View;
 
 import com.momock.data.DataSet;
 import com.momock.data.IDataSet;
+import com.momock.message.MessageBox;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
@@ -355,7 +357,7 @@ public abstract class App extends android.app.Application implements
 			ds = new DataSet();
 		return ds;
 	}
-
+	Handler executeHandler = null;
 	@Override
 	public void onCreateEnvironment() {
 		Logger.debug("onCreateEnvironment");
@@ -363,6 +365,7 @@ public abstract class App extends android.app.Application implements
 		addService(IImageService.class, new ImageService(getContentResolver()));
 		onAddServices();
 		onAddCases();
+		executeHandler = new Handler();
 	}
 
 	@Override
@@ -376,6 +379,7 @@ public abstract class App extends android.app.Application implements
 		services.clear();
 		shortNames.clear();
 		ds = null;
+		executeHandler = null;
 	}
 
 	@Override
@@ -394,5 +398,23 @@ public abstract class App extends android.app.Application implements
 		for (String clazz : classess) {
 			shortNames.put(clazz, prefix);
 		}
+	}
+
+	@Override
+	public void execute(Runnable task) {
+		executeHandler.post(task);		
+	}
+	
+	@Override
+	public void executeDelayed(Runnable task, int delayMillis){
+		executeHandler.postDelayed(task, delayMillis);		
+	}
+
+	MessageBox messageBox = null;
+	@Override
+	public MessageBox getMessageBox() {
+		if (messageBox == null)
+			messageBox = new MessageBox();
+		return messageBox;
 	}
 }

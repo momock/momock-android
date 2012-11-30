@@ -82,12 +82,14 @@ public abstract class CaseActivity extends FragmentActivity {
 	protected void onPause() {
 		log("onPause");
 		super.onPause();
+		getCase().onHide();
 	}
 
 	@Override
 	protected void onResume() {
 		log("onResume");
 		super.onResume();
+		getCase().onShow();
 	}
 
 	@Override

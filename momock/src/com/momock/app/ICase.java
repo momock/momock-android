@@ -16,6 +16,8 @@
 package com.momock.app;
 
 import com.momock.data.IDataSet;
+import com.momock.message.IMessageHandler;
+import com.momock.message.Message;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.service.IService;
@@ -51,6 +53,8 @@ public interface ICase<A> {
 	
 	void run(Object... args);
 
+	boolean isActive();
+	
 	ICase<?> getActiveCase();
 
 	void setActiveCase(ICase<?> kase);
@@ -69,6 +73,10 @@ public interface ICase<A> {
 
 	void onDetach(A target);
 	
+	void onShow();
+	
+	void onHide();
+	
 	IDataSet getDataSet();
 
 	<T extends IService> T getService(Class<?> klass);
@@ -76,4 +84,14 @@ public interface ICase<A> {
 	void addService(Class<?> klass, IService service);
 	
 	boolean onBack();
+	
+	void sendMessage(Object sender, String topic);
+	
+	void sendMessage(Object sender, String topic, Object data);
+	
+	void sendMessage(Object sender, Message msg); 
+	
+	void addMessageHandler(String topic, IMessageHandler handler);
+	
+	void removeMessageHandler(String topic, IMessageHandler handler);
 }

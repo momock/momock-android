@@ -21,7 +21,7 @@ import java.util.Map;
 public class DataSet implements IDataSet{
 	Map<String, Object> dataSet = new HashMap<String, Object>();
 	@Override
-	public void addData(String name, Object data) {
+	public void setData(String name, Object data) {
 		dataSet.put(name, data);
 	}
 

@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.momock.data.IDataSet;
+import com.momock.message.IMessageHandler;
+import com.momock.message.Message;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
@@ -112,6 +114,11 @@ public abstract class Case<A> implements ICase<A> {
 	@Override
 	public ICase<?> getParent() {
 		return parent;
+	}
+
+	@Override
+	public boolean isActive(){
+		return this == (getParent() == null ? App.get().getActiveCase() : getParent().getActiveCase());
 	}
 	
 	@Override
@@ -260,5 +267,33 @@ public abstract class Case<A> implements ICase<A> {
 		if (getActiveCase() != null)
 			return getActiveCase().onBack();
 		return false;
+	}
+	@Override
+	public void onShow() {
+		
+	}
+	@Override
+	public void onHide() {
+		
+	}
+	@Override
+	public void sendMessage(Object sender, String topic) {
+		App.get().getMessageBox().send(sender, topic);
+	}
+	@Override
+	public void sendMessage(Object sender, String topic, Object data) {
+		App.get().getMessageBox().send(sender, topic, data);
+	}
+	@Override
+	public void sendMessage(Object sender, Message msg) {
+		App.get().getMessageBox().send(sender, msg);
+	}
+	@Override
+	public void addMessageHandler(String topic, IMessageHandler handler) {
+		App.get().getMessageBox().addHandler(topic, handler);
+	}
+	@Override
+	public void removeMessageHandler(String topic, IMessageHandler handler) {
+		App.get().getMessageBox().removeHandler(topic, handler);		
 	}
 }
