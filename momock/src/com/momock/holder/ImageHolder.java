@@ -63,8 +63,8 @@ public class ImageHolder{
 	public String getUri(){
 		return null;
 	}
-	Drawable drawable = null;
-	public Drawable getAsDrawable() {
+	BitmapDrawable drawable = null;
+	public BitmapDrawable getAsDrawable() {
 		if (drawable == null)
 			drawable = new BitmapDrawable(App.get().getResources(), getAsBitmap());
 		return drawable;
@@ -97,9 +97,9 @@ public class ImageHolder{
 			}
 			
 			@Override
-			public Drawable getAsDrawable() {
+			public BitmapDrawable getAsDrawable() {
 				if (drawable == null)
-					drawable = App.get().getResources().getDrawable(id);
+					drawable = (BitmapDrawable)App.get().getResources().getDrawable(id);
 				return drawable;
 			}
 
@@ -237,7 +237,7 @@ public class ImageHolder{
 		return new ImageHolder() {
 
 			@Override
-			public Drawable getAsDrawable() {
+			public BitmapDrawable getAsDrawable() {
 				return drawable;
 			}
 			

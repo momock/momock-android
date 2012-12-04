@@ -19,16 +19,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 
-import com.momock.app.App;
-import com.momock.binder.ViewBinder.Setter;
 import com.momock.data.IDataList;
 import com.momock.event.Event;
 import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 import com.momock.event.ItemEventArgs;
-import com.momock.holder.ImageHolder;
 import com.momock.holder.ViewHolder;
 import com.momock.util.Logger;
 
@@ -60,8 +56,6 @@ public class AdapterViewBinder<T extends AdapterView<?>> {
 	public void bind(ViewHolder view, IDataList<?> list) {
 		bind((T) view.getView(), list);
 	}
-
-	Setter imageSetter = null;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void bind(T view, final IDataList<?> list) {
@@ -115,36 +109,6 @@ public class AdapterViewBinder<T extends AdapterView<?>> {
 				}
 
 			};
-			if (imageSetter != null)
-				binder.removeSetter(imageSetter);
-			imageSetter = new Setter() {
-
-				@Override
-				public boolean onSet(View view, String viewProp, Object val) {
-					if (view instanceof ImageView) {
-						if (viewProp == null) {
-							if (val instanceof CharSequence) {
-								ImageHolder ih = ImageHolder
-										.create(val.toString());
-								if (ih != null && ih.getAsBitmap() != null) {
-									((ImageView) view).setImageBitmap(ih
-											.getAsBitmap());
-									return true;
-								} else {
-									App.get()
-											.getImageService()
-											.load(adapter, (ImageView) view,
-													val.toString());
-									return true;
-								}
-							}
-						}
-					}
-					return false;
-				}
-
-			};
-			binder.addSetter(imageSetter);
 			((AdapterView) view).setAdapter(adapter);
 		}
 	}

@@ -32,12 +32,12 @@ public class SimpleItemViewBinder extends ItemViewBinder{
 	}
 	@Override
 	protected View onCreateItemView(View convertView, int index,
-			Object plug, ViewGroup parent) {
+			Object target, ViewGroup parent) {
 		View view = convertView;
 		if (view == null) {
 			view = ViewHolder.create(parent, itemViewId).getView();
 		}
-		bind(view, plug);
+		bind(view, target, parent);
 		return view;
 	}
 

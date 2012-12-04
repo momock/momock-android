@@ -17,6 +17,7 @@ package com.momock.app;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 import java.util.WeakHashMap;
 
 import android.annotation.SuppressLint;
@@ -402,12 +403,14 @@ public abstract class App extends android.app.Application implements
 
 	@Override
 	public void execute(Runnable task) {
-		executeHandler.post(task);		
+		if (executeHandler != null)
+			executeHandler.post(task);		
 	}
 	
 	@Override
 	public void executeDelayed(Runnable task, int delayMillis){
-		executeHandler.postDelayed(task, delayMillis);		
+		if (executeHandler != null)
+			executeHandler.postDelayed(task, delayMillis);		
 	}
 
 	MessageBox messageBox = null;
@@ -416,5 +419,23 @@ public abstract class App extends android.app.Application implements
 		if (messageBox == null)
 			messageBox = new MessageBox();
 		return messageBox;
+	}
+
+	Stack<Activity> stack = new Stack<Activity>();
+	@Override
+	public void pushActivity(Activity activity) {
+		if (stack.size() == 0)
+			App.get().onCreateEnvironment();
+		stack.push(activity);
+		Logger.debug("pushActivity " + stack.size() + " : " + activity.getClass());
+	}
+
+	@Override
+	public void popActivity(Activity activity) {
+		Logger.debug("popActivity " + stack.size() + " : " + activity.getClass());
+		Activity a = stack.pop();
+		Logger.check(a == activity, "Pop wrong activity!");	
+		if (stack.size() == 0)
+			App.get().onDestroyEnvironment();
 	}
 }

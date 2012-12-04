@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.momock.app;
 
+import android.app.Activity;
+
 import com.momock.data.IDataSet;
 import com.momock.message.MessageBox;
 import com.momock.outlet.IOutlet;
@@ -24,7 +26,7 @@ import com.momock.service.IService;
 public interface IApplication {
 	ICase<?> getActiveCase();
 
-	void setActiveCase(ICase<?> kase);
+	void setActiveCase(ICase<?> kase);	
 
 	ICase<?> getCase(String name);
 
@@ -63,4 +65,8 @@ public interface IApplication {
 	void executeDelayed(Runnable task, int delayMillis);
 	
 	MessageBox getMessageBox();
+	
+	void pushActivity(Activity activity);
+	
+	void popActivity(Activity activity);
 }
