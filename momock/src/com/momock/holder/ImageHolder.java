@@ -15,9 +15,7 @@
  ******************************************************************************/
 package com.momock.holder;
 
-import java.io.IOException;
 import java.lang.ref.SoftReference;
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,21 +29,12 @@ import com.momock.app.App;
 import com.momock.event.Event;
 import com.momock.event.EventArgs;
 import com.momock.event.IEvent;
+import com.momock.event.IEventHandler;
 import com.momock.service.IImageService;
-import com.momock.service.IImageService.ImageSetter;
-import com.momock.util.ImageHelper;
-import com.momock.util.Logger;
+import com.momock.service.IImageService.ImageEventArgs;
 
 public class ImageHolder{
-	public static final String PREFIX_FILE = "file://";
-	public static final String PREFIX_RES = "res://";
-	public static final String PREFIX_RAW = "raw://";
-	public static final String PREFIX_ASSETS = "assets://";
-	
-	public static class ImageLoadEventArgs extends EventArgs{
-		
-	}
-	protected IEvent<ImageLoadEventArgs> imageLoadEvent = null;
+	protected IEvent<EventArgs> imageLoadedEvent = null;
 	public ImageHolder(){
 		onCreate();
 	}
@@ -55,10 +44,16 @@ public class ImageHolder{
 	public boolean isLoaded(){
 		return getAsBitmap() != null;
 	}
-	public IEvent<ImageLoadEventArgs> getImageLoadEvent(){
-		if (imageLoadEvent == null)
-			imageLoadEvent = new Event<ImageLoadEventArgs>();
-		return imageLoadEvent;
+	protected IEvent<EventArgs> getImageLoadedEvent(){
+		if (imageLoadedEvent == null)
+			imageLoadedEvent = new Event<EventArgs>();
+		return imageLoadedEvent;
+	}
+	public void addImageLoadedEventHandler(IEventHandler<EventArgs> handler){
+		getImageLoadedEvent().addEventHandler(handler);
+	}
+	public void removeImageLoadedEventHandler(IEventHandler<EventArgs> handler){
+		getImageLoadedEvent().removeEventHandler(handler);
 	}
 	public String getUri(){
 		return null;
@@ -105,122 +100,53 @@ public class ImageHolder{
 
 		};
 	}
-	public static ImageHolder createAsync(final String uri){
-		return createAsync(uri, -1, -1);
+	public static ImageHolder get(final String uri){
+		return get(uri, -1, -1, true);
 	}
-	public static ImageHolder createAsync(final String uri, final int expectedWidth, final int expectedHeight){
+	public static ImageHolder get(final String uri, final int expectedWidth, final int expectedHeight){
+		return get(uri, expectedWidth, expectedHeight, true);
+	}
+	public static ImageHolder get(final String uri, boolean highPriority){
+		return get(uri, -1, -1, highPriority);
+	}
+	public static ImageHolder get(final String uri, final int expectedWidth, final int expectedHeight, final boolean highPriority){
 		final IImageService is = App.get().getImageService();
-		if (imageCache.containsKey(uri)){
-			SoftReference<ImageHolder> ih = imageCache.get(uri);
+		final String fullUri = is.getFullUri(uri, expectedWidth, expectedHeight);
+		if (imageCache.containsKey(fullUri)){
+			SoftReference<ImageHolder> ih = imageCache.get(fullUri);
 			if (ih.get() != null)
 				return ih.get();
 			else
-				imageCache.remove(uri);
+				imageCache.remove(fullUri);
 		}
 		ImageHolder holder = new ImageHolder() {		
-			WeakReference<Bitmap> refBitmap = null;		
-
 			@Override
 			protected void onCreate(){
 				final ImageHolder self = this;
-				is.load(this, new ImageSetter(){
-					@Override
-					public void setImage(Bitmap bitmap) {
-						refBitmap = new WeakReference<Bitmap>(bitmap);
-						ImageLoadEventArgs args = new ImageLoadEventArgs();
-						getImageLoadEvent().fireEvent(self, args);
-					}						
-				});
+				bitmap = is.loadBitmap(is.getFullUri(uri, expectedWidth, expectedHeight), highPriority);
+				if (bitmap == null && is.isRemote(uri)){
+					is.addImageEventHandler(fullUri, new IEventHandler<ImageEventArgs>(){
+
+						@Override
+						public void process(Object sender, ImageEventArgs args) {
+							bitmap = args.getBitmap();
+							getImageLoadedEvent().fireEvent(self, new EventArgs());
+						}
+						
+					});
+				}
 			}
 			@Override
 			public String getUri() {
 				return uri;
 			}
 			@Override
-			public boolean isLoaded(){
-				return refBitmap != null;
-			}
-			@Override
 			public Bitmap getAsBitmap() {
-				return refBitmap == null ? null : refBitmap.get();
+				return bitmap;
 			}
 		};		
-		imageCache.put(uri, new SoftReference<ImageHolder>(holder));
+		imageCache.put(fullUri, new SoftReference<ImageHolder>(holder));
 		return holder;
-	}
-	public static ImageHolder create(final String uri){
-		return create(uri, -1, -1);
-	}
-	public static ImageHolder create(final String uri, final int expectedWidth, final int expectedHeight){
-		if (imageCache.containsKey(uri)){
-			SoftReference<ImageHolder> ih = imageCache.get(uri);
-			if (ih.get() != null)
-				return ih.get();
-			else
-				imageCache.remove(uri);
-		}
-		if (uri.startsWith(PREFIX_FILE)) {
-			return new ImageHolder() {				
-				@Override
-				public String getUri() {
-					return uri;
-				}
-
-				@Override
-				public Bitmap getAsBitmap() {
-					if (bitmap == null)
-						bitmap = ImageHelper.fromFile(uri.substring(PREFIX_FILE.length()), expectedWidth, expectedHeight);
-					return bitmap;
-				}
-			};
-		} else if (uri.startsWith(PREFIX_RES)) {
-			return new ImageHolder() {				
-				@Override
-				public String getUri() {
-					return uri;
-				}
-
-				@Override
-				public Bitmap getAsBitmap() {
-					if (bitmap == null)
-						bitmap = ImageHelper.fromStream(ImageHolder.class.getResourceAsStream(uri.substring(PREFIX_RES.length())), expectedWidth, expectedHeight);
-					return bitmap;
-				}
-			};			
-		} else if (uri.startsWith(PREFIX_RAW)) {
-			return new ImageHolder() {				
-				@Override
-				public String getUri() {
-					return uri;
-				}
-
-				@Override
-				public Bitmap getAsBitmap() {
-					if (bitmap == null)
-						bitmap = ImageHelper.fromStream(ImageHolder.class.getResourceAsStream(uri.substring(PREFIX_RES.length())), expectedWidth, expectedHeight);
-					return bitmap;
-				}
-			};			
-		} else if (uri.startsWith(PREFIX_ASSETS)) {
-			return new ImageHolder() {				
-				@Override
-				public String getUri() {
-					return uri;
-				}
-
-				@Override
-				public Bitmap getAsBitmap() {
-					if (bitmap == null)
-						try {
-							bitmap = ImageHelper.fromStream(App.get().getResources().getAssets().open(uri.substring(PREFIX_ASSETS.length())), expectedWidth, expectedHeight);
-						} catch (IOException e) {
-							Logger.error(e.getMessage());
-						}
-					return bitmap;
-				}
-			};			
-		} 
-		return null;
 	}
 	public static ImageHolder get(final Bitmap bitmap){
 		return new ImageHolder() {

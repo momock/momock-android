@@ -23,7 +23,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -67,24 +66,20 @@ public class ViewBinder {
 				if (view instanceof ImageView) {
 					if (viewProp == null) {
 						if (val instanceof CharSequence) {
-							ImageHolder ih = ImageHolder.create(val.toString());
+							String uri = val.toString();
+							ImageHolder ih = ImageHolder.get(uri);
 							if (ih != null && ih.getAsBitmap() != null) {
 								((ImageView) view).setImageBitmap(ih
 										.getAsBitmap());
 								return true;
 							} else {
 								if (parent instanceof AdapterView)
-									App.get()
-											.getImageService()
-											.load((BaseAdapter) ((AdapterView) parent)
-													.getAdapter(),
-													(ImageView) view,
-													val.toString());
+
+									App.get().getImageService()
+											.bind(uri, (AdapterView) parent);
 								else
-									App.get()
-											.getImageService()
-											.load((ImageView) view,
-													val.toString());
+									App.get().getImageService()
+											.bind(uri, (ImageView) view);
 							}
 						} else {
 							((ImageView) view)

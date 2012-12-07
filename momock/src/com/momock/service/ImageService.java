@@ -15,84 +15,210 @@
  ******************************************************************************/
 package com.momock.service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.net.ContentHandler;
-import java.net.URLStreamHandlerFactory;
+import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Map;
 
-import android.content.ContentResolver;
 import android.graphics.Bitmap;
-import android.os.Handler;
+import android.graphics.BitmapFactory;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.google.android.filecache.FileResponseCache;
+import com.google.android.imageloader.BlockingFilterInputStream;
+import com.google.android.imageloader.ContentURLStreamHandlerFactory;
 import com.google.android.imageloader.ImageLoader;
+import com.momock.app.App;
+import com.momock.event.Event;
+import com.momock.event.IEvent;
+import com.momock.event.IEventHandler;
 import com.momock.holder.ImageHolder;
+import com.momock.util.Convert;
+import com.momock.util.ImageHelper;
 import com.momock.util.Logger;
 
-public class ImageService extends ImageLoader implements IImageService{
+public class ImageService extends ImageLoader implements IImageService {
+	static class ImageContentHandler extends ContentHandler {
+		@Override
+		public Bitmap getContent(URLConnection connection) throws IOException {
+			InputStream input = connection.getInputStream();
+			try {
+				input = new BlockingFilterInputStream(input);
+				Bitmap bitmap = BitmapFactory.decodeStream(input);
+				if (bitmap == null) {
+					throw new IOException("Image could not be decoded");
+				}
+				return bitmap;
+			} finally {
+				input.close();
+			}
+		}
+	}
+
 	public ImageService() {
-		super();
+		super(DEFAULT_TASK_LIMIT, new ContentURLStreamHandlerFactory(App.get()
+				.getContentResolver()), new ImageContentHandler(),
+				FileResponseCache.sink(), DEFAULT_CACHE_SIZE, null);
 	}
-	public ImageService(ContentHandler bitmapHandler,
-			ContentHandler prefetchHandler) {
-		super(bitmapHandler, prefetchHandler);
-	}
-	public ImageService(ContentResolver resolver) {
-		super(resolver);
-	}
-	public ImageService(int taskLimit,
-			URLStreamHandlerFactory streamFactory,
-			ContentHandler bitmapHandler, ContentHandler prefetchHandler,
-			long cacheSize, Handler handler) {
-		super(taskLimit, streamFactory, bitmapHandler, prefetchHandler, cacheSize,
-				handler);
-	}
-	public ImageService(int taskLimit) {
-		super(taskLimit);
-	}
-	public ImageService(long cacheSize) {
-		super(cacheSize);
-	}
-	public ImageService(URLStreamHandlerFactory factory) {
-		super(factory);
-	}
-	public void load(ImageHolder holder, final ImageSetter handler) {
-		Logger.check(holder != null, "Parameters holder and url cannot be null!");
-        String url = holder.getUri();
-        Bitmap bitmap = getBitmap(url);
-        ImageError error = getError(url);
-        if (bitmap != null) {
-        	handler.setImage(bitmap);
-        } else {
-            if (error != null) {
-            	handler.setImage(null);
-            } else {
-            	ImageCallback callback = new ImageCallback(){
 
-					@Override
-					public boolean unwanted() {
-						return false;
-					}
+	Map<String, IEvent<ImageEventArgs>> handlers = new HashMap<String, IEvent<ImageEventArgs>>();
 
-					@Override
-					public void send(String url, Bitmap bitmap,
-							ImageError error) {
-						if (error != null)
-							Logger.error(error.getCause().getMessage());
-						handler.setImage(bitmap);				
-					}
-                	
-                };
-                ImageRequest request = new ImageRequest(url, callback, true);
-                enqueueRequest(request);
-            }
-        }
-    }
 	@Override
-	public void load(BaseAdapter adapter, ImageView view, String url) {
-		bind(adapter, view, url);
+	public void addImageEventHandler(String url,
+			IEventHandler<ImageEventArgs> handler) {
+		IEvent<ImageEventArgs> evt;
+		if (handlers.containsKey(url)) {
+			evt = handlers.get(url);
+		} else {
+			evt = new Event<ImageEventArgs>();
+			handlers.put(url, evt);
+		}
+		evt.addEventHandler(handler);
 	}
+
 	@Override
-	public void load(ImageView view, String url) {
-		bind(view, url, null);
+	public void removeImageEventHandler(String url,
+			IEventHandler<ImageEventArgs> handler) {
+		IEvent<ImageEventArgs> evt;
+		if (handlers.containsKey(url)) {
+			evt = handlers.get(url);
+			evt.removeEventHandler(handler);
+		}
+	}
+
+	@Override
+	public Bitmap loadBitmap(String uri) {
+		return loadBitmap(uri, true);
+	}
+
+	@Override
+	public Bitmap loadBitmap(final String uri, boolean highPriority) {
+		final int expectedWidth;
+		final int expectedHeight;
+		int pos = uri.lastIndexOf('#');
+		if (pos > 0) {
+			int pos2 = uri.lastIndexOf('x');
+			Logger.check(pos2 > pos, "The image uri is not correct!");
+			expectedWidth = Convert.toInteger(uri.substring(pos + 1, pos2 - pos
+					- 1));
+			expectedHeight = Convert.toInteger(uri.substring(pos2 + 1));
+		} else {
+			expectedWidth = -1;
+			expectedHeight = -1;
+		}
+		Bitmap bitmap = null;
+		if (uri.startsWith(PREFIX_FILE)) {
+			bitmap = ImageHelper.fromFile(uri.substring(PREFIX_FILE.length()),
+					expectedWidth, expectedHeight);
+		} else if (uri.startsWith(PREFIX_RES)) {
+			bitmap = ImageHelper.fromStream(ImageHolder.class
+					.getResourceAsStream(uri.substring(PREFIX_RES.length())),
+					expectedWidth, expectedHeight);
+		} else if (uri.startsWith(PREFIX_RAW)) {
+			bitmap = ImageHelper.fromStream(ImageHolder.class
+					.getResourceAsStream(uri.substring(PREFIX_RES.length())),
+					expectedWidth, expectedHeight);
+		} else if (uri.startsWith(PREFIX_ASSETS)) {
+			try {
+				bitmap = ImageHelper.fromStream(App.get().getResources()
+						.getAssets()
+						.open(uri.substring(PREFIX_ASSETS.length())),
+						expectedWidth, expectedHeight);
+			} catch (IOException e) {
+				Logger.error(e.getMessage());
+			}
+		} else if (uri.startsWith(PREFIX_HTTP) || uri.startsWith(PREFIX_HTTPS)) {
+			bitmap = getBitmap(uri);
+			ImageError error = getError(uri);
+			if (bitmap == null && error == null) {
+				ImageRequest request = new ImageRequest(uri,
+						new ImageCallback() {
+
+							@Override
+							public boolean unwanted() {
+								return false;
+							}
+
+							@Override
+							public void send(String url, Bitmap bitmap,
+									ImageError error) {
+								IEvent<ImageEventArgs> evt;
+								if (handlers.containsKey(url)) {
+									ImageEventArgs args = new ImageEventArgs(
+											uri, bitmap, error == null ? null
+													: error.getCause());
+									evt = handlers.get(url);
+									evt.fireEvent(null, args);
+								}
+							}
+
+						}, true);
+				if (highPriority)
+					insertRequestAtFrontOfQueue(request);
+				else
+					enqueueRequest(request);
+			}
+		}
+		return bitmap;
+	}
+
+	@Override
+	public boolean isRemote(String uri) {
+		return uri.startsWith(PREFIX_HTTP) || uri.startsWith(PREFIX_HTTPS);
+	}
+
+	@Override
+	public String getFullUri(String uri, int width, int height) {
+		return width > 0 && height > 0 ? uri + "#" + width + "x" + height : uri;
+	}
+
+	@Override
+	public void bind(String fullUri, ImageView view) {
+		Logger.check(view != null, "Parameter view cannot be null !");
+		Bitmap bitmap = getBitmap(fullUri);
+		if (bitmap != null)
+			view.setImageBitmap(bitmap);
+		else {
+			loadBitmap(fullUri);
+			final WeakReference<ImageView> refView = new WeakReference<ImageView>(
+					view);
+			addImageEventHandler(fullUri, new IEventHandler<ImageEventArgs>() {
+
+				@Override
+				public void process(Object sender, ImageEventArgs args) {
+					if (refView.get() != null)
+						refView.get().setImageBitmap(args.getBitmap());
+				}
+
+			});
+		}
+	}
+
+	@Override
+	public void bind(String fullUri, AdapterView<?> view) {
+		Logger.check(view != null, "Parameter view cannot be null !");
+		bind(fullUri, (BaseAdapter) view.getAdapter());
+	}
+
+	@Override
+	public void bind(String fullUri, BaseAdapter adapter) {
+		Logger.check(adapter != null, "Parameter adapter cannot be null !");
+		loadBitmap(fullUri);
+		final WeakReference<BaseAdapter> refAdapter = new WeakReference<BaseAdapter>(
+				adapter);
+		addImageEventHandler(fullUri, new IEventHandler<ImageEventArgs>() {
+
+			@Override
+			public void process(Object sender, ImageEventArgs args) {
+				if (refAdapter.get() != null && !refAdapter.get().isEmpty())
+					refAdapter.get().notifyDataSetChanged();
+			}
+
+		});
 	}
 }

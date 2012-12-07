@@ -38,6 +38,8 @@ import com.momock.message.MessageBox;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
+import com.momock.service.CacheService;
+import com.momock.service.ICacheService;
 import com.momock.service.IImageService;
 import com.momock.service.IService;
 import com.momock.service.ImageService;
@@ -363,7 +365,8 @@ public abstract class App extends android.app.Application implements
 	public void onCreateEnvironment() {
 		Logger.debug("onCreateEnvironment");
 		onRegisterShortNames();
-		addService(IImageService.class, new ImageService(getContentResolver()));
+		addService(IImageService.class, new ImageService());
+		addService(ICacheService.class, new CacheService());
 		onAddServices();
 		onAddCases();
 		executeHandler = new Handler();

@@ -16,20 +16,56 @@
 package com.momock.service;
 
 import android.graphics.Bitmap;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-import com.momock.holder.ImageHolder;
+import com.momock.event.EventArgs;
+import com.momock.event.IEventHandler;
 
 public interface IImageService extends IService{
-
-	public static interface ImageSetter{
-		void setImage(Bitmap bitmap);
+	public static final String PREFIX_FILE = "file://";
+	public static final String PREFIX_RES = "res://";
+	public static final String PREFIX_RAW = "raw://";
+	public static final String PREFIX_ASSETS = "assets://";
+	public static final String PREFIX_HTTP = "http://";
+	public static final String PREFIX_HTTPS = "https://";
+	
+	public static class ImageEventArgs extends EventArgs {
+		String uri;
+		Bitmap bitmap;
+		Throwable error;
+		public String getUri() {
+			return uri;
+		}
+		public Bitmap getBitmap() {
+			return bitmap;
+		}
+		public Throwable getError() {
+			return error;
+		}
+		public ImageEventArgs(String uri, Bitmap bitmap, Throwable error){
+			this.uri = uri;
+			this.bitmap = bitmap;
+			this.error = error;
+		}
 	}
 	
-	void load(ImageHolder holder, ImageSetter setter);
+	void addImageEventHandler(String uri, IEventHandler<ImageEventArgs> handler);
 	
-	void load(BaseAdapter adapter, ImageView view, String url);
+	void removeImageEventHandler(String uri, IEventHandler<ImageEventArgs> handler);
 	
-	void load(ImageView view, String url);
+	String getFullUri(String uri, int width, int height);
+	
+	boolean isRemote(String uri);
+	
+	Bitmap loadBitmap(String fullUri);	
+
+	Bitmap loadBitmap(String fullUri, boolean highPriority);	
+	
+	void bind(String fullUri, ImageView view);
+	
+	void bind(String fullUri, AdapterView<?> view);
+	
+	void bind(String fullUri, BaseAdapter adapter);
 }

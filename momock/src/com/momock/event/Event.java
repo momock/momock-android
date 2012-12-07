@@ -49,7 +49,8 @@ public class Event<A extends IEventArgs> implements IEvent<A> {
 		}
 		else
 		{
-			((List<IEventHandler<A>>)handlers).add(handler);
+			if (!((List<IEventHandler<A>>)handlers).contains(handler))
+				((List<IEventHandler<A>>)handlers).add(handler);
 		}
 	}
 
