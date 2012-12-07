@@ -16,7 +16,7 @@
 package com.momock.service;
 
 import android.graphics.Bitmap;
-import android.widget.AdapterView;
+import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
@@ -65,7 +65,7 @@ public interface IImageService extends IService{
 	
 	void bind(String fullUri, ImageView view);
 	
-	void bind(String fullUri, AdapterView<?> view);
+	void bind(String fullUri, ViewGroup viewGroup);
 	
 	void bind(String fullUri, BaseAdapter adapter);
 }

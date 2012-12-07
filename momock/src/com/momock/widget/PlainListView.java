@@ -105,4 +105,9 @@ public class PlainListView extends LinearLayout implements IPlainAdapterView{
 		}
 	}
 
+	@Override
+	public Adapter getAdapter() {
+		return adapter;
+	}
+
 }

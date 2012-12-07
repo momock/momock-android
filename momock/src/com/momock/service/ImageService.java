@@ -25,6 +25,7 @@ import java.util.Map;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -41,6 +42,7 @@ import com.momock.holder.ImageHolder;
 import com.momock.util.Convert;
 import com.momock.util.ImageHelper;
 import com.momock.util.Logger;
+import com.momock.widget.IPlainAdapterView;
 
 public class ImageService extends ImageLoader implements IImageService {
 	static class ImageContentHandler extends ContentHandler {
@@ -200,9 +202,14 @@ public class ImageService extends ImageLoader implements IImageService {
 	}
 
 	@Override
-	public void bind(String fullUri, AdapterView<?> view) {
-		Logger.check(view != null, "Parameter view cannot be null !");
-		bind(fullUri, (BaseAdapter) view.getAdapter());
+	public void bind(String fullUri, ViewGroup viewGroup) {
+		Logger.check(viewGroup != null, "Parameter viewGroup cannot be null !");
+		if (viewGroup instanceof AdapterView)
+			bind(fullUri, (BaseAdapter)((AdapterView<?>)viewGroup).getAdapter());
+		else if (viewGroup instanceof IPlainAdapterView)
+			bind(fullUri, (BaseAdapter)((IPlainAdapterView)viewGroup).getAdapter());
+		else 
+			Logger.check(false, "ViewGroup must be a AdapterView or IPlainAdapterView!");
 	}
 
 	@Override

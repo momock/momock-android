@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Adapter;
 
 public interface IPlainAdapterView {
+	Adapter getAdapter();
 	void setAdapter(Adapter adapter);
 	void setOnItemClickListener(OnItemClickListener listener);
     public interface OnItemClickListener {

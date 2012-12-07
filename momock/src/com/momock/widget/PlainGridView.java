@@ -161,4 +161,9 @@ public class PlainGridView extends LinearLayout implements IPlainAdapterView {
 		this.rowHeight = rowHeight;
 	}
 
+	@Override
+	public Adapter getAdapter() {
+		return adapter;
+	}
+
 }
