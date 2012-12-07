@@ -304,7 +304,8 @@ public final class HtmlView extends TextView {
         }
     }
 
-    private void handleEmbed(Attributes attributes, Editable output) {
+    @SuppressWarnings("deprecation")
+	private void handleEmbed(Attributes attributes, Editable output) {
         String src = attributes.getValue("src");
         String type = attributes.getValue("type");
         boolean allowFullScreen = Boolean.parseBoolean(attributes.getValue("allowfullscreen"));
@@ -657,7 +658,8 @@ public final class HtmlView extends TextView {
             }
         }
 
-        private void replaceLayer(Bitmap result) {
+        @SuppressWarnings("deprecation")
+		private void replaceLayer(Bitmap result) {
             if (mLayers != null && result != null) {
                 BitmapDrawable drawable = new BitmapDrawable(result);
                 drawable.setBounds(mLayers.getBounds());
@@ -682,7 +684,6 @@ public final class HtmlView extends TextView {
 
         private String mHtml;
 
-        @SuppressWarnings("hiding")
         public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
             public SavedState createFromParcel(Parcel in) {
                 return new SavedState(in);

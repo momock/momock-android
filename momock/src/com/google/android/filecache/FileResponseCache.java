@@ -573,7 +573,7 @@ public abstract class FileResponseCache extends ResponseCache {
      */
     private static class Frame {
 
-        private static final int SDK = Integer.parseInt(Build.VERSION.SDK);
+        private static final int SDK = Build.VERSION.SDK_INT;
 
         private static final int GINGERBREAD = 9;
 

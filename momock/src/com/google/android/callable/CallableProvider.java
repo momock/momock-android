@@ -16,14 +16,15 @@
 
 package com.google.android.callable;
 
+import java.util.List;
+
+import android.annotation.SuppressLint;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
-import java.util.List;
 
 /**
  * Implements
@@ -54,9 +55,10 @@ public final class CallableProvider {
      * {@link CallableContentProvider} and use
      * {@link #query(CallableContentProvider, Uri)} to dispatch calls.
      */
-    public static Bundle call(ContentResolver resolver, Uri uri, String method, String arg,
+	@SuppressLint("NewApi")
+	public static Bundle call(ContentResolver resolver, Uri uri, String method, String arg,
             Bundle extras) {
-        if (Integer.parseInt(Build.VERSION.SDK) < 11) {
+        if (Build.VERSION.SDK_INT < 11) {
             Cursor cursor = resolver.query(uri(uri, method, arg), null, null, null, null);
             Bundle result = null;
             if (cursor != null) {

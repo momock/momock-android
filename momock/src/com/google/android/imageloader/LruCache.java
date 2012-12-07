@@ -23,7 +23,9 @@ import java.util.LinkedHashMap;
  */
 class LruCache<K, V> extends LinkedHashMap<K, V> {
 
-    private static final int INITIAL_CAPACITY = 32;
+	private static final long serialVersionUID = 7204753166236963214L;
+
+	private static final int INITIAL_CAPACITY = 32;
 
     // Hold information for at least a few pages full of thumbnails.
     private static final int MAX_CAPACITY = 256;

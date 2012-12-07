@@ -16,26 +16,6 @@
 
 package com.google.android.imageloader;
 
-import android.app.Activity;
-import android.app.Application;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.DataSetObserver;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Handler;
-import android.os.SystemClock;
-import android.text.TextUtils;
-import android.util.Log;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.BaseExpandableListAdapter;
-import android.widget.ImageView;
-
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
@@ -52,6 +32,24 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Executor;
+
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.text.TextUtils;
+import android.util.Log;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 
 /**
  * A helper class to load images asynchronously.

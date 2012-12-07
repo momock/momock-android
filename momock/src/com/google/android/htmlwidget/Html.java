@@ -189,7 +189,8 @@ class Html {
         }
     }
 
-    private static void withinDiv(StringBuilder out, Spanned text,
+    @SuppressWarnings("unused")
+	private static void withinDiv(StringBuilder out, Spanned text,
             int start, int end) {
         int next;
         for (int i = start; i < end; i = next) {
@@ -557,7 +558,6 @@ class HtmlToSpannedConverter implements ContentHandler {
         // XXX This code is copied from Integer.decode() so we don't
         // have to instantiate an Integer!
 
-        int value;
         int sign = 1;
         int index = 0;
         int len = nm.length();
@@ -614,7 +614,8 @@ class HtmlToSpannedConverter implements ContentHandler {
         text.append("\n");
     }
 
-    private static Object getLast(Spanned text, Class kind) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	private static Object getLast(Spanned text, Class kind) {
         /*
          * This knows that the last returned object from getSpans()
          * will be the most recently added.
@@ -633,7 +634,8 @@ class HtmlToSpannedConverter implements ContentHandler {
         text.setSpan(mark, len, len, Spannable.SPAN_MARK_MARK);
     }
 
-    private static void end(SpannableStringBuilder text, Class kind,
+    @SuppressWarnings("rawtypes")
+	private static void end(SpannableStringBuilder text, Class kind,
                             Object repl) {
         int len = text.length();
         Object obj = getLast(text, kind);

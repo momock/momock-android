@@ -16,6 +16,7 @@
 
 package com.google.android.filecache;
 
+import android.annotation.SuppressLint;
 import android.text.format.DateUtils;
 
 import java.io.BufferedInputStream;
@@ -39,7 +40,8 @@ class FileCacheResponse extends CacheResponse {
 
     private static final int BUFFER_SIZE = 8 * 1024;
 
-    private static Map<String, List<String>> readHeaders(DataInput din) throws IOException {
+    @SuppressLint("DefaultLocale")
+	private static Map<String, List<String>> readHeaders(DataInput din) throws IOException {
         int keyCount = din.readInt();
         Map<String, List<String>> headers = new HashMap<String, List<String>>(keyCount);
         for (int i = 0; i < keyCount; i++) {
@@ -80,7 +82,6 @@ class FileCacheResponse extends CacheResponse {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Map<String, List<String>> getHeaders() throws IOException {
         if (mHeaders == null) {
             if (mInputStream != null) {

@@ -26,7 +26,9 @@ import android.graphics.Bitmap;
  */
 class BitmapCache<K> extends LinkedHashMap<K, Bitmap> {
 
-    // Assume a 32-bit image
+	private static final long serialVersionUID = 6908189537449302771L;
+
+	// Assume a 32-bit image
     private static final long BYTES_PER_PIXEL = 4;
 
     private static final int INITIAL_CAPACITY = 32;
