@@ -67,14 +67,26 @@ public class DataNodeView extends DataViewBase<IDataNode> {
 		if (segments != null && segments.length <= level)
 			return;
 		String name = segments[level];
+		if (current.hasProperty(name)) {
+			Object obj = current.getProperty(name);
+			if (obj instanceof IDataNode) {
+				IDataNode ni = (IDataNode) obj;
+				if (segments.length - 1 == level)
+					add(ni);
+				else
+					visit(ni, segments, level + 1);
+				return;
+			}
+		}
 		for (int i = 0; i < current.getItemCount(); i++) {
 			Object obj = current.getItem(i);
 			if (obj instanceof IDataNode) {
 				IDataNode ni = (IDataNode) obj;
-				if (segments.length - 1 == level) {
-					add(ni);
-				} else if (name.equals(ni.getName())) {
-					visit(ni, segments, level + 1);
+				if ("*".equals(name) || name.equals(ni.getName())) {
+					if (segments.length - 1 == level)
+						add(ni);
+					else
+						visit(ni, segments, level + 1);
 				}
 			}
 		}
@@ -96,12 +108,12 @@ public class DataNodeView extends DataViewBase<IDataNode> {
 					return order.compare(lhs, rhs);
 				}
 			});
-			if (limit > 0){
+			if (limit > 0) {
 				store.removeAllItems();
-				for (int i = 0; i < limit; i++) {	
+				for (int i = 0; i < limit; i++) {
 					if (offset + i < count)
 						store.addItem(nodes[offset + i]);
-					else 
+					else
 						break;
 				}
 			} else {

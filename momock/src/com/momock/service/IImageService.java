@@ -26,7 +26,6 @@ import com.momock.event.IEventHandler;
 public interface IImageService extends IService{
 	public static final String PREFIX_FILE = "file://";
 	public static final String PREFIX_RES = "res://";
-	public static final String PREFIX_RAW = "raw://";
 	public static final String PREFIX_ASSETS = "assets://";
 	public static final String PREFIX_HTTP = "http://";
 	public static final String PREFIX_HTTPS = "https://";

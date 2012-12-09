@@ -16,18 +16,48 @@
 package com.momock.util;
 
 import com.momock.data.DataList;
-import com.momock.data.DataMap;
-import com.momock.data.IDataMutableList;
-import com.momock.data.IDataNode;
-import com.momock.data.IDataView;
+import com.momock.data.IDataList;
+import com.momock.data.IDataMap;
+import com.momock.data.IDataMutableMap;
 
 public class DataHelper {
-	public static <T extends DataMap<String, Object>> IDataMutableList<T> fromDataNodes(IDataView<IDataNode> nodes, Class<T> cls){
+
+	@SuppressWarnings("unchecked")
+	public static <T, I extends IDataMap<String, Object>> DataList<T> getBeanList(IDataList<I> nodes, Class<T> beanClass){
 		DataList<T> dl = new DataList<T>();
 		for(int i = 0; i < nodes.getItemCount(); i++){
 			try {
-				T obj = cls.newInstance();
-				obj.copyPropertiesFrom(nodes.getItem(i));
+				T obj = beanClass.newInstance();
+				if (obj instanceof IDataMutableMap){
+					IDataMutableMap<String, Object> target = (IDataMutableMap<String, Object>)obj;
+					target.copyPropertiesFrom(nodes.getItem(i));
+				} else {
+					BeanHelper.copyPropertiesFromDataMap(obj, nodes.getItem(i));					
+				}					
+				dl.addItem(obj);
+			} catch (Exception e) {
+				Logger.error(e.getMessage());
+			}
+		}
+		return dl;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T, I extends IDataList<?>> DataList<T> getBeanList(IDataList<I> nodes, Class<T> beanClass, String ... props){
+		DataList<T> dl = new DataList<T>();
+		for(int i = 0; i < nodes.getItemCount(); i++){
+			try {
+				T obj = beanClass.newInstance();
+				if (obj instanceof IDataMutableMap){
+					IDataMutableMap<String, Object> target = (IDataMutableMap<String, Object>)obj;
+					for(int j = 0; j < props.length; j++){
+						target.setProperty(props[j], nodes.getItem(i).getItem(j));
+					}		
+				} else {
+					for(int j = 0; j < props.length; j++){
+						BeanHelper.setProperty(obj, props[j], nodes.getItem(i).getItem(j));
+					}								
+				}					
 				dl.addItem(obj);
 			} catch (Exception e) {
 				Logger.error(e.getMessage());

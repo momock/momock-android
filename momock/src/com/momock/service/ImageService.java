@@ -121,10 +121,6 @@ public class ImageService extends ImageLoader implements IImageService {
 			bitmap = ImageHelper.fromStream(ImageHolder.class
 					.getResourceAsStream(uri.substring(PREFIX_RES.length())),
 					expectedWidth, expectedHeight);
-		} else if (uri.startsWith(PREFIX_RAW)) {
-			bitmap = ImageHelper.fromStream(ImageHolder.class
-					.getResourceAsStream(uri.substring(PREFIX_RES.length())),
-					expectedWidth, expectedHeight);
 		} else if (uri.startsWith(PREFIX_ASSETS)) {
 			try {
 				bitmap = ImageHelper.fromStream(App.get().getResources()

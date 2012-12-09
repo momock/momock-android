@@ -21,6 +21,8 @@ import java.util.Map;
 
 import org.xmlpull.v1.XmlPullParser;
 
+import com.momock.data.IDataMap;
+
 public class BeanHelper {
 	static HashMap<Class<?>, HashMap<String, Method>> setPropsCache = new HashMap<Class<?>, HashMap<String, Method>>();
 	static HashMap<Class<?>, HashMap<String, Method>> getPropsCache = new HashMap<Class<?>, HashMap<String, Method>>();
@@ -124,6 +126,32 @@ public class BeanHelper {
 			Class<?> type = m.getParameterTypes()[0];
 			m.setAccessible(true);
 			Object val = propsToCopy.get(key);
+			if (val != null) {
+				if (Integer.class == type || int.class == type) {
+					val = Convert.toInteger(val);
+				} else if (Long.class == type || long.class == type) {
+					val = Convert.toLong(val);
+				} else if (Double.class == type || double.class == type) {
+					val = Convert.toDouble(val);
+				} else if (String.class == type) {
+					val = Convert.toString(val);
+				}
+				try {
+					m.invoke(obj, val);
+				} catch (Exception ex) {
+					Logger.debug(ex.getMessage());
+				}
+			}
+		}
+	}
+	public static void copyPropertiesFromDataMap(Object obj, IDataMap<String, Object> propsToCopy) {
+		Map<String, Method> props = getSetPropertyMethods(obj.getClass());
+		for (String key : propsToCopy.getPropertyNames()) {
+			String propName = NamingHelper.toPascalCase(key);
+			Method m = (Method)props.get(propName);			
+			Class<?> type = m.getParameterTypes()[0];
+			m.setAccessible(true);
+			Object val = propsToCopy.getProperty(key);
 			if (val != null) {
 				if (Integer.class == type || int.class == type) {
 					val = Convert.toInteger(val);
