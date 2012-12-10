@@ -25,6 +25,7 @@ import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 import com.momock.event.ItemEventArgs;
 import com.momock.holder.ViewHolder;
+import com.momock.util.Logger;
 import com.momock.widget.IPlainAdapterView;
 
 public class PlainAdapterViewBinder<T extends IPlainAdapterView> {
@@ -47,6 +48,11 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> {
 		this.binder = binder;
 	}
 
+	BaseAdapter adapter = null;
+	public BaseAdapter getAdapter(){
+		return adapter;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void bind(ViewHolder view, IDataList<?> list) {
 		bind((T) view.getView(), list);
@@ -63,7 +69,7 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> {
 					itemClickedEvent.fireEvent(v, args);
 				}
 			});
-			final BaseAdapter adapter = new BaseAdapter() {
+			adapter = new BaseAdapter() {
 
 				@Override
 				public int getCount() {
@@ -85,6 +91,18 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> {
 						ViewGroup parent) {
 					return binder.onCreateItemView(convertView, position,
 							getItem(position), parent);
+				}
+
+				@Override
+				public void notifyDataSetChanged() {
+					super.notifyDataSetChanged();
+					Logger.debug("PlainAdapterViewBinder.BaseAdapter.notifyDataSetChanged");
+				}
+
+				@Override
+				public void notifyDataSetInvalidated() {
+					super.notifyDataSetInvalidated();
+					Logger.debug("PlainAdapterViewBinder.BaseAdapter.notifyDataSetChanged");
 				}
 
 			};			

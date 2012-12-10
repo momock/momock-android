@@ -74,5 +74,21 @@ public class Event<A extends IEventArgs> implements IEvent<A> {
 				handlers = hs.get(0);						
 		}	
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean hasEventHandler(IEventHandler<A> handler) {
+		if (handlers == null)
+			return false;
+		else if (handlers instanceof IEventHandler<?>)
+		{
+			return handlers == handler;
+		}
+		else
+		{
+			List<IEventHandler<A>> hs = (List<IEventHandler<A>>)handlers;
+			return hs.contains(handler);
+		}	
+	}
 	
 }

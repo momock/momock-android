@@ -20,7 +20,10 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.ContentHandler;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import android.graphics.Bitmap;
@@ -48,16 +51,20 @@ public class ImageService extends ImageLoader implements IImageService {
 	static class ImageContentHandler extends ContentHandler {
 		@Override
 		public Bitmap getContent(URLConnection connection) throws IOException {
-			InputStream input = connection.getInputStream();
+			InputStream input = null;
 			try {
-				input = new BlockingFilterInputStream(input);
+				input = new BlockingFilterInputStream(connection.getInputStream());
 				Bitmap bitmap = BitmapFactory.decodeStream(input);
 				if (bitmap == null) {
 					throw new IOException("Image could not be decoded");
 				}
 				return bitmap;
+			} catch(IOException e){
+				Logger.error(e.getMessage());
+				throw e;
 			} finally {
-				input.close();
+				if (input != null)
+					input.close();
 			}
 		}
 	}
@@ -68,17 +75,17 @@ public class ImageService extends ImageLoader implements IImageService {
 				FileResponseCache.sink(), DEFAULT_CACHE_SIZE, null);
 	}
 
-	Map<String, IEvent<ImageEventArgs>> handlers = new HashMap<String, IEvent<ImageEventArgs>>();
+	Map<String, IEvent<ImageEventArgs>> allImageHandlers = new HashMap<String, IEvent<ImageEventArgs>>();
 
 	@Override
 	public void addImageEventHandler(String url,
 			IEventHandler<ImageEventArgs> handler) {
 		IEvent<ImageEventArgs> evt;
-		if (handlers.containsKey(url)) {
-			evt = handlers.get(url);
+		if (allImageHandlers.containsKey(url)) {
+			evt = allImageHandlers.get(url);
 		} else {
 			evt = new Event<ImageEventArgs>();
-			handlers.put(url, evt);
+			allImageHandlers.put(url, evt);
 		}
 		evt.addEventHandler(handler);
 	}
@@ -87,8 +94,8 @@ public class ImageService extends ImageLoader implements IImageService {
 	public void removeImageEventHandler(String url,
 			IEventHandler<ImageEventArgs> handler) {
 		IEvent<ImageEventArgs> evt;
-		if (handlers.containsKey(url)) {
-			evt = handlers.get(url);
+		if (allImageHandlers.containsKey(url)) {
+			evt = allImageHandlers.get(url);
 			evt.removeEventHandler(handler);
 		}
 	}
@@ -134,6 +141,16 @@ public class ImageService extends ImageLoader implements IImageService {
 			bitmap = getBitmap(uri);
 			ImageError error = getError(uri);
 			if (bitmap == null && error == null) {
+
+		        Iterator<?> it = mRequests.iterator();
+		        while (it.hasNext()) {
+		        	ImageRequest r = (ImageRequest)it.next();
+		            if (r.getUrl().equals(uri)) {
+		                it.remove();
+		                Logger.debug("Found ImageRequest of " + uri + " in the queue, remove it.");
+		            }
+		        }
+		        
 				ImageRequest request = new ImageRequest(uri,
 						new ImageCallback() {
 
@@ -146,11 +163,11 @@ public class ImageService extends ImageLoader implements IImageService {
 							public void send(String url, Bitmap bitmap,
 									ImageError error) {
 								IEvent<ImageEventArgs> evt;
-								if (handlers.containsKey(url)) {
+								if (allImageHandlers.containsKey(url)) {
 									ImageEventArgs args = new ImageEventArgs(
 											uri, bitmap, error == null ? null
 													: error.getCause());
-									evt = handlers.get(url);
+									evt = allImageHandlers.get(url);
 									evt.fireEvent(null, args);
 								}
 							}
@@ -207,21 +224,43 @@ public class ImageService extends ImageLoader implements IImageService {
 		else 
 			Logger.check(false, "ViewGroup must be a AdapterView or IPlainAdapterView!");
 	}
+	class AdapterRefreshHandler implements IEventHandler<ImageEventArgs>{
+		WeakReference<BaseAdapter> refAdapter; 
+		public AdapterRefreshHandler(BaseAdapter adapter){
+			refAdapter = new WeakReference<BaseAdapter>(adapter);
+		}
+		public BaseAdapter getAdapter(){
+			return refAdapter.get();
+		}
+		@Override
+		public void process(Object sender, ImageEventArgs args) {
+			if (refAdapter.get() != null && !refAdapter.get().isEmpty())
+				refAdapter.get().notifyDataSetChanged();
+		}
 
+	}
+	List<AdapterRefreshHandler> adapterHandlers = new ArrayList<AdapterRefreshHandler>();
 	@Override
 	public void bind(String fullUri, BaseAdapter adapter) {
 		Logger.check(adapter != null, "Parameter adapter cannot be null !");
-		loadBitmap(fullUri);
-		final WeakReference<BaseAdapter> refAdapter = new WeakReference<BaseAdapter>(
-				adapter);
-		addImageEventHandler(fullUri, new IEventHandler<ImageEventArgs>() {
-
-			@Override
-			public void process(Object sender, ImageEventArgs args) {
-				if (refAdapter.get() != null && !refAdapter.get().isEmpty())
-					refAdapter.get().notifyDataSetChanged();
+		Bitmap bitmap = loadBitmap(fullUri);
+		if (bitmap == null){
+			AdapterRefreshHandler handler = null;
+			Iterator<AdapterRefreshHandler> it = adapterHandlers.iterator();
+			while(it.hasNext()){
+				AdapterRefreshHandler h = it.next();
+				if (h.getAdapter() == null) 
+					it.remove();
+				else if (h.getAdapter() == adapter){
+					handler = h;
+					break;
+				}				
 			}
-
-		});
+			if (handler == null){
+				handler = new AdapterRefreshHandler(adapter);
+				adapterHandlers.add(handler);
+			}
+			addImageEventHandler(fullUri, handler);
+		}
 	}
 }

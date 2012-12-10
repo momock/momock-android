@@ -16,6 +16,7 @@
 package com.momock.holder;
 
 import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,13 +61,13 @@ public class ImageHolder{
 	}
 	BitmapDrawable drawable = null;
 	public BitmapDrawable getAsDrawable() {
-		if (drawable == null)
+		if (drawable == null && getAsBitmap() != null)
 			drawable = new BitmapDrawable(App.get().getResources(), getAsBitmap());
 		return drawable;
 	}
 	Bitmap bitmap = null;
 	public Bitmap getAsBitmap() {
-		if (bitmap == null)
+		if (bitmap == null && getAsDrawable() != null)
 		{
 			Drawable drawable = getAsDrawable();
 			if (drawable instanceof BitmapDrawable) {
@@ -119,30 +120,29 @@ public class ImageHolder{
 			else
 				imageCache.remove(fullUri);
 		}
-		ImageHolder holder = new ImageHolder() {		
-			@Override
-			protected void onCreate(){
-				final ImageHolder self = this;
-				bitmap = is.loadBitmap(is.getFullUri(uri, expectedWidth, expectedHeight), highPriority);
-				if (bitmap == null && is.isRemote(uri)){
-					is.addImageEventHandler(fullUri, new IEventHandler<ImageEventArgs>(){
-
-						@Override
-						public void process(Object sender, ImageEventArgs args) {
-							bitmap = args.getBitmap();
-							getImageLoadedEvent().fireEvent(self, new EventArgs());
-						}
-						
-					});
-				}
-			}
+		ImageHolder holder = new ImageHolder() {	
+			WeakReference<Bitmap> refBitmap = null;
 			@Override
 			public String getUri() {
 				return uri;
 			}
 			@Override
 			public Bitmap getAsBitmap() {
-				return bitmap;
+				if (refBitmap == null || refBitmap.get() == null){
+					final ImageHolder self = this;	
+					refBitmap = new WeakReference<Bitmap>(is.loadBitmap(fullUri, highPriority));
+					if (refBitmap.get() == null && is.isRemote(fullUri)){
+						IEventHandler<ImageEventArgs> handler = new IEventHandler<ImageEventArgs>(){
+							@Override
+							public void process(Object sender, ImageEventArgs args) {
+								refBitmap = new WeakReference<Bitmap>(args.getBitmap());
+								getImageLoadedEvent().fireEvent(self, new EventArgs());
+							}							
+						};
+						is.addImageEventHandler(fullUri, handler);
+					}
+				}
+				return refBitmap.get();
 			}
 		};		
 		imageCache.put(fullUri, new SoftReference<ImageHolder>(holder));

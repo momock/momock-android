@@ -56,7 +56,10 @@ public class AdapterViewBinder<T extends AdapterView<?>> {
 	public void bind(ViewHolder view, IDataList<?> list) {
 		bind((T) view.getView(), list);
 	}
-
+	BaseAdapter adapter = null;
+	public BaseAdapter getAdapter(){
+		return adapter;
+	}
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void bind(T view, final IDataList<?> list) {
 		if (view != null) {
@@ -84,7 +87,7 @@ public class AdapterViewBinder<T extends AdapterView<?>> {
 					Logger.debug("onNothingSelected");
 				}
 			});
-			final BaseAdapter adapter = new BaseAdapter() {
+			adapter = new BaseAdapter() {
 
 				@Override
 				public int getCount() {
@@ -106,6 +109,18 @@ public class AdapterViewBinder<T extends AdapterView<?>> {
 						ViewGroup parent) {
 					return binder.onCreateItemView(convertView, position,
 							getItem(position), parent);
+				}
+
+				@Override
+				public void notifyDataSetChanged() {
+					super.notifyDataSetChanged();
+					Logger.debug("AdapterViewBinder.BaseAdapter.notifyDataSetChanged");
+				}
+
+				@Override
+				public void notifyDataSetInvalidated() {
+					super.notifyDataSetInvalidated();
+					Logger.debug("AdapterViewBinder.BaseAdapter.notifyDataSetInvalidated");
 				}
 
 			};

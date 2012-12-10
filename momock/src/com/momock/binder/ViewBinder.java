@@ -73,6 +73,7 @@ public class ViewBinder {
 										.getAsBitmap());
 								return true;
 							} else {
+								((ImageView) view).setImageBitmap(null);
 								if (parent instanceof AdapterView)
 
 									App.get().getImageService()

@@ -45,18 +45,19 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
+
+import com.momock.util.Logger;
 
 /**
  * A helper class to load images asynchronously.
  */
 public class ImageLoader {
 
-    protected static final String TAG = "ImageLoader";
+    //protected static final String TAG = "ImageLoader";
 
     /**
      * The default maximum number of active tasks.
@@ -684,6 +685,9 @@ public class ImageLoader {
 
         protected ImageError mError;
 
+        public String getUrl(){
+        	return mUrl;
+        }
         public ImageRequest(String url, ImageCallback callback, boolean loadBitmap) {
             mUrl = url;
             mCallback = callback;
@@ -739,6 +743,7 @@ public class ImageLoader {
                         return false;
                     }
                 }
+                Logger.debug("Start download image " + mUrl);
                 // Check if the last attempt to load the URL had an error
                 mError = getError(mUrl);
                 if (mError != null) {
@@ -769,6 +774,7 @@ public class ImageLoader {
                     if (mBitmap == null) {
                         throw new NullPointerException("ContentHandler returned null");
                     }
+                    Logger.debug("Finish download image " + mUrl);
                     return true;
                 } else {
                     if (mPrefetchContentHandler != null) {
@@ -795,7 +801,7 @@ public class ImageLoader {
             if (mBitmap != null) {
                 putBitmap(mUrl, mBitmap);
             } else if (mError != null && !hasError(mUrl)) {
-                Log.e(TAG, "Failed to load " + mUrl, mError.getCause());
+                Logger.error("Failed to load " + mUrl + "(" + mError.getCause().getMessage() + ")");
                 putError(mUrl, mError);
             }
             if (mCallback != null) {
