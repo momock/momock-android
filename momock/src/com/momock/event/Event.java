@@ -45,6 +45,7 @@ public class Event<A extends IEventArgs> implements IEvent<A> {
 		{
 			List<IEventHandler<A>> hs = new ArrayList<IEventHandler<A>>();
 			hs.add((IEventHandler<A>)handlers);
+			hs.add(handler);
 			handlers = hs;
 		}
 		else

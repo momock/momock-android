@@ -77,10 +77,10 @@ public class ViewBinder {
 								if (parent instanceof AdapterView)
 
 									App.get().getImageService()
-											.bind(uri, (AdapterView) parent);
+											.bind(uri, (AdapterView) parent, false);
 								else
 									App.get().getImageService()
-											.bind(uri, (ImageView) view);
+											.bind(uri, (ImageView) view, false);
 							}
 						} else {
 							((ImageView) view)

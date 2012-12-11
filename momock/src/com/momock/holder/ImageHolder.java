@@ -102,10 +102,10 @@ public class ImageHolder{
 		};
 	}
 	public static ImageHolder get(final String uri){
-		return get(uri, -1, -1, true);
+		return get(uri, -1, -1, false);
 	}
 	public static ImageHolder get(final String uri, final int expectedWidth, final int expectedHeight){
-		return get(uri, expectedWidth, expectedHeight, true);
+		return get(uri, expectedWidth, expectedHeight, false);
 	}
 	public static ImageHolder get(final String uri, boolean highPriority){
 		return get(uri, -1, -1, highPriority);
