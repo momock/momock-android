@@ -370,11 +370,17 @@ public abstract class App extends android.app.Application implements
 		onAddServices();
 		onAddCases();
 		executeHandler = new Handler();
+		for(Map.Entry<Class<?>, IService> e : services.entrySet()){
+			e.getValue().start();
+		}
 	}
 
 	@Override
 	public void onDestroyEnvironment() {
 		Logger.debug("onDestroyEnvironment");
+		for(Map.Entry<Class<?>, IService> e : services.entrySet()){
+			e.getValue().stop();
+		}
 		activeCase = null;
 		cachedLayoutInflater.clear();
 		cases.clear();

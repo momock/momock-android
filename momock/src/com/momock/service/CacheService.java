@@ -72,5 +72,11 @@ public class CacheService implements ICacheService{
 	public File getCacheOf(String uri) {
 		return new File(cacheDir, getFilenameOf(uri));
 	}
+	@Override
+	public void start() {
+	}
+	@Override
+	public void stop() {		
+	}
 
 }

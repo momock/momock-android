@@ -48,6 +48,7 @@ public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> imple
 						int index = tabHost.getCurrentTab();
 						int id = target.getTabContentId();
 						ITabPlug plug = plugs.getItem(index);
+						setActivePlug(plug);
 						FragmentManager fm = getAttachedObject().getFragmentManager();
 						FragmentTransaction ft = fm.beginTransaction();
 

@@ -101,6 +101,8 @@ public class PagerTabOutlet extends Outlet<ITabPlug, TabHolder> implements ITabO
 			@Override
 			public void onTabChanged(String tabId) {
 				int index = tabHost.getCurrentTab();
+				ITabPlug plug = plugs.getItem(index);
+				setActivePlug(plug);
 				tabContent.setCurrentItem(index, true);
 			}
 		});

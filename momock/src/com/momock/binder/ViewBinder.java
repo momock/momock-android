@@ -76,16 +76,23 @@ public class ViewBinder {
 								((ImageView) view).setImageBitmap(null);
 								if (parent instanceof AdapterView)
 
-									App.get().getImageService()
-											.bind(uri, (AdapterView) parent, false);
+									App.get()
+											.getImageService()
+											.bind(uri, (AdapterView) parent,
+													false);
 								else
 									App.get().getImageService()
 											.bind(uri, (ImageView) view, false);
 							}
 						} else {
-							((ImageView) view)
-									.setImageBitmap(val instanceof ImageHolder ? ((ImageHolder) val)
-											.getAsBitmap() : (Bitmap) val);
+							if (val instanceof Drawable) {
+								((ImageView) view)
+										.setImageDrawable((Drawable) val);
+							} else {
+								((ImageView) view)
+										.setImageBitmap(val instanceof ImageHolder ? ((ImageHolder) val)
+												.getAsBitmap() : (Bitmap) val);
+							}
 						}
 						return true;
 					} else if ("ImageDrawable".equals(viewProp)) {

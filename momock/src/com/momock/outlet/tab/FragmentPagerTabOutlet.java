@@ -136,6 +136,8 @@ public class FragmentPagerTabOutlet extends Outlet<ITabPlug, FragmentTabHolder>
 			@Override
 			public void onTabChanged(String tabId) {
 				int index = tabHost.getCurrentTab();
+				ITabPlug plug = plugs.getItem(index);
+				setActivePlug(plug);
 				tabContent.setCurrentItem(index, true);
 			}
 		});

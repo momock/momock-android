@@ -48,6 +48,7 @@ import com.momock.util.Logger;
 import com.momock.widget.IPlainAdapterView;
 
 public class ImageService extends ImageLoader implements IImageService {
+	boolean stopped = false;
 	static class ImageContentHandler extends ContentHandler {
 		@Override
 		public Bitmap getContent(URLConnection connection) throws IOException {
@@ -160,7 +161,7 @@ public class ImageService extends ImageLoader implements IImageService {
 
 							@Override
 							public boolean unwanted() {
-								if (getBitmap(uri) != null){
+								if (stopped || getBitmap(uri) != null){
 									//Logger.debug("Image " + uri + " has been loaded." );
 									return true;
 								}
@@ -170,12 +171,11 @@ public class ImageService extends ImageLoader implements IImageService {
 							@Override
 							public void send(String url, Bitmap bitmap,
 									ImageError error) {
-								IEvent<ImageEventArgs> evt;
-								if (allImageHandlers.containsKey(url)) {
+								if (!stopped && allImageHandlers.containsKey(url)) {
 									ImageEventArgs args = new ImageEventArgs(
 											uri, bitmap, error == null ? null
 													: error.getCause());
-									evt = allImageHandlers.get(url);
+									IEvent<ImageEventArgs> evt = allImageHandlers.get(url);
 									evt.fireEvent(null, args);
 								}
 							}
@@ -307,5 +307,15 @@ public class ImageService extends ImageLoader implements IImageService {
 			}
 			addImageEventHandler(fullUri, handler);
 		}
+	}
+
+	@Override
+	public void start() {		
+	}
+
+	@Override
+	public void stop() {
+		stopped = true;
+		mRequests.clear();
 	}
 }

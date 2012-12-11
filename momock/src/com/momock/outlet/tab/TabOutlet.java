@@ -53,6 +53,15 @@ public class TabOutlet extends Outlet<ITabPlug, TabHolder> implements ITabOutlet
 	        if (getActivePlug() == plug)
 	        	tabHost.setCurrentTab(i);
 		}
+		tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+
+			@Override
+			public void onTabChanged(String tabId) {
+				int index = tabHost.getCurrentTab();
+				ITabPlug plug = plugs.getItem(index);
+				setActivePlug(plug);
+			}
+		});
 	}
 	@Override
 	public void onActivate(ITabPlug plug) {

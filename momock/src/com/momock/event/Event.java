@@ -16,6 +16,7 @@
 package com.momock.event;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Event<A extends IEventArgs> implements IEvent<A> {
@@ -29,8 +30,10 @@ public class Event<A extends IEventArgs> implements IEvent<A> {
 		if (handlers instanceof IEventHandler<?>) {
 			((IEventHandler<A>)handlers).process(sender, args);
 		} else {
-			for(IEventHandler<A> handler : (List<IEventHandler<A>>)handlers)
+			Iterator<IEventHandler<A>> it = ((List<IEventHandler<A>>)handlers).iterator();
+			while(it.hasNext())
 			{
+				IEventHandler<A> handler = it.next();
 				handler.process(sender, args);
 			}			
 		}
