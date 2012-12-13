@@ -39,7 +39,9 @@ import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
 import com.momock.service.CacheService;
+import com.momock.service.Downloader;
 import com.momock.service.ICacheService;
+import com.momock.service.IDownloader;
 import com.momock.service.IImageService;
 import com.momock.service.IService;
 import com.momock.service.ImageService;
@@ -365,8 +367,9 @@ public abstract class App extends android.app.Application implements
 	public void onCreateEnvironment() {
 		Logger.debug("onCreateEnvironment");
 		onRegisterShortNames();
-		addService(IImageService.class, new ImageService());
 		addService(ICacheService.class, new CacheService());
+		addService(IDownloader.class, new Downloader());
+		addService(IImageService.class, new ImageService());
 		onAddServices();
 		onAddCases();
 		executeHandler = new Handler();

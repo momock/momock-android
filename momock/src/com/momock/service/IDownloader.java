@@ -15,9 +15,10 @@
  ******************************************************************************/
 package com.momock.service;
 
-import java.io.File;
 
-public interface ICacheService extends IService{
-	File getCacheDir(String category);
-	File getCacheOf(String category, String uri);
+public interface IDownloader extends IService{
+	HttpSession getSession(String url);
+	void removeSession(String url);
+	HttpSession addSession(String url, HttpSession.Callback callback);
+	HttpSession addSession(String url, HttpSession.Callback callback, boolean highPriority);
 }

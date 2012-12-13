@@ -13,11 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.service;
+package com.momock.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
-public interface ICacheService extends IService{
-	File getCacheDir(String category);
-	File getCacheOf(String category, String uri);
+public class FileHelper {
+	public static void copyFile(File source, File target) throws IOException{
+		FileInputStream fis = new FileInputStream(source);
+		FileOutputStream fos = new FileOutputStream(target);
+		byte[] bs = new byte[10240];
+		int len;
+		while((len = fis.read(bs)) > 0){
+			fos.write(bs, 0, len);
+		}
+		fis.close();
+		fos.close();
+	}
 }

@@ -91,4 +91,14 @@ public class XmlDataService implements IDataService{
 	public IDataList<Product> getAllProducts() {
 		return products;
 	}
+
+	@Override
+	public void start() {
+		
+	}
+
+	@Override
+	public void stop() {
+		
+	}
 }
