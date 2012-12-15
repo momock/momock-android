@@ -28,9 +28,12 @@ import com.momock.event.Event;
 import com.momock.event.EventArgs;
 import com.momock.service.ICacheService;
 import com.momock.util.Convert;
+import com.momock.util.FileHelper;
 import com.momock.util.Logger;
 
-public class HttpSession {
+public class HttpSession implements Comparable<HttpSession>{
+	public static final int DEFAULT_PRIORITY = 10;
+			
 	public static final int STATE_CREATED = 0;
 	public static final int STATE_STARTED = 1;
 	public static final int STATE_HEADER_RECEIVED = 2;
@@ -41,13 +44,19 @@ public class HttpSession {
 
 	public static class StateChangedEventArgs extends EventArgs {
 		int state;
+		HttpSession session;
 
-		public StateChangedEventArgs(int state) {
+		public StateChangedEventArgs(int state, HttpSession session) {
 			this.state = state;
+			this.session = session;
 		}
 
 		public int getState() {
 			return state;
+		}
+
+		public HttpSession getSession() {
+			return session;
 		}
 	}
 
@@ -59,6 +68,7 @@ public class HttpSession {
 	File file = null;
 	File fileData = null;
 	File fileInfo = null;
+	int priority = DEFAULT_PRIORITY;
 	int state = STATE_CREATED;
 	HttpRequestBase request = null;
 	Event<StateChangedEventArgs> stateChangedEvent = new Event<StateChangedEventArgs>();
@@ -78,11 +88,6 @@ public class HttpSession {
 			this.file = cacheService.getCacheOf(this.getClass().getName(), url);
 		this.fileData = new File(file.getPath() + ".data");
 		this.fileInfo = new File(file.getPath() + ".info");
-		if (fileData.exists() && fileInfo.exists()) {
-			downloadedLength = fileData.length();
-			readHeaders();
-			resetFromHeaders();
-		}
 	}
 
 	Map<String, List<String>> headers = new TreeMap<String, List<String>>();
@@ -195,7 +200,7 @@ public class HttpSession {
 		App.get().execute(new Runnable() {
 			@Override
 			public void run() {
-				StateChangedEventArgs args = new StateChangedEventArgs(state);
+				StateChangedEventArgs args = new StateChangedEventArgs(state, HttpSession.this);
 				stateChangedEvent.fireEvent(HttpSession.this, args);
 			}
 		});
@@ -225,10 +230,17 @@ public class HttpSession {
 		request = new HttpGet(url);
 		request.setHeader("Accept", "application/json");
 		request.setHeader("Accept-Encoding", "gzip");
-		if (file.exists()) {
-			request.setHeader("Range", "bytes=" + file.length() + "-");
+		if (fileData.exists()) {
+			request.setHeader("Range", "bytes=" + fileData.length() + "-");
 		}
 		error = null;
+		downloadedLength = 0;
+		contentLength = -1;
+		if (fileData.exists() && fileInfo.exists()) {
+			downloadedLength = fileData.length();
+			readHeaders();
+			resetFromHeaders();
+		}		
 		setState(STATE_STARTED);
 		try {
 			httpClient.execute(request, new ResponseHandler<Object>() {
@@ -272,7 +284,7 @@ public class HttpSession {
 							int percent = -1;
 							while ((count = input.read(data)) != -1) {
 								downloadedLength += count;
-								if (downloadedLength * 100 / contentLength != percent) {
+								if (contentLength > 0 && downloadedLength * 100 / contentLength != percent) {
 									percent = (int) (downloadedLength * 100 / contentLength);
 									setState(STATE_CONTENT_RECEIVING);
 								}
@@ -282,7 +294,18 @@ public class HttpSession {
 							output.flush();
 							output.close();
 							instream.close();
-							setState(STATE_CONTENT_RECEIVED);
+							if (contentLength == -1)
+								contentLength = downloadedLength;
+							if (isDownloaded()){
+								if (file.exists())
+									file.delete();
+								FileHelper.copyFile(fileData, file);
+								fileData.delete();
+								fileInfo.delete();
+								setState(STATE_CONTENT_RECEIVED);
+							} else {
+								throw new RuntimeException("Why ?");
+							}
 						} catch (Exception e) {
 							error = e;
 							Logger.error(e.getMessage());
@@ -298,8 +321,7 @@ public class HttpSession {
 			error = e;
 			Logger.error(e.getMessage());
 			setState(STATE_ERROR);
-		} finally {
-			setState(STATE_FINISHED);			
+			setState(STATE_FINISHED);		
 		}
 	}
 
@@ -308,5 +330,18 @@ public class HttpSession {
 			request.abort();
 			request = null;
 		}
+	}
+
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
+	@Override
+	public int compareTo(HttpSession another) {
+		return - (this.priority - another.priority); // the bigger priority session should be processed faster
 	}
 }

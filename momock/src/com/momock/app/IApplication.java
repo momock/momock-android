@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.momock.app;
 
-import android.app.Activity;
-
 import com.momock.data.IDataSet;
 import com.momock.message.MessageBox;
 import com.momock.outlet.IOutlet;
@@ -56,6 +54,10 @@ public interface IApplication {
 	
 	IDataSet getDataSet();
 	
+	void onCreateActivity();
+	
+	void onDestroyActivity();
+	
 	void onCreateEnvironment();
 	
 	void onDestroyEnvironment();
@@ -66,7 +68,4 @@ public interface IApplication {
 	
 	MessageBox getMessageBox();
 	
-	void pushActivity(Activity activity);
-	
-	void popActivity(Activity activity);
 }

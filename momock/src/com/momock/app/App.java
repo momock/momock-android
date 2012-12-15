@@ -17,7 +17,6 @@ package com.momock.app;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
 import java.util.WeakHashMap;
 
 import android.annotation.SuppressLint;
@@ -40,8 +39,10 @@ import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
 import com.momock.service.CacheService;
 import com.momock.service.Downloader;
+import com.momock.service.HttpService;
 import com.momock.service.ICacheService;
 import com.momock.service.IDownloader;
+import com.momock.service.IHttpService;
 import com.momock.service.IImageService;
 import com.momock.service.IService;
 import com.momock.service.ImageService;
@@ -218,6 +219,7 @@ public abstract class App extends android.app.Application implements
 
 	// Implementation for IApplication interface
 	protected ICase<?> activeCase = null;
+	protected int activeActivityCount = 0;
 	protected HashMap<String, ICase<?>> cases = new HashMap<String, ICase<?>>();
 
 	@Override
@@ -363,10 +365,14 @@ public abstract class App extends android.app.Application implements
 		return ds;
 	}
 	Handler executeHandler = null;
+	boolean environmentCreated = false;
 	@Override
 	public void onCreateEnvironment() {
 		Logger.debug("onCreateEnvironment");
+		if (environmentCreated) return;
+		environmentCreated = true;
 		onRegisterShortNames();
+		addService(IHttpService.class, new HttpService());
 		addService(ICacheService.class, new CacheService());
 		addService(IDownloader.class, new Downloader());
 		addService(IImageService.class, new ImageService());
@@ -381,6 +387,8 @@ public abstract class App extends android.app.Application implements
 	@Override
 	public void onDestroyEnvironment() {
 		Logger.debug("onDestroyEnvironment");
+		if (!environmentCreated) return;
+		environmentCreated = false;
 		for(Map.Entry<Class<?>, IService> e : services.entrySet()){
 			e.getValue().stop();
 		}
@@ -393,6 +401,7 @@ public abstract class App extends android.app.Application implements
 		shortNames.clear();
 		ds = null;
 		executeHandler = null;
+		messageBox = null;
 	}
 
 	@Override
@@ -433,21 +442,17 @@ public abstract class App extends android.app.Application implements
 		return messageBox;
 	}
 
-	Stack<Activity> stack = new Stack<Activity>();
 	@Override
-	public void pushActivity(Activity activity) {
-		if (stack.size() == 0)
+	public void onCreateActivity() {
+		if (!environmentCreated && activeActivityCount == 0)
 			App.get().onCreateEnvironment();
-		stack.push(activity);
-		Logger.debug("pushActivity " + stack.size() + " : " + activity.getClass());
+		activeActivityCount ++;
 	}
 
 	@Override
-	public void popActivity(Activity activity) {
-		Logger.debug("popActivity " + stack.size() + " : " + activity.getClass());
-		Activity a = stack.pop();
-		Logger.check(a == activity, "Pop wrong activity!");	
-		if (stack.size() == 0)
+	public void onDestroyActivity() {
+		activeActivityCount --;
+		if (environmentCreated && activeActivityCount == 0)
 			App.get().onDestroyEnvironment();
 	}
 }

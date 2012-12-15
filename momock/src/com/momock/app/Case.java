@@ -78,9 +78,13 @@ public abstract class Case<A> implements ICase<A> {
 
 	@Override
 	public void attach(final A target) {
+		if (attachedObject != null){
+			Logger.debug("onDetach " + getFullName() + "(" + Integer.toHexString(this.hashCode()) +") : " + attachedObject + "(" + Integer.toHexString(attachedObject.hashCode()) +")");
+		}
 		detach();
 		if (target != null)
-		{
+		{	
+			Logger.debug("onAttach " + getFullName() + "(" + Integer.toHexString(this.hashCode()) +") : " + target + "(" + Integer.toHexString(target.hashCode()) +")");
 			attachedObject = target;
 			onAttach(target);	
 		}
@@ -98,12 +102,10 @@ public abstract class Case<A> implements ICase<A> {
 	@Override
 	public void onAttach(A target)
 	{
-		
 	}
 	@Override
 	public void onDetach(A target)
 	{
-		
 	}
 
 	// Implementation for ICase interface

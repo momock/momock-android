@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.momock.service;
 
+import java.io.File;
+
 import android.graphics.Bitmap;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -57,6 +59,8 @@ public interface IImageService extends IService{
 	String getFullUri(String uri, int width, int height);
 	
 	boolean isRemote(String uri);
+	
+	File getCacheOf(String fullUri);
 	
 	Bitmap loadBitmap(String fullUri);	
 

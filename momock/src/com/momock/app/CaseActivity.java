@@ -38,12 +38,12 @@ public abstract class CaseActivity extends FragmentActivity {
 	}
 
 	protected void log(String msg){
-		Logger.info((getCase() == null ? getClass().getName() : getCase().getFullName()) + " : " + msg);
+		Logger.info("*" + (getCase() == null ? getClass().getName() : getCase().getFullName()) + "(" + Integer.toHexString(this.hashCode()) +") : " + msg);
 	}
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		log("onCreate");
-		App.get().pushActivity(this);
+		App.get().onCreateActivity();
 		super.onCreate(savedInstanceState);
 		onCreate();
 		getCase().attach(CaseActivity.this);
@@ -67,7 +67,7 @@ public abstract class CaseActivity extends FragmentActivity {
 		log("onDestroy");
 		super.onDestroy();
 		getCase().detach();
-		App.get().popActivity(this);
+		App.get().onDestroyActivity();
 	}
 
 	@Override

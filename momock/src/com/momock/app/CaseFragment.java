@@ -40,7 +40,7 @@ public abstract class CaseFragment extends Fragment{
 	}
 
 	protected void log(String msg){
-		Logger.info((getCase() == null ? this.toString() : getCase().getFullName()) + " : " + msg);
+		Logger.info((getCase() == null ? this.toString() : getCase().getFullName()) + "(" + Integer.toHexString(this.hashCode()) +") : " + msg);
 	}
 	
 	@Override

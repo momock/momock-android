@@ -15,11 +15,9 @@
  ******************************************************************************/
 package com.momock.service;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.net.ContentHandler;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,101 +25,91 @@ import java.util.List;
 import java.util.Map;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-import com.google.android.filecache.FileResponseCache;
-import com.google.android.imageloader.BlockingFilterInputStream;
-import com.google.android.imageloader.ContentURLStreamHandlerFactory;
-import com.google.android.imageloader.ImageLoader;
 import com.momock.app.App;
+import com.momock.cache.ICache;
+import com.momock.cache.SimpleCache;
 import com.momock.event.Event;
 import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 import com.momock.holder.ImageHolder;
+import com.momock.net.HttpSession;
+import com.momock.net.HttpSession.StateChangedEventArgs;
 import com.momock.util.Convert;
 import com.momock.util.ImageHelper;
 import com.momock.util.Logger;
 import com.momock.widget.IPlainAdapterView;
 
-public class ImageService extends ImageLoader implements IImageService {
-	boolean stopped = false;
-	static class ImageContentHandler extends ContentHandler {
-		@Override
-		public Bitmap getContent(URLConnection connection) throws IOException {
-			InputStream input = null;
-			try {
-				input = new BlockingFilterInputStream(connection.getInputStream());
-				Bitmap bitmap = BitmapFactory.decodeStream(input);
-				if (bitmap == null) {
-					throw new IOException("Image could not be decoded");
-				}
-				return bitmap;
-			} catch(IOException e){
-				Logger.error(e.getMessage());
-				throw e;
-			} finally {
-				if (input != null)
-					input.close();
-			}
-		}
-	}
-
-	public ImageService() {
-		super(DEFAULT_TASK_LIMIT, new ContentURLStreamHandlerFactory(App.get()
-				.getContentResolver()), new ImageContentHandler(),
-				FileResponseCache.sink(), DEFAULT_CACHE_SIZE, null);
-	}
-
+public class ImageService implements IImageService {
+	Downloader downloader;
 	Map<String, IEvent<ImageEventArgs>> allImageHandlers = new HashMap<String, IEvent<ImageEventArgs>>();
-
+	ICache<String, Bitmap> bitmapCache = new SimpleCache<String, Bitmap>();
+	public ImageService(){
+		this(5, null);
+	}
+	public ImageService(int maxTaskCount, String userAgent){
+		downloader = new Downloader(maxTaskCount);
+	}
+	public Bitmap getBitmap(String fullUri){
+		return bitmapCache.get(fullUri);
+	}
 	@Override
-	public void addImageEventHandler(String url,
+	public void addImageEventHandler(String fullUri,
 			IEventHandler<ImageEventArgs> handler) {
 		IEvent<ImageEventArgs> evt;
-		if (allImageHandlers.containsKey(url)) {
-			evt = allImageHandlers.get(url);
+		if (allImageHandlers.containsKey(fullUri)) {
+			evt = allImageHandlers.get(fullUri);
 		} else {
 			evt = new Event<ImageEventArgs>();
-			allImageHandlers.put(url, evt);
+			allImageHandlers.put(fullUri, evt);
 		}
 		evt.addEventHandler(handler);
 	}
 
 	@Override
-	public void removeImageEventHandler(String url,
+	public void removeImageEventHandler(String fullUri,
 			IEventHandler<ImageEventArgs> handler) {
 		IEvent<ImageEventArgs> evt;
-		if (allImageHandlers.containsKey(url)) {
-			evt = allImageHandlers.get(url);
+		if (allImageHandlers.containsKey(fullUri)) {
+			evt = allImageHandlers.get(fullUri);
 			evt.removeEventHandler(handler);
 		}
 	}
 
 	@Override
-	public Bitmap loadBitmap(String uri) {
-		return loadBitmap(uri, false);
+	public Bitmap loadBitmap(String fullUri) {
+		return loadBitmap(fullUri, false);
 	}
-
+	
 	@Override
-	public Bitmap loadBitmap(final String uri, boolean highPriority) {
+	public File getCacheOf(String fullUri){
+		ICacheService cacheService = App.get().getService(ICacheService.class);
+		return cacheService.getCacheOf(getClass().getName(), fullUri);
+	}
+	
+	@Override
+	public Bitmap loadBitmap(final String fullUri, boolean highPriority) {
 		final int expectedWidth;
 		final int expectedHeight;
-		int pos = uri.lastIndexOf('#');
+		String uri = fullUri;
+		int pos = fullUri.lastIndexOf('#');
 		if (pos > 0) {
-			int pos2 = uri.lastIndexOf('x');
+			int pos2 = fullUri.lastIndexOf('x');
 			Logger.check(pos2 > pos, "The image uri is not correct!");
-			expectedWidth = Convert.toInteger(uri.substring(pos + 1, pos2 - pos
+			expectedWidth = Convert.toInteger(fullUri.substring(pos + 1, pos2 - pos
 					- 1));
-			expectedHeight = Convert.toInteger(uri.substring(pos2 + 1));
+			expectedHeight = Convert.toInteger(fullUri.substring(pos2 + 1));
+			uri = fullUri.substring(0, pos);
 		} else {
 			expectedWidth = -1;
 			expectedHeight = -1;
 		}
-		Bitmap bitmap = null;
+		Bitmap bitmap = getBitmap(uri);
+		if (bitmap != null) return bitmap;
 		if (uri.startsWith(PREFIX_FILE)) {
 			bitmap = ImageHelper.fromFile(uri.substring(PREFIX_FILE.length()),
 					expectedWidth, expectedHeight);
@@ -138,57 +126,42 @@ public class ImageService extends ImageLoader implements IImageService {
 			} catch (IOException e) {
 				Logger.error(e.getMessage());
 			}
-		} else if (uri.startsWith(PREFIX_HTTP) || uri.startsWith(PREFIX_HTTPS)) {
-			bitmap = getBitmap(uri);
-			ImageError error = getError(uri);
-			if (bitmap == null && error == null) {
-
-		        Iterator<?> it = mRequests.iterator();
-		        while (it.hasNext()) {
-		        	ImageRequest r = (ImageRequest)it.next();
-		            if (r.getUrl().equals(uri)) {
-		            	if (highPriority){
-			                it.remove();
-			                break;
-		            	} else {
-		            		return null;
-		            	}
-		            }
-		        }
-		        
-				ImageRequest request = new ImageRequest(uri,
-						new ImageCallback() {
-
+		} else if (uri.startsWith(PREFIX_HTTP) || uri.startsWith(PREFIX_HTTPS)) {			
+			if (bitmap == null) {
+				File bmpFile = getCacheOf(fullUri);
+				if (bmpFile.exists()){
+					bitmap = ImageHelper.fromFile(bmpFile, expectedWidth, expectedHeight);
+				} 
+				if (bitmap == null) {
+					HttpSession session = downloader.getSession(uri);
+					if (session == null){
+						session = downloader.addSession(uri, bmpFile);
+						session.getStateChangedEvent().addEventHandler(new IEventHandler<StateChangedEventArgs>(){
+	
 							@Override
-							public boolean unwanted() {
-								if (stopped || getBitmap(uri) != null){
-									//Logger.debug("Image " + uri + " has been loaded." );
-									return true;
-								}
-								return false;
-							}
-
-							@Override
-							public void send(String url, Bitmap bitmap,
-									ImageError error) {
-								if (!stopped && allImageHandlers.containsKey(url)) {
-									ImageEventArgs args = new ImageEventArgs(
-											uri, bitmap, error == null ? null
-													: error.getCause());
-									IEvent<ImageEventArgs> evt = allImageHandlers.get(url);
-									evt.fireEvent(null, args);
+							public void process(Object sender,
+									StateChangedEventArgs args) {
+								if (args.getState() == HttpSession.STATE_FINISHED){
+									if (allImageHandlers.containsKey(fullUri)) {
+										Bitmap bitmap = !args.getSession().isDownloaded() ? null : 
+											ImageHelper.fromFile(args.getSession().getFile(), expectedWidth, expectedHeight);
+										ImageEventArgs iea = new ImageEventArgs(
+												fullUri, bitmap, args.getSession().getError());
+										IEvent<ImageEventArgs> evt = allImageHandlers.get(fullUri);
+										evt.fireEvent(null, iea);
+									}
 								}
 							}
-
-						}, true);
-				
-				Logger.debug("Image " + uri + " has been added into the downloading queue. " + (highPriority ? "[***]" : ""));
-				if (highPriority){
-					insertRequestAtFrontOfQueue(request);
-				}else{
-					enqueueRequest(request);					
+							
+						});
+						Logger.debug("Image " + uri + " has been added into the downloading queue. " + (highPriority ? "[***]" : ""));		
+					}
+			        session.setPriority(highPriority ? HttpSession.DEFAULT_PRIORITY + 1 : HttpSession.DEFAULT_PRIORITY);		
 				}
 			}
+		}
+		if (bitmap != null){
+			bitmapCache.put(fullUri, bitmap);
 		}
 		return bitmap;
 	}
@@ -310,12 +283,15 @@ public class ImageService extends ImageLoader implements IImageService {
 	}
 
 	@Override
-	public void start() {		
+	public void start() {	
+		downloader.start();
 	}
 
 	@Override
 	public void stop() {
-		stopped = true;
-		mRequests.clear();
+		allImageHandlers.clear();
+		imageViewHandlers.clear();
+		adapterHandlers.clear();
+		downloader.stop();
 	}
 }
