@@ -15,10 +15,16 @@
  ******************************************************************************/
 package com.momock.service;
 
+import java.io.File;
+
+import com.momock.net.HttpSession;
+
 
 public interface IDownloader extends IService{
 	HttpSession getSession(String url);
 	void removeSession(String url);
-	HttpSession addSession(String url, HttpSession.Callback callback);
-	HttpSession addSession(String url, HttpSession.Callback callback, boolean highPriority);
+	HttpSession addSession(String url);
+	HttpSession addSession(String url, boolean highPriority);
+	HttpSession addSession(String url, File file);
+	HttpSession addSession(String url, File file, boolean highPriority);
 }

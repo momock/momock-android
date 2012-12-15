@@ -15,209 +15,51 @@
  ******************************************************************************/
 package com.momock.service;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.zip.GZIPInputStream;
-
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.net.http.AndroidHttpClient;
-import android.os.AsyncTask;
-import android.os.Build;
 
-import com.momock.app.App;
-import com.momock.util.Convert;
-import com.momock.util.Logger;
+import com.momock.net.HttpSession;
 
 public class Downloader implements IDownloader {
-
+	Timer timer = null;
+	String userAgent; 
+	HttpSession executingSessions[];
 	AndroidHttpClient httpClient;
-	int activeTaskCount = 0;
 
-	class HttpRequestTask extends AsyncTask<Void, Void, Void> {
-		HttpRequestBase request;
-		HttpSession session = null;
-		public HttpRequestTask(HttpSession session){
-			this.session = session;
-		}
-		@Override
-		protected Void doInBackground(Void... params) {
-
-			try {
-				request = new HttpGet(session.getUrl());
-				request.setHeader("Accept", "application/json");
-				request.setHeader("Accept-Encoding", "gzip");
-				ICacheService cacheService = App.get().getService(ICacheService.class);
-				File file = cacheService.getCacheOf("downloader", session.getUrl());
-				session.setFile(file);
-				if (file.exists()){
-					request.setHeader("Range", "bytes=" + file.length() + "-");
-				}
-
-				httpClient.execute(request, new ResponseHandler<Object>() {
-
-					@Override
-					public Object handleResponse(HttpResponse response) {
-						Header[] hs;
-						hs = response.getHeaders("Content-Length");
-						int contentLength = -1;
-						if (hs != null)
-							contentLength = Convert.toInteger(hs[0].getValue());
-						hs = response.getHeaders("Content-Range");
-						if (hs != null){
-							String cr = hs[0].getValue();
-							int pos = cr.indexOf('/');
-							contentLength = Convert.toInteger(cr.substring(pos + 1));
-						}
-						session.setContentLength(contentLength);
-						App.get().execute(new Runnable() {
-
-							@Override
-							public void run() {
-								if (session.getCallback() != null)
-									session.getCallback().onHeaderReceived(
-											session);
-							}
-
-						});
-						HttpEntity entity = response.getEntity();
-						if (entity != null) {
-							try {
-								InputStream instream = entity.getContent();
-								Header contentEncoding = response
-										.getFirstHeader("Content-Encoding");
-								if (contentEncoding != null
-										&& contentEncoding.getValue()
-												.equalsIgnoreCase("gzip")) {
-									instream = new GZIPInputStream(instream);
-								}
-								InputStream input = new BufferedInputStream(
-										instream);
-								OutputStream output = new FileOutputStream(session.getFile(), session.getFile().exists());
-
-								byte data[] = new byte[1024 * 10];
-								int received = 0;
-								int count;
-								int percent = -1;
-								while ((count = input.read(data)) != -1) {
-									received += count;
-									session.setDownloadedLength(received);
-									if (received * 100 / contentLength != percent) {
-										percent = received * 100
-												/ contentLength;
-										publishProgress();
-									}
-									output.write(data, 0, count);
-								}
-
-								output.flush();
-								output.close();
-								instream.close();
-							} catch (Exception e) {
-								Logger.error(e.getMessage());
-							}
-						}
-						return null;
-					}
-				});
-			} catch (Exception e) {
-				session.setError(e);
-				Logger.error(session.getUrl() + " : " + e.getMessage());
-				App.get().execute(new Runnable() {
-
-					@Override
-					public void run() {
-						if (session.getCallback() != null)
-							session.getCallback().onError(session);
-					}
-
-				});
-			}
-			return null;
-		}
-
-		@Override
-		protected void onProgressUpdate(Void... params) {
-			if (session.getCallback() != null)
-				session.getCallback().onContentReceiving(session);
-			if (session.getDownloadedLength() == session.getContentLength()) {
-				if (session.getCallback() != null)
-					session.getCallback().onContentReceived(session);
-			}
-		}
-
-		@Override
-		protected void onPostExecute(Void result) {
-			if (session.getCallback() != null)
-				session.getCallback().onFinish(session);
-			removeSession(session.getUrl());
-			activeTaskCount--;
-			Logger.debug("Finish download " + session.getUrl());
-		}
-
-		@Override
-		protected void onPreExecute() {
-			Logger.debug("Start download " + session.getUrl());
-			activeTaskCount++;
-			if (session.getCallback() != null)
-				session.getCallback().onStart(session);
-		}
-
-		public final android.os.AsyncTask<Void, Void, Void> executeOnThreadPool(
-				Void... params) {
-			if (Build.VERSION.SDK_INT < 4) {
-				return execute(params);
-			} else if (Build.VERSION.SDK_INT < 11) {
-				return execute(params);
-			} else {
-				try {
-					Method method = android.os.AsyncTask.class
-							.getMethod("executeOnExecutor", Executor.class,
-									Object[].class);
-					Field field = android.os.AsyncTask.class
-							.getField("THREAD_POOL_EXECUTOR");
-					Object executor = field.get(null);
-					method.invoke(this, executor, params);
-				} catch (NoSuchMethodException e) {
-					throw new RuntimeException(
-							"Unexpected NoSuchMethodException", e);
-				} catch (NoSuchFieldException e) {
-					throw new RuntimeException(
-							"Unexpected NoSuchFieldException", e);
-				} catch (IllegalAccessException e) {
-					throw new RuntimeException(
-							"Unexpected IllegalAccessException", e);
-				} catch (InvocationTargetException e) {
-					throw new RuntimeException(
-							"Unexpected InvocationTargetException", e);
-				}
-				return this;
-			}
-		}
-
+	public Downloader(){
+		this(10, "Android");
 	}
-
+	public Downloader(int maxTaskCount, String userAgent){
+		executingSessions = new HttpSession[maxTaskCount];
+		this.userAgent = userAgent;
+	}
 	@Override
-	public void start() {
-		httpClient = AndroidHttpClient.newInstance("Android");
+	public void start() {		
+		httpClient = AndroidHttpClient.newInstance(userAgent);
 	}
+	void startTimer(){
+		if (timer != null) return;
+		timer = new Timer();
+		timer.scheduleAtFixedRate(new TimerTask(){
 
+			@Override
+			public void run() {
+				processQueue();
+			}
+			
+		}, 1000, 1000);
+	}
+	void stopTimer(){
+		timer.cancel();
+		timer = null;
+	}
 	@Override
 	public void stop() {
 		httpClient.close();
@@ -242,28 +84,55 @@ public class Downloader implements IDownloader {
 		return null;
 	}
 
-	static final int MAX_TASK_COUNT = 5;
-
-	void flushQueue() {
-		while (activeTaskCount < MAX_TASK_COUNT && !queue.isEmpty()) {
-			new HttpRequestTask(queue.poll()).executeOnThreadPool();
+	void processQueue() {
+		if (queue.isEmpty())
+			stopTimer();
+		else{
+			for(int i = 0; i < executingSessions.length && !queue.isEmpty(); i++){
+				HttpSession session = executingSessions[i];
+				if (session != null){
+					if (session.isFinished())
+						session = null;
+				}
+				if (session == null){
+					session = queue.poll();
+					executingSessions[i] = session;
+					session.start();
+				}					
+			}
 		}
 	}
 
+	void resetTimer(){
+		if (queue.isEmpty())
+			stopTimer();
+		else if (timer == null){
+			startTimer();
+		}
+	}
 	@Override
 	public synchronized void removeSession(String url) {
 		sessions.remove(url);
 		Iterator<HttpSession> it = getSessionFromQueue(url);
 		if (it != null) it.remove();
-		flushQueue();
+		resetTimer();
 	}
 	@Override
-	public HttpSession addSession(String url, HttpSession.Callback callback){
-		return addSession(url, callback, false);
+	public HttpSession addSession(String url){
+		return addSession(url, false);
 	}
 	@Override
-	public synchronized HttpSession addSession(String url,
-			HttpSession.Callback callback, boolean highPriority) {
+	public HttpSession addSession(String url, boolean highPriority) {
+		return addSession(url, null, highPriority);
+	}
+
+	@Override
+	public HttpSession addSession(String url, File file) {
+		return addSession(url, file, false);
+	}
+
+	@Override
+	public synchronized HttpSession addSession(String url, File file, boolean highPriority) {
 		HttpSession session = getSession(url);
 		if (session != null) {
 			Iterator<HttpSession> it = getSessionFromQueue(url);
@@ -272,20 +141,17 @@ public class Downloader implements IDownloader {
 					it.remove();
 					queue.add(0, session);
 				}
-				if (callback != null)
-					session.setCallback(callback);
 			}
 			return session;
 		} else {
-			session = new HttpSession(url);
-			session.setCallback(callback);
+			session = new HttpSession(httpClient, url, file);
 			sessions.put(url, session);
 			if (highPriority)
 				queue.add(0, session);
 			else
 				queue.add(session);
 		}
-		flushQueue();
+		resetTimer();
 		return session;
 	}
 

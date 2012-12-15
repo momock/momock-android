@@ -27,18 +27,22 @@ import android.os.Environment;
 
 import com.momock.app.App;
 
-public class CacheService implements ICacheService{
+public class CacheService implements ICacheService {
 	File cacheDir;
-	static final String CACHE_DIR_NAME = "filecaches"; 
-	public CacheService(){
+
+	public CacheService() {
 	}
-	String getFilenameOf(String uri){
-		return uri.replaceFirst("https?:\\/\\/", "").replaceAll("[^a-zA-Z0-9]", "_");
+
+	String getFilenameOf(String uri) {
+		return uri.replaceFirst("https?:\\/\\/", "").replaceAll("[^a-zA-Z0-9]",
+				"_");
 	}
+
 	@Override
 	public File getCacheDir(String category) {
 		File fc = category == null ? cacheDir : new File(cacheDir, category);
-		if (!fc.exists()) fc.mkdir();
+		if (!fc.exists())
+			fc.mkdir();
 		return fc;
 	}
 
@@ -52,34 +56,36 @@ public class CacheService implements ICacheService{
 		return context.getExternalCacheDir();
 	}
 
-
 	public void clear() {
-		if (cacheDir == null) return;
+		if (cacheDir == null)
+			return;
 		final File[] files = cacheDir.listFiles();
-		if (files == null) return;
+		if (files == null)
+			return;
 		for (final File f : files) {
 			f.delete();
 		}
 	}
-	
+
 	@Override
 	public void start() {
 		Context context = App.get();
-		
+
 		if (getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-			cacheDir = new File(
-					Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ? getExternalCacheDir(context)
-							: new File(getExternalStorageDirectory().getPath() + "/Android/data/"
-									+ context.getPackageName() + "/cache/"), CACHE_DIR_NAME);
+			cacheDir = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ? getExternalCacheDir(context)
+					: new File(getExternalStorageDirectory().getPath()
+							+ "/Android/data/" + context.getPackageName()
+							+ "/cache/");
 		} else {
-			cacheDir = new File(context.getCacheDir(), CACHE_DIR_NAME);
+			cacheDir = context.getCacheDir();
 		}
 		if (cacheDir != null && !cacheDir.exists()) {
 			cacheDir.mkdirs();
 		}
 	}
+
 	@Override
-	public void stop() {		
+	public void stop() {
 	}
 
 }

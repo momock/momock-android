@@ -30,7 +30,8 @@ public class Event<A extends IEventArgs> implements IEvent<A> {
 		if (handlers instanceof IEventHandler<?>) {
 			((IEventHandler<A>)handlers).process(sender, args);
 		} else {
-			Iterator<IEventHandler<A>> it = ((List<IEventHandler<A>>)handlers).iterator();
+			ArrayList<IEventHandler<A>> all = new ArrayList<IEventHandler<A>>((List<IEventHandler<A>>)handlers);
+			Iterator<IEventHandler<A>> it = all.iterator();
 			while(it.hasNext())
 			{
 				IEventHandler<A> handler = it.next();
