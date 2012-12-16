@@ -22,6 +22,7 @@ import android.widget.BaseAdapter;
 
 import com.momock.data.IDataList;
 import com.momock.event.Event;
+import com.momock.event.EventArgs;
 import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 import com.momock.event.ItemEventArgs;
@@ -31,7 +32,12 @@ import com.momock.util.Logger;
 public class AdapterViewBinder<T extends AdapterView<?>> {
 	IEvent<ItemEventArgs> itemClickedEvent = new Event<ItemEventArgs>();
 	IEvent<ItemEventArgs> itemSelectedEvent = new Event<ItemEventArgs>();
+	IEvent<EventArgs> dataChangedEvent = new Event<EventArgs>();
 
+	public IEvent<EventArgs> getDataChangedEvent() {
+		return dataChangedEvent;
+	}
+	
 	public IEvent<ItemEventArgs> getItemClickedEvent() {
 		return itemClickedEvent;
 	}
@@ -113,6 +119,7 @@ public class AdapterViewBinder<T extends AdapterView<?>> {
 
 				@Override
 				public void notifyDataSetChanged() {
+					getDataChangedEvent().fireEvent(this, new EventArgs());
 					super.notifyDataSetChanged();
 					Logger.debug("AdapterViewBinder.BaseAdapter.notifyDataSetChanged");
 				}

@@ -21,6 +21,7 @@ import android.widget.BaseAdapter;
 
 import com.momock.data.IDataList;
 import com.momock.event.Event;
+import com.momock.event.EventArgs;
 import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 import com.momock.event.ItemEventArgs;
@@ -32,6 +33,12 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> {
 
 	IEvent<ItemEventArgs> itemClickedEvent = new Event<ItemEventArgs>();
 
+	IEvent<EventArgs> dataChangedEvent = new Event<EventArgs>();
+
+	public IEvent<EventArgs> getDataChangedEvent() {
+		return dataChangedEvent;
+	}
+	
 	public IEvent<ItemEventArgs> getItemClickedEvent() {
 		return itemClickedEvent;
 	}
@@ -95,6 +102,7 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> {
 
 				@Override
 				public void notifyDataSetChanged() {
+					getDataChangedEvent().fireEvent(this, new EventArgs());
 					super.notifyDataSetChanged();
 					Logger.debug("PlainAdapterViewBinder.BaseAdapter.notifyDataSetChanged");
 				}
