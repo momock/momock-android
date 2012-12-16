@@ -31,10 +31,9 @@ import com.momock.util.Convert;
 import com.momock.util.FileHelper;
 import com.momock.util.Logger;
 
-public class HttpSession implements Comparable<HttpSession>{
-	public static final int DEFAULT_PRIORITY = 10;
+public class HttpSession{
 			
-	public static final int STATE_CREATED = 0;
+	public static final int STATE_WAITING = 0;
 	public static final int STATE_STARTED = 1;
 	public static final int STATE_HEADER_RECEIVED = 2;
 	public static final int STATE_CONTENT_RECEIVING = 3;
@@ -68,8 +67,7 @@ public class HttpSession implements Comparable<HttpSession>{
 	File file = null;
 	File fileData = null;
 	File fileInfo = null;
-	int priority = DEFAULT_PRIORITY;
-	int state = STATE_CREATED;
+	int state = STATE_WAITING;
 	HttpRequestBase request = null;
 	Event<StateChangedEventArgs> stateChangedEvent = new Event<StateChangedEventArgs>();
 
@@ -175,7 +173,7 @@ public class HttpSession implements Comparable<HttpSession>{
 
 	String getStateName(int state){
 		switch(state){
-		case STATE_CREATED : return "STATE_CREATED";
+		case STATE_WAITING : return "STATE_WAITING";
 		case STATE_STARTED : return "STATE_STARTED";
 		case STATE_HEADER_RECEIVED : return "STATE_HEADER_RECEIVED";
 		case STATE_CONTENT_RECEIVING : return "STATE_CONTENT_RECEIVING";
@@ -222,6 +220,11 @@ public class HttpSession implements Comparable<HttpSession>{
 		}
 	}
 
+	public void resume(){
+		if (request == null){
+			this.state = STATE_WAITING;
+		}
+	}
 	public void start() {
 		if (request != null){
 			Logger.warn(url + " has already been started.");
@@ -332,16 +335,4 @@ public class HttpSession implements Comparable<HttpSession>{
 		}
 	}
 
-	public int getPriority() {
-		return priority;
-	}
-
-	public void setPriority(int priority) {
-		this.priority = priority;
-	}
-
-	@Override
-	public int compareTo(HttpSession another) {
-		return - (this.priority - another.priority); // the bigger priority session should be processed faster
-	}
 }

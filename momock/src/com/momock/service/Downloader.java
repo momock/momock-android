@@ -16,11 +16,8 @@
 package com.momock.service;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -32,7 +29,7 @@ public class Downloader implements IDownloader {
 	HttpSession executingSessions[];
 
 	public Downloader() {
-		this(10);
+		this(5);
 	}
 
 	public Downloader(int maxTaskCount) {
@@ -67,25 +64,31 @@ public class Downloader implements IDownloader {
 	@Override
 	public void stop() {
 		stopTimer();
-		for(Map.Entry<String, HttpSession> e : sessions.entrySet()){
-			e.getValue().stop();
+		for (int i = 0; i < executingSessions.length; i++) {
+			HttpSession session = executingSessions[i];
+			if (session != null) {
+				session.stop();
+				executingSessions[i] = null;
+			}
 		}
+		queue.clear();
 	}
 
-	protected Map<String, HttpSession> sessions = new HashMap<String, HttpSession>();
 	protected LinkedList<HttpSession> queue = new LinkedList<HttpSession>();
 
 	@Override
 	public HttpSession getSession(String url) {
-		return sessions.get(url);
-	}
-
-	Iterator<HttpSession> getSessionFromQueue(String url) {
 		Iterator<HttpSession> it = queue.iterator();
 		while (it.hasNext()) {
 			HttpSession session = it.next();
 			if (url.equals(session.getUrl())) {
-				return it;
+				return session;
+			}
+		}
+		for (int i = 0; i < executingSessions.length; i++) {
+			HttpSession session = executingSessions[i];
+			if (session != null && url.equals(session.getUrl())) {
+				return session;
 			}
 		}
 		return null;
@@ -95,14 +98,13 @@ public class Downloader implements IDownloader {
 		if (queue.isEmpty())
 			stopTimer();
 		else {
-			Collections.sort(queue);
-			for (int i = 0; i < executingSessions.length && !queue.isEmpty(); i++) {
+			for (int i = 0; i < executingSessions.length; i++) {
 				HttpSession session = executingSessions[i];
 				if (session != null) {
 					if (session.isFinished())
 						session = null;
 				}
-				if (session == null) {
+				if (session == null && !queue.isEmpty()) {
 					session = queue.poll();
 					executingSessions[i] = session;
 					session.start();
@@ -120,47 +122,22 @@ public class Downloader implements IDownloader {
 	}
 
 	@Override
-	public synchronized void removeSession(String url) {
-		sessions.remove(url);
-		Iterator<HttpSession> it = getSessionFromQueue(url);
-		if (it != null)
-			it.remove();
-		resetTimer();
-	}
-
-	@Override
-	public HttpSession addSession(String url) {
-		return addSession(url, 0);
-	}
-
-	@Override
-	public HttpSession addSession(String url, int priority) {
-		return addSession(url, null, priority);
-	}
-
-	@Override
-	public HttpSession addSession(String url, File file) {
-		return addSession(url, file, 0);
-	}
-	protected IHttpService getHttpService(){
-		IHttpService httpService = App.get().getService(IHttpService.class);
-		return httpService;
-	}
-	@Override
-	public synchronized HttpSession addSession(String url, File file,
-			int priority) {
-		HttpSession session = getSession(url);
-		if (session != null) {
-			session.setPriority(priority);
-			return session;
-		} else {			
-			session = new HttpSession(getHttpService().getHttpClient(), url, file);
-			session.setPriority(priority);
-			sessions.put(url, session);
+	public synchronized void addSession(HttpSession session){
+		if (!queue.contains(session)){
 			queue.add(session);
+			resetTimer();
 		}
-		resetTimer();
-		return session;
+	}
+	@Override
+	public synchronized void removeSession(HttpSession session){
+		if (queue.contains(session)){
+			queue.remove(session);
+		}
+	}
+	@Override
+	public HttpSession newSession(String url, File file) {
+		IHttpService httpService = App.get().getService(IHttpService.class);
+		return new HttpSession(httpService.getHttpClient(), url, file);
 	}
 
 }

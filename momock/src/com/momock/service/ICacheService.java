@@ -20,4 +20,5 @@ import java.io.File;
 public interface ICacheService extends IService{
 	File getCacheDir(String category);
 	File getCacheOf(String category, String uri);
+	void clear(String category);
 }

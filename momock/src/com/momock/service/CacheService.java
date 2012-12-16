@@ -34,7 +34,7 @@ public class CacheService implements ICacheService {
 	}
 
 	String getFilenameOf(String uri) {
-		return uri.replaceFirst("https?:\\/\\/", "").replaceAll("[^a-zA-Z0-9]",
+		return uri.replaceFirst("https?:\\/\\/", "").replaceAll("[^a-zA-Z0-9.]",
 				"_");
 	}
 
@@ -56,15 +56,22 @@ public class CacheService implements ICacheService {
 		return context.getExternalCacheDir();
 	}
 
-	public void clear() {
-		if (cacheDir == null)
-			return;
-		final File[] files = cacheDir.listFiles();
+	void clearDir(File dir){
+		final File[] files = dir.listFiles();
 		if (files == null)
 			return;
 		for (final File f : files) {
-			f.delete();
+			if (f.isDirectory())
+				clearDir(f);
+			else
+				f.delete();
 		}
+	}
+	@Override
+	public void clear(String category) {
+		if (cacheDir == null)
+			return;
+		clearDir(category == null ? cacheDir : new File(cacheDir, category));
 	}
 
 	@Override

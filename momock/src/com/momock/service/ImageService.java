@@ -135,7 +135,8 @@ public class ImageService implements IImageService {
 				if (bitmap == null) {
 					HttpSession session = downloader.getSession(uri);
 					if (session == null){
-						session = downloader.addSession(uri, bmpFile);
+						session = downloader.newSession(uri, bmpFile);
+						downloader.addSession(session);
 						session.getStateChangedEvent().addEventHandler(new IEventHandler<StateChangedEventArgs>(){
 	
 							@Override
@@ -156,7 +157,6 @@ public class ImageService implements IImageService {
 						});
 						Logger.debug("Image " + uri + " has been added into the downloading queue. " + (highPriority ? "[***]" : ""));		
 					}
-			        session.setPriority(highPriority ? HttpSession.DEFAULT_PRIORITY + 1 : HttpSession.DEFAULT_PRIORITY);		
 				}
 			}
 		}

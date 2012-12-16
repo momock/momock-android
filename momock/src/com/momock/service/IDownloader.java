@@ -19,12 +19,13 @@ import java.io.File;
 
 import com.momock.net.HttpSession;
 
+public interface IDownloader extends IService {
 
-public interface IDownloader extends IService{
 	HttpSession getSession(String url);
-	void removeSession(String url);
-	HttpSession addSession(String url);
-	HttpSession addSession(String url, int priority);
-	HttpSession addSession(String url, File file);
-	HttpSession addSession(String url, File file, int priority);
+
+	void addSession(HttpSession session);
+
+	void removeSession(HttpSession session);
+
+	HttpSession newSession(String url, File file);
 }
