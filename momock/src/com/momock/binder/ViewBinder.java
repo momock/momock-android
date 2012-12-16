@@ -75,14 +75,9 @@ public class ViewBinder {
 							} else {
 								((ImageView) view).setImageBitmap(null);
 								if (parent instanceof AdapterView)
-
-									App.get()
-											.getImageService()
-											.bind(uri, (AdapterView) parent,
-													false);
+									App.get().getImageService().bind(uri, (AdapterView) parent);
 								else
-									App.get().getImageService()
-											.bind(uri, (ImageView) view, false);
+									App.get().getImageService().bind(uri, (ImageView) view);
 							}
 						} else {
 							if (val instanceof Drawable) {

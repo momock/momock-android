@@ -186,7 +186,7 @@ public class HttpSession{
 	public boolean isFinished(){
 		return state == STATE_FINISHED;
 	}
-	protected void setState(final int state) {
+	public void setState(final int state) {
 		this.state = state;
 		if (state == STATE_CONTENT_RECEIVING){
 			Logger.debug(url + "(" + getStateName(state) + ") : " + downloadedLength + "/" + contentLength);

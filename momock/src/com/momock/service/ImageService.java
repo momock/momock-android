@@ -81,18 +81,13 @@ public class ImageService implements IImageService {
 	}
 
 	@Override
-	public Bitmap loadBitmap(String fullUri) {
-		return loadBitmap(fullUri, false);
-	}
-	
-	@Override
 	public File getCacheOf(String fullUri){
 		ICacheService cacheService = App.get().getService(ICacheService.class);
 		return cacheService.getCacheOf(getClass().getName(), fullUri);
 	}
 	
 	@Override
-	public Bitmap loadBitmap(final String fullUri, boolean highPriority) {
+	public Bitmap loadBitmap(final String fullUri) {
 		final int expectedWidth;
 		final int expectedHeight;
 		String uri = fullUri;
@@ -155,7 +150,7 @@ public class ImageService implements IImageService {
 							}
 							
 						});
-						Logger.debug("Image " + uri + " has been added into the downloading queue. " + (highPriority ? "[***]" : ""));		
+						Logger.debug("Image " + uri + " has been added into the downloading queue. ");		
 					}
 				}
 			}
@@ -178,13 +173,13 @@ public class ImageService implements IImageService {
 
 
 	@Override
-	public void bind(String fullUri, IEventHandler<ImageEventArgs> handler, boolean highPriority) {
+	public void bind(String fullUri, IEventHandler<ImageEventArgs> handler) {
 		Bitmap bitmap = getBitmap(fullUri);
 		if (bitmap != null) {
 			ImageEventArgs args = new ImageEventArgs(fullUri, bitmap, null);
 			handler.process(this, args);
 		} else {
-			loadBitmap(fullUri, highPriority);
+			loadBitmap(fullUri);
 			addImageEventHandler(fullUri, handler);
 		}
 	}
@@ -206,13 +201,13 @@ public class ImageService implements IImageService {
 	List<ImageViewRefreshHandler> imageViewHandlers = new ArrayList<ImageViewRefreshHandler>();
 
 	@Override
-	public void bind(String fullUri, ImageView view, boolean highPriority) {
+	public void bind(String fullUri, ImageView view) {
 		Logger.check(view != null, "Parameter view cannot be null !");
 		Bitmap bitmap = getBitmap(fullUri);
 		if (bitmap != null)
 			view.setImageBitmap(bitmap);
 		else {
-			loadBitmap(fullUri, highPriority);
+			loadBitmap(fullUri);
 			ImageViewRefreshHandler handler = null;
 			Iterator<ImageViewRefreshHandler> it = imageViewHandlers.iterator();
 			while(it.hasNext()){
@@ -233,12 +228,12 @@ public class ImageService implements IImageService {
 	}
 
 	@Override
-	public void bind(String fullUri, ViewGroup viewGroup, boolean highPriority) {
+	public void bind(String fullUri, ViewGroup viewGroup) {
 		Logger.check(viewGroup != null, "Parameter viewGroup cannot be null !");
 		if (viewGroup instanceof AdapterView)
-			bind(fullUri, (BaseAdapter)((AdapterView<?>)viewGroup).getAdapter(), highPriority);
+			bind(fullUri, (BaseAdapter)((AdapterView<?>)viewGroup).getAdapter());
 		else if (viewGroup instanceof IPlainAdapterView)
-			bind(fullUri, (BaseAdapter)((IPlainAdapterView)viewGroup).getAdapter(), highPriority);
+			bind(fullUri, (BaseAdapter)((IPlainAdapterView)viewGroup).getAdapter());
 		else 
 			Logger.check(false, "ViewGroup must be a AdapterView or IPlainAdapterView!");
 	}
@@ -259,9 +254,9 @@ public class ImageService implements IImageService {
 	}
 	List<AdapterRefreshHandler> adapterHandlers = new ArrayList<AdapterRefreshHandler>();
 	@Override
-	public void bind(String fullUri, BaseAdapter adapter, boolean highPriority) {
+	public void bind(String fullUri, BaseAdapter adapter) {
 		Logger.check(adapter != null, "Parameter adapter cannot be null !");
-		Bitmap bitmap = loadBitmap(fullUri, highPriority);
+		Bitmap bitmap = loadBitmap(fullUri);
 		if (bitmap == null){
 			AdapterRefreshHandler handler = null;
 			Iterator<AdapterRefreshHandler> it = adapterHandlers.iterator();

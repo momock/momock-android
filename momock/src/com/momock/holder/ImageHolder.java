@@ -102,15 +102,9 @@ public class ImageHolder{
 		};
 	}
 	public static ImageHolder get(final String uri){
-		return get(uri, -1, -1, false);
+		return get(uri, -1, -1);
 	}
 	public static ImageHolder get(final String uri, final int expectedWidth, final int expectedHeight){
-		return get(uri, expectedWidth, expectedHeight, false);
-	}
-	public static ImageHolder get(final String uri, boolean highPriority){
-		return get(uri, -1, -1, highPriority);
-	}
-	public static ImageHolder get(final String uri, final int expectedWidth, final int expectedHeight, final boolean highPriority){
 		final IImageService is = App.get().getImageService();
 		final String fullUri = is.getFullUri(uri, expectedWidth, expectedHeight);
 		if (imageCache.containsKey(fullUri)){
@@ -130,7 +124,7 @@ public class ImageHolder{
 			public Bitmap getAsBitmap() {
 				if (refBitmap == null || refBitmap.get() == null){
 					final ImageHolder self = this;	
-					refBitmap = new WeakReference<Bitmap>(is.loadBitmap(fullUri, highPriority));
+					refBitmap = new WeakReference<Bitmap>(is.loadBitmap(fullUri));
 					if (refBitmap.get() == null && is.isRemote(fullUri)){
 						IEventHandler<ImageEventArgs> handler = new IEventHandler<ImageEventArgs>(){
 							@Override

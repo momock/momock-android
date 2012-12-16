@@ -63,14 +63,12 @@ public interface IImageService extends IService{
 	File getCacheOf(String fullUri);
 	
 	Bitmap loadBitmap(String fullUri);	
-
-	Bitmap loadBitmap(String fullUri, boolean highPriority);	
 	
-	void bind(String fullUri, IEventHandler<ImageEventArgs> handler, boolean highPriority);
+	void bind(String fullUri, IEventHandler<ImageEventArgs> handler);
 	
-	void bind(String fullUri, ImageView view, boolean highPriority);
+	void bind(String fullUri, ImageView view);
 	
-	void bind(String fullUri, ViewGroup viewGroup, boolean highPriority);
+	void bind(String fullUri, ViewGroup viewGroup);
 	
-	void bind(String fullUri, BaseAdapter adapter, boolean highPriority);
+	void bind(String fullUri, BaseAdapter adapter);
 }

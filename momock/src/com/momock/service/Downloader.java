@@ -123,7 +123,12 @@ public class Downloader implements IDownloader {
 
 	@Override
 	public synchronized void addSession(HttpSession session){
-		if (!queue.contains(session)){
+		if (!queue.contains(session) && (
+				session.getState() == HttpSession.STATE_FINISHED ||
+				session.getState() == HttpSession.STATE_ERROR ||
+				session.getState() == HttpSession.STATE_WAITING
+				)){
+			session.setState(HttpSession.STATE_WAITING);
 			queue.add(session);
 			resetTimer();
 		}
