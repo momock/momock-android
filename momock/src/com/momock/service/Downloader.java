@@ -17,12 +17,13 @@ package com.momock.service;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.momock.app.App;
 import com.momock.net.HttpSession;
+import com.momock.util.Logger;
 
 public class Downloader implements IDownloader {
 	Timer timer = null;
@@ -41,9 +42,11 @@ public class Downloader implements IDownloader {
 	}
 
 	void startTimer() {
+		Logger.debug("startTimer");
 		if (timer != null)
 			return;
 		timer = new Timer();
+		Logger.debug("timer.scheduleAtFixedRate");
 		timer.scheduleAtFixedRate(new TimerTask() {
 
 			@Override
@@ -55,7 +58,9 @@ public class Downloader implements IDownloader {
 	}
 
 	void stopTimer() {
+		Logger.debug("stopTimer");
 		if (timer != null){
+			Logger.debug("timer.cancel");
 			timer.cancel();
 			timer = null;
 		}
@@ -74,7 +79,7 @@ public class Downloader implements IDownloader {
 		queue.clear();
 	}
 
-	protected LinkedList<HttpSession> queue = new LinkedList<HttpSession>();
+	protected LinkedBlockingQueue<HttpSession> queue = new LinkedBlockingQueue<HttpSession>();
 
 	@Override
 	public HttpSession getSession(String url) {
@@ -122,7 +127,7 @@ public class Downloader implements IDownloader {
 	}
 
 	@Override
-	public synchronized void addSession(HttpSession session){
+	public void addSession(HttpSession session){
 		if (!queue.contains(session) && (
 				session.getState() == HttpSession.STATE_FINISHED ||
 				session.getState() == HttpSession.STATE_ERROR ||
@@ -134,7 +139,7 @@ public class Downloader implements IDownloader {
 		}
 	}
 	@Override
-	public synchronized void removeSession(HttpSession session){
+	public void removeSession(HttpSession session){
 		if (queue.contains(session)){
 			queue.remove(session);
 		}

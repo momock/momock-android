@@ -65,6 +65,8 @@ public interface ICase<A> {
 
 	Object getAttachedObject();
 
+	boolean isAttached();
+	
 	void attach(A target);
 
 	void detach();

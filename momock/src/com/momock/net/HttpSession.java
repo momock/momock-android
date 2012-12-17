@@ -9,10 +9,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.Executor;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
@@ -22,6 +26,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
+
+import android.os.AsyncTask;
+import android.os.Build;
 
 import com.momock.app.App;
 import com.momock.event.Event;
@@ -245,93 +252,131 @@ public class HttpSession{
 			resetFromHeaders();
 		}		
 		setState(STATE_STARTED);
-		try {
-			httpClient.execute(request, new ResponseHandler<Object>() {
+		App.get().execute(new Runnable(){
 
-				@Override
-				public Object handleResponse(HttpResponse response) {
+			@Override
+			public void run() {
 
-					headers = new TreeMap<String, List<String>>();
-					for (Header h : response.getAllHeaders()) {
-						String key = h.getName();
-						List<String> vals = null;
-						if (headers.containsKey(key))
-							vals = headers.get(key);
-						else {
-							vals = new ArrayList<String>();
-							headers.put(key, vals);
-						}
-						vals.add(h.getValue());
-					}
-					writeHeaders();
-					resetFromHeaders();
-					setState(STATE_HEADER_RECEIVED);
-					HttpEntity entity = response.getEntity();
-					if (entity != null) {
+				AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>(){
+
+					@Override
+					protected Void doInBackground(Void... params) {
 						try {
-							InputStream instream = entity.getContent();
-							Header contentEncoding = response
-									.getFirstHeader("Content-Encoding");
-							if (contentEncoding != null
-									&& contentEncoding.getValue()
-											.equalsIgnoreCase("gzip")) {
-								instream = new GZIPInputStream(instream);
-							}
-							InputStream input = new BufferedInputStream(
-									instream);
-							OutputStream output = new FileOutputStream(
-									fileData, fileData.exists());
+							httpClient.execute(request, new ResponseHandler<Object>() {
 
-							byte data[] = new byte[1024 * 10];
-							int count;
-							int percent = -1;
-							while ((count = input.read(data)) != -1) {
-								downloadedLength += count;
-								if (contentLength > 0 && downloadedLength * 100 / contentLength != percent) {
-									percent = (int) (downloadedLength * 100 / contentLength);
-									setState(STATE_CONTENT_RECEIVING);
+								@Override
+								public Object handleResponse(HttpResponse response) {
+
+									headers = new TreeMap<String, List<String>>();
+									for (Header h : response.getAllHeaders()) {
+										String key = h.getName();
+										List<String> vals = null;
+										if (headers.containsKey(key))
+											vals = headers.get(key);
+										else {
+											vals = new ArrayList<String>();
+											headers.put(key, vals);
+										}
+										vals.add(h.getValue());
+									}
+									writeHeaders();
+									resetFromHeaders();
+									setState(STATE_HEADER_RECEIVED);
+									HttpEntity entity = response.getEntity();
+									if (entity != null) {
+										try {
+											InputStream instream = entity.getContent();
+											Header contentEncoding = response
+													.getFirstHeader("Content-Encoding");
+											if (contentEncoding != null
+													&& contentEncoding.getValue()
+															.equalsIgnoreCase("gzip")) {
+												instream = new GZIPInputStream(instream);
+											}
+											InputStream input = new BufferedInputStream(
+													instream);
+											OutputStream output = new FileOutputStream(
+													fileData, fileData.exists());
+
+											byte data[] = new byte[1024 * 10];
+											int count;
+											int percent = -1;
+											while ((count = input.read(data)) != -1) {
+												downloadedLength += count;
+												if (contentLength > 0 && downloadedLength * 100 / contentLength != percent) {
+													percent = (int) (downloadedLength * 100 / contentLength);
+													setState(STATE_CONTENT_RECEIVING);
+												}
+												output.write(data, 0, count);
+											}
+
+											output.flush();
+											output.close();
+											instream.close();
+											if (contentLength == -1)
+												contentLength = downloadedLength;
+											if (isDownloaded()){
+												if (file.exists())
+													file.delete();
+												FileHelper.copyFile(fileData, file);
+												fileData.delete();
+												fileInfo.delete();
+												setState(STATE_CONTENT_RECEIVED);
+											} else {
+												throw new RuntimeException("Why ?");
+											}
+										} catch (Exception e) {
+											error = e;
+											Logger.error(e.getMessage());
+											setState(STATE_ERROR);
+										} finally {
+											setState(STATE_FINISHED);
+										}
+									}
+									return null;
 								}
-								output.write(data, 0, count);
-							}
-
-							output.flush();
-							output.close();
-							instream.close();
-							if (contentLength == -1)
-								contentLength = downloadedLength;
-							if (isDownloaded()){
-								if (file.exists())
-									file.delete();
-								FileHelper.copyFile(fileData, file);
-								fileData.delete();
-								fileInfo.delete();
-								setState(STATE_CONTENT_RECEIVED);
-							} else {
-								throw new RuntimeException("Why ?");
-							}
+							});
 						} catch (Exception e) {
 							error = e;
 							Logger.error(e.getMessage());
 							setState(STATE_ERROR);
-						} finally {
-							setState(STATE_FINISHED);
+							setState(STATE_FINISHED);		
 						}
-					}
-					return null;
-				}
-			});
-		} catch (Exception e) {
-			error = e;
-			Logger.error(e.getMessage());
-			setState(STATE_ERROR);
-			setState(STATE_FINISHED);		
-		}
+						return null;
+					}					
+
+				};
+
+		        if (Build.VERSION.SDK_INT < 4) {
+		        	task.execute();
+		        } else if (Build.VERSION.SDK_INT < 11) {
+		        	task.execute();
+		        } else {
+		            try {
+		                Method method = android.os.AsyncTask.class.getMethod("executeOnExecutor",
+		                        Executor.class, Object[].class);
+		                Field field = android.os.AsyncTask.class.getField("THREAD_POOL_EXECUTOR");
+		                Object executor = field.get(null);
+		                method.invoke(task, executor);
+		            } catch (NoSuchMethodException e) {
+		                throw new RuntimeException("Unexpected NoSuchMethodException", e);
+		            } catch (NoSuchFieldException e) {
+		                throw new RuntimeException("Unexpected NoSuchFieldException", e);
+		            } catch (IllegalAccessException e) {
+		                throw new RuntimeException("Unexpected IllegalAccessException", e);
+		            } catch (InvocationTargetException e) {
+		                throw new RuntimeException("Unexpected InvocationTargetException", e);
+		            }
+		        }
+			}
+			
+		});
 	}
 
 	public void stop() {
 		if (request != null){
 			request.abort();
-			request = null;
+			request = null; 
 		}
 	}
 

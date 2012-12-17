@@ -298,4 +298,8 @@ public abstract class Case<A> implements ICase<A> {
 	public void removeMessageHandler(String topic, IMessageHandler handler) {
 		App.get().getMessageBox().removeHandler(topic, handler);		
 	}
+	@Override
+	public boolean isAttached() {
+		return getAttachedObject() != null;
+	}
 }
