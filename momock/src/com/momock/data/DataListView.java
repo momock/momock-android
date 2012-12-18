@@ -50,31 +50,30 @@ public class DataListView<T> extends DataViewBase<T> {
 				store.addItem(obj);
 			}
 		}
+		int count = store.getItemCount();
+		Object[] objs = new Object[count];
+		for (int i = 0; i < count; i++) {
+			objs[i] = store.getItem(i);
+		}
 		if (store.getItemCount() > 0 && order != null) {
-			int count = store.getItemCount();
-			Object[] objs = new Object[count];
-			for (int i = 0; i < count; i++) {
-				objs[i] = store.getItem(i);
-			}
 			Arrays.sort(objs, new Comparator<Object>() {
 				@Override
 				public int compare(Object lhs, Object rhs) {
 					return order.compare((T)lhs, (T)rhs);
 				}
 			});
-
-			if (limit > 0){
-				store.removeAllItems();
-				for (int i = 0; i < limit; i++) {	
-					if (offset + i < count)
-						store.addItem((T)objs[offset + i]);
-					else 
-						break;
-				}
-			} else {
-				for (int i = 0; i < count; i++) {
-					store.setItem(i, (T)objs[i]);
-				}
+		}
+		if (limit > 0){
+			store.removeAllItems();
+			for (int i = 0; i < limit; i++) {	
+				if (offset + i < count)
+					store.addItem((T)objs[offset + i]);
+				else 
+					break;
+			}
+		} else {
+			for (int i = 0; i < count; i++) {
+				store.setItem(i, (T)objs[i]);
 			}
 		}
 	}

@@ -80,7 +80,7 @@ public class Logger {
 	}
 	public static void debug(String msg) {
 		if (logLevel > LEVEL_DEBUG) return;
-
+		if (msg == null) msg = "";
 		Throwable t = new Throwable(); 
 		StackTraceElement trace = t.getStackTrace()[1];
 		android.util.Log.d(getSourceInfo(trace), msg);
@@ -91,7 +91,7 @@ public class Logger {
 	
 	public static void info(String msg) {
 		if (logLevel > LEVEL_INFO) return;
-
+		if (msg == null) msg = "";
 		Throwable t = new Throwable(); 
 		StackTraceElement trace = t.getStackTrace()[1];
 		android.util.Log.i(getSourceInfo(trace), msg);
@@ -102,7 +102,7 @@ public class Logger {
 
 	public static void warn(String msg) {
 		if (logLevel > LEVEL_WARN) return;
-
+		if (msg == null) msg = "";
 		Throwable t = new Throwable(); 
 		StackTraceElement trace = t.getStackTrace()[1];
 		android.util.Log.w(getSourceInfo(trace), msg);
@@ -113,7 +113,7 @@ public class Logger {
 
 	public static void error(String msg) {
 		if (logLevel > LEVEL_ERROR) return;
-
+		if (msg == null) msg = "";
 		Throwable t = new Throwable(); 
 		StackTraceElement trace = t.getStackTrace()[1];
 		android.util.Log.e(getSourceInfo(trace), msg);
@@ -125,7 +125,7 @@ public class Logger {
 	public static void check(boolean condition, String msg){
 		if (!condition)	{
 			if (logLevel > LEVEL_ERROR) return;
-
+			if (msg == null) msg = "";
 			Throwable t = new Throwable(); 
 			StackTraceElement trace = t.getStackTrace()[1];
 			android.util.Log.e(getSourceInfo(trace), msg);

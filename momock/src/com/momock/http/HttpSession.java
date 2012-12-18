@@ -1,22 +1,21 @@
-package com.momock.net;
+package com.momock.http;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.Executor;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
@@ -27,6 +26,7 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 
+import android.annotation.TargetApi;
 import android.os.AsyncTask;
 import android.os.Build;
 
@@ -76,10 +76,13 @@ public class HttpSession{
 	File fileInfo = null;
 	int state = STATE_WAITING;
 	HttpRequestBase request = null;
+	boolean downloadMode = false;
+	byte[] result = null;
 	Event<StateChangedEventArgs> stateChangedEvent = new Event<StateChangedEventArgs>();
 
-	public HttpSession(HttpClient httpClient, String url) {
-		this(httpClient, url, null);
+	public HttpSession(HttpClient httpClient, HttpRequestBase request) {
+		this.httpClient = httpClient;
+		this.request = request;
 	}
 
 	public HttpSession(HttpClient httpClient, String url, File file) {
@@ -93,6 +96,7 @@ public class HttpSession{
 			this.file = cacheService.getCacheOf(this.getClass().getName(), url);
 		this.fileData = new File(file.getPath() + ".data");
 		this.fileInfo = new File(file.getPath() + ".info");
+		downloadMode = true;
 	}
 
 	Map<String, List<String>> headers = new TreeMap<String, List<String>>();
@@ -165,7 +169,20 @@ public class HttpSession{
 	public Throwable getError() {
 		return error;
 	}
-
+	public InputStream getResult(){
+		if (downloadMode){
+			try {
+				if (file != null)
+					return new FileInputStream(file);
+			} catch (FileNotFoundException e) {
+				Logger.error(e.getMessage());
+			}
+		} else {
+			if (result != null)
+				return new ByteArrayInputStream(result);
+		}
+		return null;
+	}
 	public File getFile() {
 		return file;
 	}
@@ -227,30 +244,26 @@ public class HttpSession{
 		}
 	}
 
-	public void resume(){
-		if (request == null){
-			this.state = STATE_WAITING;
-		}
-	}
 	public void start() {
-		if (request != null){
-			Logger.warn(url + " has already been started.");
+		if (state != STATE_WAITING && state != STATE_FINISHED){
+			Logger.warn(url + " is executing.");
 			return;
-		}
-		request = new HttpGet(url);
-		request.setHeader("Accept", "application/json");
-		request.setHeader("Accept-Encoding", "gzip");
-		if (fileData.exists()) {
-			request.setHeader("Range", "bytes=" + fileData.length() + "-");
 		}
 		error = null;
 		downloadedLength = 0;
-		contentLength = -1;
-		if (fileData.exists() && fileInfo.exists()) {
-			downloadedLength = fileData.length();
-			readHeaders();
-			resetFromHeaders();
-		}		
+		contentLength = -1;		
+		if (downloadMode){
+			request = new HttpGet(url);
+			if (fileData.exists() && fileInfo.exists()) {
+				request.setHeader("Range", "bytes=" + fileData.length() + "-");
+				downloadedLength = fileData.length();
+				readHeaders();
+				resetFromHeaders();
+			}		
+		} else {
+			
+		}
+		request.setHeader("Accept-Encoding", "gzip");
 		setState(STATE_STARTED);
 		App.get().execute(new Runnable(){
 
@@ -266,7 +279,6 @@ public class HttpSession{
 
 								@Override
 								public Object handleResponse(HttpResponse response) {
-
 									headers = new TreeMap<String, List<String>>();
 									for (Header h : response.getAllHeaders()) {
 										String key = h.getName();
@@ -279,7 +291,9 @@ public class HttpSession{
 										}
 										vals.add(h.getValue());
 									}
-									writeHeaders();
+									if (downloadMode){
+										writeHeaders();
+									}
 									resetFromHeaders();
 									setState(STATE_HEADER_RECEIVED);
 									HttpEntity entity = response.getEntity();
@@ -295,8 +309,7 @@ public class HttpSession{
 											}
 											InputStream input = new BufferedInputStream(
 													instream);
-											OutputStream output = new FileOutputStream(
-													fileData, fileData.exists());
+											OutputStream output = downloadMode ? new FileOutputStream(fileData, fileData.exists()) : new ByteArrayOutputStream();
 
 											byte data[] = new byte[1024 * 10];
 											int count;
@@ -311,20 +324,20 @@ public class HttpSession{
 											}
 
 											output.flush();
+											if (!downloadMode) result = ((ByteArrayOutputStream)output).toByteArray();
 											output.close();
 											instream.close();
 											if (contentLength == -1)
 												contentLength = downloadedLength;
-											if (isDownloaded()){
+
+											if (downloadMode){
 												if (file.exists())
 													file.delete();
 												FileHelper.copyFile(fileData, file);
 												fileData.delete();
 												fileInfo.delete();
-												setState(STATE_CONTENT_RECEIVED);
-											} else {
-												throw new RuntimeException("Why ?");
 											}
+											setState(STATE_CONTENT_RECEIVED);										
 										} catch (Exception e) {
 											error = e;
 											Logger.error(e.getMessage());
@@ -352,24 +365,13 @@ public class HttpSession{
 		        } else if (Build.VERSION.SDK_INT < 11) {
 		        	task.execute();
 		        } else {
-		            try {
-		                Method method = android.os.AsyncTask.class.getMethod("executeOnExecutor",
-		                        Executor.class, Object[].class);
-		                Field field = android.os.AsyncTask.class.getField("THREAD_POOL_EXECUTOR");
-		                Object executor = field.get(null);
-		                method.invoke(task, executor);
-		            } catch (NoSuchMethodException e) {
-		                throw new RuntimeException("Unexpected NoSuchMethodException", e);
-		            } catch (NoSuchFieldException e) {
-		                throw new RuntimeException("Unexpected NoSuchFieldException", e);
-		            } catch (IllegalAccessException e) {
-		                throw new RuntimeException("Unexpected IllegalAccessException", e);
-		            } catch (InvocationTargetException e) {
-		                throw new RuntimeException("Unexpected InvocationTargetException", e);
-		            }
+		        	executeTaskOnExecutor(task);
 		        }
 			}
-			
+			@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+			void executeTaskOnExecutor(AsyncTask<Void, Void, Void> task){
+	        	task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);				
+			}
 		});
 	}
 

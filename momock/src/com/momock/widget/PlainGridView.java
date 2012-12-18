@@ -74,7 +74,21 @@ public class PlainGridView extends LinearLayout implements IPlainAdapterView {
 		adapter.registerDataSetObserver(observer);
 		observer.onChanged();
 	}
+	class DummyGridItem extends View{
 
+		public DummyGridItem(Context context, AttributeSet attrs, int defStyle) {
+			super(context, attrs, defStyle);
+		}
+
+		public DummyGridItem(Context context, AttributeSet attrs) {
+			super(context, attrs);
+		}
+
+		public DummyGridItem(Context context) {
+			super(context);
+		}
+		
+	}
 	private class Observer extends DataSetObserver {
 		PlainGridView context;
 
@@ -87,16 +101,23 @@ public class PlainGridView extends LinearLayout implements IPlainAdapterView {
 			if (context.adapter == null)
 				return;
 
+			int i;
 			int count = context.getChildCount();
 			int rows = (count + columns - 1) / columns;
 			List<LinearLayout> oldRows = new ArrayList<LinearLayout>(rows);
 			List<View> oldItems = new ArrayList<View>(count);
+			List<View> oldDummyItems = new ArrayList<View>(columns);
 
-			for (int i = 0; i < context.getChildCount(); i++) {
+			for (i = 0; i < context.getChildCount(); i++) {
 				LinearLayout row = (LinearLayout) context.getChildAt(i);
 				oldRows.add(row);
 				for (int j = 0; j < row.getChildCount(); j++) {
-					oldItems.add(row.getChildAt(j));
+					View v = row.getChildAt(j);
+					if (i == context.getChildCount() - 1 && v instanceof DummyGridItem)
+						oldDummyItems.add(v);
+					else
+						oldItems.add(v);
+					
 				}
 				row.removeAllViews();
 			}
@@ -105,7 +126,7 @@ public class PlainGridView extends LinearLayout implements IPlainAdapterView {
 			Iterator<LinearLayout> iterRow = oldRows.iterator();
 			Iterator<View> iterItem = oldItems.iterator();
 			LinearLayout curr = null;
-			for (int i = 0; i < context.adapter.getCount(); i++) {
+			for (i = 0; i < context.adapter.getCount(); i++) {
 				final int index = i;
 				int c = i % columns;
 				if (c == 0) {
@@ -142,6 +163,20 @@ public class PlainGridView extends LinearLayout implements IPlainAdapterView {
 						listener.onItemClick(PlainGridView.this, v, index);
 					}
 				});
+			}
+
+			Iterator<View> iterDummyItem = oldDummyItems.iterator();
+			i = context.adapter.getCount() % columns;
+			if (i > 0){
+				for (; i < columns; i++) {
+					View convertView = iterDummyItem.hasNext() ? iterDummyItem.next() : null;
+					if (convertView == null){
+						convertView = new DummyGridItem(context.getContext());
+					}
+					
+					curr.addView(convertView);
+					convertView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1));
+				}
 			}
 			super.onChanged();
 		}

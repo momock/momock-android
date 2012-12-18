@@ -37,22 +37,19 @@ import com.momock.event.Event;
 import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 import com.momock.holder.ImageHolder;
-import com.momock.net.HttpSession;
-import com.momock.net.HttpSession.StateChangedEventArgs;
+import com.momock.http.HttpSession;
+import com.momock.http.HttpSession.StateChangedEventArgs;
 import com.momock.util.Convert;
 import com.momock.util.ImageHelper;
 import com.momock.util.Logger;
 import com.momock.widget.IPlainAdapterView;
 
 public class ImageService implements IImageService {
-	Downloader downloader;
 	Map<String, IEvent<ImageEventArgs>> allImageHandlers = new HashMap<String, IEvent<ImageEventArgs>>();
 	ICache<String, Bitmap> bitmapCache = new SimpleCache<String, Bitmap>();
-	public ImageService(){
-		this(5, null);
-	}
-	public ImageService(int maxTaskCount, String userAgent){
-		downloader = new Downloader(maxTaskCount);
+	Map<String, HttpSession> sessions = new HashMap<String, HttpSession>();
+	IHttpService getHttpService(){
+		return App.get().getService(IHttpService.class);
 	}
 	public Bitmap getBitmap(String fullUri){
 		return bitmapCache.get(fullUri);
@@ -128,10 +125,11 @@ public class ImageService implements IImageService {
 					bitmap = ImageHelper.fromFile(bmpFile, expectedWidth, expectedHeight);
 				} 
 				if (bitmap == null) {
-					HttpSession session = downloader.getSession(uri);
+					HttpSession session = sessions.get(uri);
 					if (session == null){
-						session = downloader.newSession(uri, bmpFile);
-						downloader.addSession(session);
+						session = getHttpService().download(uri, bmpFile);
+						session.start();
+						sessions.put(uri, session);
 						session.getStateChangedEvent().addEventHandler(new IEventHandler<StateChangedEventArgs>(){
 	
 							@Override
@@ -279,7 +277,6 @@ public class ImageService implements IImageService {
 
 	@Override
 	public void start() {	
-		downloader.start();
 	}
 
 	@Override
@@ -287,6 +284,5 @@ public class ImageService implements IImageService {
 		allImageHandlers.clear();
 		imageViewHandlers.clear();
 		adapterHandlers.clear();
-		downloader.stop();
 	}
 }

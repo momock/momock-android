@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.momock.app;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -38,10 +40,8 @@ import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
 import com.momock.service.CacheService;
-import com.momock.service.Downloader;
 import com.momock.service.HttpService;
 import com.momock.service.ICacheService;
-import com.momock.service.IDownloader;
 import com.momock.service.IHttpService;
 import com.momock.service.IImageService;
 import com.momock.service.IService;
@@ -103,7 +103,21 @@ public abstract class App extends android.app.Application implements
 	}
 
 	static App app = null;
-
+	
+	Thread.UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
+	
+	public App(){
+		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+			@Override
+			public void uncaughtException(Thread thread, Throwable ex) {
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				PrintStream ps = new PrintStream(baos);
+				ex.printStackTrace(ps);
+				Logger.error(thread + ":" + new String(baos.toByteArray()));
+				handler.uncaughtException(thread, ex);
+			}
+		});
+	}
 	Map<Context, LayoutInflater> cachedLayoutInflater = new WeakHashMap<Context, LayoutInflater>();
 
 	public static App get() {
@@ -374,7 +388,6 @@ public abstract class App extends android.app.Application implements
 		onRegisterShortNames();
 		addService(IHttpService.class, new HttpService());
 		addService(ICacheService.class, new CacheService());
-		addService(IDownloader.class, new Downloader());
 		addService(IImageService.class, new ImageService());
 		onAddServices();
 		onAddCases();
