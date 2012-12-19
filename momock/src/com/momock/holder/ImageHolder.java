@@ -34,7 +34,7 @@ import com.momock.event.IEventHandler;
 import com.momock.service.IImageService;
 import com.momock.service.IImageService.ImageEventArgs;
 
-public class ImageHolder{
+public class ImageHolder implements IHolder{
 	protected IEvent<EventArgs> imageLoadedEvent = null;
 	public ImageHolder(){
 		onCreate();

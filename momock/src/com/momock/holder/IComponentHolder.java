@@ -15,6 +15,6 @@
  ******************************************************************************/
 package com.momock.holder;
 
-public interface IComponentHolder {
+public interface IComponentHolder extends IHolder{
 
 }

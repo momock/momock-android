@@ -91,12 +91,6 @@ public abstract class CaseActivity extends FragmentActivity {
 	}
 
 	@Override
-	protected void onResumeFragments() {
-		log("onResumeFragments");
-		super.onResumeFragments();
-	}
-
-	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		log("onSaveInstanceState");
 		super.onSaveInstanceState(outState);

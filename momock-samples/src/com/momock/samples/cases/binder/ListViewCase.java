@@ -41,7 +41,7 @@ public class ListViewCase extends Case<Fragment>{
 	
 	@Override
 	public void onCreate() {
-		IActionOutlet<?> outlet = getParent().getOutlet(OutletNames.SAMPLES);
+		IActionOutlet<?> outlet = (IActionOutlet<?>)getParent().getOutlet(OutletNames.SAMPLES);
 		outlet.addPlug(ActionPlug.create(TextHolder.get("ListView Sample"))
 				.addExecuteEventHandler(new IEventHandler<IEventArgs>() {
 					@Override

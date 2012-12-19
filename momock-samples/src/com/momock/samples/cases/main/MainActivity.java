@@ -33,9 +33,10 @@ public class MainActivity extends CaseActivity {
         setContentView(R.layout.case_main);        
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
-    	IActionOutlet<Menu> outlet = getCase().getOutlet(OutletNames.MAIN_MENU);
+    	IActionOutlet<Menu> outlet = (IActionOutlet<Menu>)getCase().getOutlet(OutletNames.MAIN_MENU);
     	outlet.attach(menu);
         return true;
     }

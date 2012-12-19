@@ -17,7 +17,7 @@ package com.momock.holder;
 
 import com.momock.app.App;
 
-public abstract class TextHolder {
+public abstract class TextHolder implements IHolder{
 	public abstract String getText();
 
 	@Override

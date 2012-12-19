@@ -301,22 +301,23 @@ public abstract class App extends android.app.Application implements
 	@SuppressWarnings("rawtypes")
 	HashMap<String, IOutlet> outlets = new HashMap<String, IOutlet>();
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	@Override
-	public <P extends IPlug, H, T extends IOutlet<P, H>> T getOutlet(String name) {
-		T outlet = null;
+	public IOutlet getOutlet(String name) {
+		IOutlet outlet = null;
 		if (outlets.containsKey(name))
-			outlet = (T) outlets.get(name);
+			outlet = outlets.get(name);
 		else {
-			outlet = (T) new PlaceholderOutlet();
+			outlet = new PlaceholderOutlet();
 			outlets.put(name, outlet);
 		}
 		return outlet;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
-	public <P extends IPlug, H, T extends IOutlet<P, H>> void addOutlet(
-			String name, T outlet) {
+	public void addOutlet(
+			String name, IOutlet outlet) {
 		Logger.debug("addOutlet : " + name);
 		if (outlets.containsKey(name) && outlet != null) {
 			IOutlet<?, ?> oldOutlet = outlets.get(name);

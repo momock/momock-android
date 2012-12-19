@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import android.os.Environment;
 
@@ -36,8 +37,10 @@ public class Logger {
 	static PrintStream logStream = null;
 	static String logFileName = "log.txt";
 	static int logLevel = LEVEL_DEBUG;
+	static boolean enabled = true;
 
 	public static void open(String logfilename, int level) {
+		if (!enabled) return;
 		logFileName = logfilename;
 		if (logStream == null) {
 
@@ -57,6 +60,7 @@ public class Logger {
 	}
 	public static void close()
 	{
+		if (!enabled) return;
 		if (logStream == null) return;
 		logStream.println("========== Logger End   ==========");
 		logStream.close();
@@ -64,14 +68,14 @@ public class Logger {
 	}
 	static void checkLogFile()
 	{
-		if (logStream == null)
+		if (enabled && logStream == null)
 			open("log.txt", LEVEL_DEBUG);
 	}
 	static String getLog(String level, String msg)
 	{
 		Throwable t = new Throwable(); 
 		StackTraceElement trace = t.getStackTrace()[2];
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.ENGLISH);
 		return "[" + level + "] " + sdf.format(new Date()) + " in " + trace.getFileName() + "(" + trace.getLineNumber() + ") >" + msg;
 	}
 	static String getSourceInfo(StackTraceElement trace)
@@ -79,7 +83,7 @@ public class Logger {
 		return trace.getFileName() + "(" + trace.getLineNumber() + ")";
 	}
 	public static void debug(String msg) {
-		if (logLevel > LEVEL_DEBUG) return;
+		if (!enabled && logLevel > LEVEL_DEBUG) return;
 		if (msg == null) msg = "";
 		Throwable t = new Throwable(); 
 		StackTraceElement trace = t.getStackTrace()[1];
@@ -90,7 +94,7 @@ public class Logger {
 	}
 	
 	public static void info(String msg) {
-		if (logLevel > LEVEL_INFO) return;
+		if (!enabled && logLevel > LEVEL_INFO) return;
 		if (msg == null) msg = "";
 		Throwable t = new Throwable(); 
 		StackTraceElement trace = t.getStackTrace()[1];
@@ -101,7 +105,7 @@ public class Logger {
 	}
 
 	public static void warn(String msg) {
-		if (logLevel > LEVEL_WARN) return;
+		if (!enabled && logLevel > LEVEL_WARN) return;
 		if (msg == null) msg = "";
 		Throwable t = new Throwable(); 
 		StackTraceElement trace = t.getStackTrace()[1];
@@ -112,7 +116,7 @@ public class Logger {
 	}
 
 	public static void error(String msg) {
-		if (logLevel > LEVEL_ERROR) return;
+		if (!enabled && logLevel > LEVEL_ERROR) return;
 		if (msg == null) msg = "";
 		Throwable t = new Throwable(); 
 		StackTraceElement trace = t.getStackTrace()[1];
@@ -124,7 +128,7 @@ public class Logger {
 
 	public static void check(boolean condition, String msg){
 		if (!condition)	{
-			if (logLevel > LEVEL_ERROR) return;
+			if (!enabled && logLevel > LEVEL_ERROR) return;
 			if (msg == null) msg = "";
 			Throwable t = new Throwable(); 
 			StackTraceElement trace = t.getStackTrace()[1];
@@ -135,5 +139,11 @@ public class Logger {
 			
 			throw new RuntimeException(msg);
 		}
+	}
+	public static boolean isEnabled() {
+		return enabled;
+	}
+	public static void setEnabled(boolean enabled) {
+		Logger.enabled = enabled;
 	}
 }

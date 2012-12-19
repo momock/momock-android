@@ -182,13 +182,13 @@ public class ViewBinder {
 			else
 				cv = view.findViewById(Convert.toInteger(tagOrId));
 			for (Setter s : customSetters) {
-				set = s.onSet(cv, pv.viewProp, target, name, val, (ViewGroup)view);
+				set = s.onSet(cv, pv.viewProp, target, name, val, view instanceof ViewGroup ? (ViewGroup)view : null);
 				if (set)
 					break;
 			}
 			if (!set) {
 				for (Setter s : globalSetters) {
-					set = s.onSet(cv, pv.viewProp, target, name, val, (ViewGroup)view);
+					set = s.onSet(cv, pv.viewProp, target, name, val, view instanceof ViewGroup ? (ViewGroup)view : null);
 					if (set)
 						break;
 				}
