@@ -51,6 +51,9 @@ public class ImageService implements IImageService {
 	IHttpService getHttpService(){
 		return App.get().getService(IHttpService.class);
 	}
+	ICacheService getCacheService(){
+		return App.get().getService(ICacheService.class);
+	}
 	public Bitmap getBitmap(String fullUri){
 		return bitmapCache.get(fullUri);
 	}
@@ -79,8 +82,7 @@ public class ImageService implements IImageService {
 
 	@Override
 	public File getCacheOf(String fullUri){
-		ICacheService cacheService = App.get().getService(ICacheService.class);
-		return cacheService.getCacheOf(getClass().getName(), fullUri);
+		return getCacheService().getCacheOf(getClass().getName(), fullUri);
 	}
 	
 	@Override
@@ -284,5 +286,9 @@ public class ImageService implements IImageService {
 		allImageHandlers.clear();
 		imageViewHandlers.clear();
 		adapterHandlers.clear();
+	}
+	@Override
+	public Class<?>[] getDependencyServices() {
+		return new Class<?>[]{IHttpService.class, ICacheService.class};
 	}
 }

@@ -16,6 +16,7 @@
 package com.momock.service;
 
 public interface IService {
+	Class<?>[] getDependencyServices();
 	void start();
 	void stop();
 }

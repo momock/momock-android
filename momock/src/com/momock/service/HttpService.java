@@ -147,5 +147,9 @@ public class HttpService implements IHttpService {
 		if (headers != null) httpDelete.setHeaders(headers);
 		return new HttpSession(httpClient, httpDelete);
 	}
+	@Override
+	public Class<?>[] getDependencyServices() {
+		return null;
+	}
 
 }

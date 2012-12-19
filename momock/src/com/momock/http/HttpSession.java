@@ -48,6 +48,20 @@ public class HttpSession{
 	public static final int STATE_ERROR = 5;
 	public static final int STATE_FINISHED = 6;
 
+	public static class DownloadInfo{
+		long downloadedLength = 0;
+		long contentLength = -1;
+		DownloadInfo(long downloadedLength, long contentLength){
+			this.downloadedLength = downloadedLength;
+			this.contentLength = contentLength;
+		}
+		public long getDownloadedLength() {
+			return downloadedLength;
+		}
+		public long getContentLength() {
+			return contentLength;
+		}
+	}
 	public static class StateChangedEventArgs extends EventArgs {
 		int state;
 		HttpSession session;
@@ -78,6 +92,7 @@ public class HttpSession{
 	HttpRequestBase request = null;
 	boolean downloadMode = false;
 	byte[] result = null;
+	
 	Event<StateChangedEventArgs> stateChangedEvent = new Event<StateChangedEventArgs>();
 
 	public HttpSession(HttpClient httpClient, HttpRequestBase request) {
@@ -96,9 +111,54 @@ public class HttpSession{
 			this.file = cacheService.getCacheOf(this.getClass().getName(), url);
 		this.fileData = new File(file.getPath() + ".data");
 		this.fileInfo = new File(file.getPath() + ".info");
-		downloadMode = true;
+		DownloadInfo di = getDownloadInfo(url, file);
+		if (di != null){
+			this.downloadedLength = di.getDownloadedLength();
+			this.contentLength = di.getContentLength();		
+			state = STATE_FINISHED;
+		}
+		downloadMode = true;		
 	}
+	public static DownloadInfo getDownloadInfo(String url, File file){
+		if (file.exists()){
+			return new DownloadInfo(file.length(), file.length());
+		}
+		DownloadInfo di = null;
+		File fileData = new File(file.getPath() + ".data");
+		File fileInfo = new File(file.getPath() + ".info");
+		if (fileData.exists() && fileInfo.exists()){
+			long downloadedLength = fileData.length();
+			long contentLength = -1;
+			DataInputStream din;
+			try {
+				din = new DataInputStream(new FileInputStream(
+						fileInfo));
 
+				int headerCount = din.readInt();
+				for (int i = 0; i < headerCount; i++) {
+					String key = din.readUTF();				
+					int count = din.readInt();
+					List<String> vals = new ArrayList<String>();
+					for (int j = 0; j < count; j++) {
+						String val = din.readUTF();
+						vals.add(val);
+					}		
+					if ("Content-Length".equals(key)){
+						if (contentLength == -1)
+							contentLength = Convert.toInteger(vals.get(0));						
+					} else if ("Content-Range".equals(key)){
+						int pos = vals.get(0).indexOf('/');
+						contentLength = Convert.toInteger(vals.get(0).substring(pos + 1));
+					}
+				}
+				din.close();	
+				di = new DownloadInfo(downloadedLength, contentLength);
+			} catch (Exception e) {
+				Logger.error(e.getMessage());
+			}
+		}
+		return di;
+	}
 	Map<String, List<String>> headers = new TreeMap<String, List<String>>();
 
 	void readHeaders() {

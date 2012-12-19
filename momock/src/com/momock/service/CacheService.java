@@ -95,4 +95,9 @@ public class CacheService implements ICacheService {
 	public void stop() {
 	}
 
+	@Override
+	public Class<?>[] getDependencyServices() {
+		return null;
+	}
+
 }

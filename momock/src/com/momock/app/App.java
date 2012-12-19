@@ -17,7 +17,9 @@ package com.momock.app;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -393,8 +395,44 @@ public abstract class App extends android.app.Application implements
 		onAddServices();
 		onAddCases();
 		executeHandler = new Handler();
+		List<Class<?>> startedServices = new ArrayList<Class<?>>();
+		List<IService> waitingServices = new ArrayList<IService>();
 		for(Map.Entry<Class<?>, IService> e : services.entrySet()){
-			e.getValue().start();
+			IService service = e.getValue();
+			Class<?> classes[] = service.getDependencyServices();
+			if (classes == null || classes.length == 0){
+				Logger.debug("Start service " + service.getClass());
+				service.start();
+				startedServices.add(service.getClass());
+			} else {
+				waitingServices.add(service);
+			}
+		}
+		while(waitingServices.size() > 0){
+			int started = 0;
+			for(int i = 0; i < waitingServices.size(); i ++){
+				IService service = waitingServices.get(i);
+				Class<?> classes[] = service.getDependencyServices();
+				int fits = 0;
+				for (int j = 0; j < classes.length; j++){
+					Class<?> cls = classes[j];
+					for (int s = 0; s < startedServices.size(); s++){
+						Class<?> scls = startedServices.get(s);
+						if (cls.isAssignableFrom(scls)){
+							fits ++;
+							break;
+						}
+					}
+				}
+				if (fits == classes.length){
+					Logger.debug("Start service " + service.getClass());
+					service.start();
+					startedServices.add(service.getClass());
+					waitingServices.remove(i--);
+					started ++;
+				}
+			}
+			Logger.check(started != 0, "Some dependency services are missing!");
 		}
 	}
 
