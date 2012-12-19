@@ -41,13 +41,8 @@ import com.momock.message.MessageBox;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
-import com.momock.service.CacheService;
-import com.momock.service.HttpService;
-import com.momock.service.ICacheService;
-import com.momock.service.IHttpService;
 import com.momock.service.IImageService;
 import com.momock.service.IService;
-import com.momock.service.ImageService;
 import com.momock.util.Logger;
 
 public abstract class App extends android.app.Application implements
@@ -389,9 +384,6 @@ public abstract class App extends android.app.Application implements
 		if (environmentCreated) return;
 		environmentCreated = true;
 		onRegisterShortNames();
-		addService(IHttpService.class, new HttpService());
-		addService(ICacheService.class, new CacheService());
-		addService(IImageService.class, new ImageService());
 		onAddServices();
 		onAddCases();
 		executeHandler = new Handler();

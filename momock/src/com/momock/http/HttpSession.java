@@ -320,9 +320,7 @@ public class HttpSession{
 				readHeaders();
 				resetFromHeaders();
 			}		
-		} else {
-			
-		}
+		} 
 		request.setHeader("Accept-Encoding", "gzip");
 		setState(STATE_STARTED);
 		App.get().execute(new Runnable(){
@@ -391,13 +389,17 @@ public class HttpSession{
 												contentLength = downloadedLength;
 
 											if (downloadMode){
-												if (file.exists())
-													file.delete();
-												FileHelper.copyFile(fileData, file);
-												fileData.delete();
-												fileInfo.delete();
-											}
-											setState(STATE_CONTENT_RECEIVED);										
+												if (isDownloaded()){
+													if (file.exists())
+														file.delete();
+													FileHelper.copyFile(fileData, file);
+													fileData.delete();
+													fileInfo.delete();
+													setState(STATE_CONTENT_RECEIVED);	
+												}
+											} else {
+												setState(STATE_CONTENT_RECEIVED);														
+											}								
 										} catch (Exception e) {
 											error = e;
 											Logger.error(e.getMessage());

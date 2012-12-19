@@ -101,4 +101,9 @@ public class XmlDataService implements IDataService{
 	public void stop() {
 		
 	}
+	
+	@Override
+	public Class<?>[] getDependencyServices() {
+		return null;
+	}
 }
