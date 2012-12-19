@@ -61,7 +61,7 @@ public abstract class FragmentHolder implements IComponentHolder{
 			
 		};
 	}
-	public static <T extends Fragment> FragmentHolder create(final Class<T> fc)
+	public static <T extends Fragment> FragmentHolder create(final Class<T> fc, final ICase<Fragment> kase)
 	{
 		return new FragmentHolder(){
 			Fragment fragment = null;
@@ -71,6 +71,7 @@ public abstract class FragmentHolder implements IComponentHolder{
 					try {
 						Logger.debug("Creating fragment " + fc.getName());
 						fragment = fc.newInstance();
+						((CaseFragment)fragment).setCase(kase);
 					} catch (Exception e) {
 						Logger.error(e.getMessage());
 					}

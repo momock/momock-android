@@ -25,11 +25,13 @@ import android.view.ViewGroup;
 
 import com.momock.util.Logger;
 
-public abstract class CaseFragment extends Fragment{
+public class CaseFragment extends Fragment{
 
-	protected abstract String getCaseName();
 	protected ICase<Fragment> kase = null;
 
+	protected String getCaseName(){
+		throw new RuntimeException("Case has not been assigned.");
+	}
 	@SuppressWarnings("unchecked")
 	public ICase<Fragment> getCase() {
 		if (kase == null) {
@@ -39,6 +41,9 @@ public abstract class CaseFragment extends Fragment{
 		return kase;
 	}
 
+	public void setCase(ICase<Fragment> kase){
+		this.kase = kase;
+	}
 	protected void log(String msg){
 		Logger.info((getCase() == null ? this.toString() : getCase().getFullName()) + "(" + Integer.toHexString(this.hashCode()) +") : " + msg);
 	}
