@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.cache;
+package com.momock.util;
 
-import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
-public interface ICache<K, V> {
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
 
-	boolean put(K key, V value);
+import com.momock.data.IDataMap;
 
-	V get(K key);
+public class HttpHelper {
 
-	void remove(K key);
-
-	Collection<K> keys();
-
-	void clear();
+	public static String getFullUrl(String url, IDataMap<String, String> params){
+		if (params == null) return url;
+		List<BasicNameValuePair> lparams = new LinkedList<BasicNameValuePair>();
+		for (String key : params.getPropertyNames()) {
+			lparams.add(new BasicNameValuePair(key, params.getProperty(key)));
+		}
+		return url + (url.lastIndexOf('?') == -1 ? "?" : "&") + URLEncodedUtils.format(lparams, "UTF-8");
+	}
 }

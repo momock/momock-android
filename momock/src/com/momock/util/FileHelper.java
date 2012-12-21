@@ -19,8 +19,22 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class FileHelper {
+	public static String readTextFile(File source, String encoding) throws IOException{
+		StringBuilder sb = new StringBuilder();
+		FileInputStream fis = new FileInputStream(source);
+		InputStreamReader isr = new InputStreamReader(fis, encoding == null ? "UTF-8" : encoding);
+		char[] cs = new char[10240];
+		int len;
+		while((len = isr.read(cs)) > 0){
+			sb.append(cs, 0, len);
+		}
+		isr.close();
+		fis.close();
+		return sb.toString();
+	}
 	public static void copyFile(File source, File target) throws IOException{
 		FileInputStream fis = new FileInputStream(source);
 		FileOutputStream fos = new FileOutputStream(target);

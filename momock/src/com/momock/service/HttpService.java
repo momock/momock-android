@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2012 momock.com
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.momock.service;
 
 import java.io.File;
@@ -13,13 +28,13 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.net.http.AndroidHttpClient;
 
 import com.momock.data.IDataMap;
 import com.momock.http.HttpSession;
+import com.momock.util.HttpHelper;
 
 public class HttpService implements IHttpService {
 
@@ -49,14 +64,6 @@ public class HttpService implements IHttpService {
 		return httpClient;
 	}
 
-	String getFullUrl(String url, IDataMap<String, String> params){
-		if (params == null) return url;
-		List<BasicNameValuePair> lparams = new LinkedList<BasicNameValuePair>();
-		for (String key : params.getPropertyNames()) {
-			lparams.add(new BasicNameValuePair(key, params.getProperty(key)));
-		}
-		return url + (url.lastIndexOf('?') == -1 ? "?" : "&") + URLEncodedUtils.format(lparams, "UTF-8");
-	}
 	HttpEntity getHttpEntity(IDataMap<String, String> params){
 		if (params == null) return null;
 		List<BasicNameValuePair> lparams = new LinkedList<BasicNameValuePair>();
@@ -83,7 +90,7 @@ public class HttpService implements IHttpService {
 	}
 	@Override
 	public HttpSession get(String url, Header[] headers, IDataMap<String, String> params) {
-		HttpGet httpGet = new HttpGet(getFullUrl(url, params));	
+		HttpGet httpGet = new HttpGet(HttpHelper.getFullUrl(url, params));	
 		if (headers != null) httpGet.setHeaders(headers);
 		return new HttpSession(httpClient, httpGet);
 	}
@@ -143,7 +150,7 @@ public class HttpService implements IHttpService {
 	}
 	@Override
 	public HttpSession delete(String url, Header[] headers,	IDataMap<String, String> params) {
-		HttpDelete httpDelete = new HttpDelete(getFullUrl(url, params));	
+		HttpDelete httpDelete = new HttpDelete(HttpHelper.getFullUrl(url, params));	
 		if (headers != null) httpDelete.setHeaders(headers);
 		return new HttpSession(httpClient, httpDelete);
 	}

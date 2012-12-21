@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.momock.util;
 
+import static android.os.Environment.getExternalStorageState;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -44,10 +46,12 @@ public class Logger {
 		logFileName = logfilename;
 		if (logStream == null) {
 
-			try {
-				logStream = new PrintStream(new FileOutputStream(
-						Environment.getExternalStorageDirectory() + "/"
-								+ logFileName, false));
+			try {				
+				if (getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+					logStream = new PrintStream(new FileOutputStream(Environment.getExternalStorageDirectory() + "/" + logFileName, false));
+				} else {
+					logStream = new PrintStream(new FileOutputStream("/" + logFileName, false));
+				}
 			} catch (IOException e) {
 				logStream = System.out;
 				android.util.Log.e("Logger", "Fails to create log file!", e);

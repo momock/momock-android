@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2012 momock.com
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.momock.http;
 
 import java.io.BufferedInputStream;
@@ -96,6 +111,7 @@ public class HttpSession{
 	Event<StateChangedEventArgs> stateChangedEvent = new Event<StateChangedEventArgs>();
 
 	public HttpSession(HttpClient httpClient, HttpRequestBase request) {
+		this.url = request.getURI().toString();
 		this.httpClient = httpClient;
 		this.request = request;
 	}
@@ -229,6 +245,21 @@ public class HttpSession{
 	public Throwable getError() {
 		return error;
 	}
+	public String getResultAsString(String encoding){
+		try {
+			if (downloadMode) {
+				if (file != null)
+					return FileHelper.readTextFile(file, encoding);
+
+			} else {
+				if (result != null)
+					return new String(result, encoding == null ? "UTF-8" : encoding);
+			}
+		} catch (Exception e) {
+			Logger.error(e.getMessage());
+		}
+		return null;
+	}
 	public InputStream getResult(){
 		if (downloadMode){
 			try {
@@ -303,7 +334,7 @@ public class HttpSession{
 			contentLength = Convert.toInteger(val.substring(pos + 1));
 		}
 	}
-
+	
 	public void start() {
 		if (state != STATE_WAITING && state != STATE_FINISHED){
 			Logger.warn(url + " is executing.");
@@ -319,9 +350,13 @@ public class HttpSession{
 				downloadedLength = fileData.length();
 				readHeaders();
 				resetFromHeaders();
-			}		
+			}	
+			request.setHeader("Accept-Encoding", "gzip");	
 		} 
-		request.setHeader("Accept-Encoding", "gzip");
+		Logger.debug("Request headers of " + url + " : ");
+		for(Header header : request.getAllHeaders()){
+			Logger.debug(header.getName() + " = " + header.getValue());
+		}
 		setState(STATE_STARTED);
 		App.get().execute(new Runnable(){
 
@@ -337,6 +372,12 @@ public class HttpSession{
 
 								@Override
 								public Object handleResponse(HttpResponse response) {
+
+									Logger.debug("Response headers of " + url + " : ");
+									for(Header header : response.getAllHeaders()){
+										Logger.debug(header.getName() + " = " + header.getValue());
+									}
+									
 									headers = new TreeMap<String, List<String>>();
 									for (Header h : response.getAllHeaders()) {
 										String key = h.getName();

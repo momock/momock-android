@@ -378,10 +378,17 @@ public abstract class App extends android.app.Application implements
 	}
 	Handler executeHandler = null;
 	boolean environmentCreated = false;
+	protected void onPreCreateEnvironment() {
+		
+	}
+	protected void onPostCreateEnvironment() {
+		
+	}
 	@Override
 	public void onCreateEnvironment() {
 		Logger.debug("onCreateEnvironment");
 		if (environmentCreated) return;
+		onPreCreateEnvironment();
 		environmentCreated = true;
 		onRegisterShortNames();
 		onAddServices();
@@ -426,6 +433,7 @@ public abstract class App extends android.app.Application implements
 			}
 			Logger.check(started != 0, "Some dependency services are missing!");
 		}
+		onPostCreateEnvironment();
 	}
 
 	@Override
