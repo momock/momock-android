@@ -141,10 +141,19 @@ public class ImageService implements IImageService {
 									if (allImageHandlers.containsKey(fullUri)) {
 										Bitmap bitmap = !args.getSession().isDownloaded() ? null : 
 											ImageHelper.fromFile(args.getSession().getFile(), expectedWidth, expectedHeight);
-										ImageEventArgs iea = new ImageEventArgs(
-												fullUri, bitmap, args.getSession().getError());
-										IEvent<ImageEventArgs> evt = allImageHandlers.get(fullUri);
-										evt.fireEvent(null, iea);
+										if (bitmap == null){
+											if (args.getSession().getError() != null){
+												Logger.error("Fails to download image (" + args.getSession().getUrl() + ") : " + args.getSession().getError().getMessage());
+											}
+											if (args.getSession().isDownloaded()){
+												Logger.error("The content in image (" + args.getSession().getUrl() + ") : " + args.getSession().getResultAsString(null));
+											}
+										} else {
+											ImageEventArgs iea = new ImageEventArgs(
+													fullUri, bitmap, args.getSession().getError());
+											IEvent<ImageEventArgs> evt = allImageHandlers.get(fullUri);
+											evt.fireEvent(null, iea);
+										}
 									}
 								}
 							}

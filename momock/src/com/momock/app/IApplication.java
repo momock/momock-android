@@ -70,4 +70,6 @@ public interface IApplication {
 	
 	MessageBox getMessageBox();
 	
+	String getVersion();	
+	
 }

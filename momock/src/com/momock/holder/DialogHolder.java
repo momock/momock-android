@@ -31,65 +31,102 @@ import com.momock.event.IEventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.util.Logger;
 
-public abstract class DialogHolder implements IHolder{
+public abstract class DialogHolder implements IHolder {
 	WeakReference<DialogFragment> refDialog = null;
+
 	protected abstract FragmentManager getFragmentManager();
+
 	protected abstract DialogFragment getDialogFragment();
-	public void show(){
+
+	public void show() {
 		DialogFragment df = getDialogFragment();
 		FragmentManager fm = getFragmentManager();
 		Logger.check(df != null && fm != null, "Fails to open dialog!");
 		refDialog = new WeakReference<DialogFragment>(df);
 		df.show(fm, "");
 	}
-	public void close(){
-		if (refDialog != null && refDialog.get() != null){
+
+	public void close() {
+		if (refDialog != null && refDialog.get() != null) {
 			refDialog.get().dismiss();
 		}
 	}
-	public static DialogHolder create(final ICase<?> kase, final TextHolder title, final TextHolder message, 
-			final TextHolder okButton, final IEventHandler<IEventArgs> okHandler){
-		return create(kase, title, message, okButton, okHandler, null, null);
+
+	public static DialogHolder create(final ICase<?> kase, final IHolder title,
+			final IHolder message, final TextHolder okButton,
+			final IEventHandler<IEventArgs> okHandler) {
+		return create(kase, null, title, message, okButton, okHandler, null, null);
 	}
-	public static DialogHolder create(final ICase<?> kase, final TextHolder title, final TextHolder message, 
-			final TextHolder okButton, final IEventHandler<IEventArgs> okHandler, final TextHolder cancelButton, final IEventHandler<IEventArgs> cancelHandler){
-		return new DialogHolder(){
+
+	public static DialogHolder create(final ICase<?> kase, final ImageHolder icon, final IHolder title,
+			final IHolder message, final TextHolder okButton,
+			final IEventHandler<IEventArgs> okHandler,
+			final TextHolder cancelButton,
+			final IEventHandler<IEventArgs> cancelHandler) {
+		return new DialogHolder() {
 
 			@Override
 			public FragmentManager getFragmentManager() {
 				if (kase.getAttachedObject() instanceof FragmentActivity)
-					return ((FragmentActivity)kase.getAttachedObject()).getSupportFragmentManager();
+					return ((FragmentActivity) kase.getAttachedObject())
+							.getSupportFragmentManager();
 				else if (kase.getAttachedObject() instanceof Fragment)
-					return ((Fragment)kase.getAttachedObject()).getFragmentManager();
+					return ((Fragment) kase.getAttachedObject())
+							.getFragmentManager();
 				return null;
 			}
 
 			@Override
 			protected DialogFragment getDialogFragment() {
-				return new DialogFragment(){
+				return new DialogFragment() {
 
 					@Override
 					public Dialog onCreateDialog(Bundle savedInstanceState) {
-						AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-						if (message != null)
-							builder.setMessage(message.getText());
-						if (title != null)
-							builder.setTitle(title.getText());
-						if (okButton != null && okHandler != null)
-							builder.setPositiveButton(okButton.getText(), new DialogInterface.OnClickListener() {
-				                   public void onClick(DialogInterface dialog, int id) {
-				                	   okHandler.process(dialog, null);
-				                   }
-				               });
-						if (cancelButton != null && cancelHandler != null)
-							builder.setNegativeButton(cancelButton.getText(), new DialogInterface.OnClickListener() {
-				                   public void onClick(DialogInterface dialog, int id) {
-				                	   cancelHandler.process(dialog, null);
-				                   }
-				               });
+						AlertDialog.Builder builder = new AlertDialog.Builder(
+								getActivity());
+						if (icon != null){
+							builder.setIcon(icon.getAsDrawable());
+						}
+						if (message != null) {
+							Logger.check(message instanceof TextHolder
+									|| message instanceof ViewHolder,
+									"message must be either a TextHolder or a ViewHolder");
+							if (message instanceof TextHolder)
+								builder.setMessage(((TextHolder) message)
+										.getText());
+							else
+								builder.setView(((ViewHolder)message).getView());
+						}
+						if (title != null) {
+							Logger.check(title instanceof TextHolder
+									|| title instanceof ViewHolder,
+									"title must be either a TextHolder or a ResourceHolder");
+							if (title instanceof TextHolder)
+								builder.setTitle(((TextHolder) title).getText());
+							else
+								builder.setCustomTitle(((ViewHolder)title).getView());
+						}
+						if (okButton != null && okHandler != null) {
+							DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									okHandler.process(dialog, null);
+								}
+							};
+							builder.setPositiveButton(okButton.getText(), listener);						
+						}
+						if (cancelButton != null && cancelHandler != null) {
+							DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									cancelHandler.process(dialog, null);
+								}
+							};
+							builder.setNegativeButton(cancelButton.getText(), listener);
+						}
 						return builder.create();
 					}
-					
+
 				};
 			}
 		};

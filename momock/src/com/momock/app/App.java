@@ -28,6 +28,8 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -507,4 +509,17 @@ public abstract class App extends android.app.Application implements
 		if (environmentCreated && activeActivityCount == 0)
 			App.get().onDestroyEnvironment();
 	}
+
+	@Override
+	public String getVersion() {
+		PackageInfo pInfo;
+		try {
+			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+			return pInfo.versionName;
+		} catch (NameNotFoundException e) {
+			Logger.error(e.getMessage());
+		}
+		return "?";
+	}
+
 }

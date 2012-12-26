@@ -25,6 +25,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.momock.app.App;
+import com.momock.app.ICase;
+import com.momock.util.Logger;
 
 public abstract class ViewHolder implements IComponentHolder{
 	public static interface OnViewCreatedHandler
@@ -165,6 +167,36 @@ public abstract class ViewHolder implements IComponentHolder{
 				if (ref == null || ref.get() == null)
 				{
 					LayoutInflater inflater = App.get().getLayoutInflater(refContext.get());
+					ref = new WeakReference<View>(inflater.inflate(resourceId, null));
+					if (handler != null)
+						handler.onViewCreated(ref.get());
+				}
+				return (T)ref.get();
+			}
+			
+			@Override
+			public void reset() {
+				ref = null;
+			}
+		};
+	}
+	
+
+	public static ViewHolder create(ICase<?> kase, final int resourceId){
+		return create(kase, resourceId, null);
+	}
+	public static ViewHolder create(final ICase<?> kase, final int resourceId, final OnViewCreatedHandler handler){
+		return new ViewHolder()
+		{
+			WeakReference<View> ref = null;
+			@SuppressWarnings("unchecked")
+			@Override
+			public <T extends View> T getView() {				
+				if (ref == null || ref.get() == null)
+				{
+					Object obj = kase.getAttachedObject();
+					Logger.check(obj instanceof Activity || obj instanceof Fragment, "Case must be attached to either an Activity or a Fragment");
+					LayoutInflater inflater = App.get().getLayoutInflater(obj instanceof Activity ? (Activity)obj : ((Fragment)obj).getActivity());
 					ref = new WeakReference<View>(inflater.inflate(resourceId, null));
 					if (handler != null)
 						handler.onViewCreated(ref.get());
