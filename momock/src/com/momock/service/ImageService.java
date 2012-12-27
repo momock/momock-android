@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.graphics.Bitmap;
+import android.support.v4.view.PagerAdapter;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -299,5 +300,44 @@ public class ImageService implements IImageService {
 	@Override
 	public Class<?>[] getDependencyServices() {
 		return new Class<?>[]{IHttpService.class, ICacheService.class};
+	}
+	class PagerAdapterRefreshHandler implements IEventHandler<ImageEventArgs>{
+		WeakReference<PagerAdapter> refAdapter; 
+		public PagerAdapterRefreshHandler(PagerAdapter adapter){
+			refAdapter = new WeakReference<PagerAdapter>(adapter);
+		}
+		public PagerAdapter getAdapter(){
+			return refAdapter.get();
+		}
+		@Override
+		public void process(Object sender, ImageEventArgs args) {
+			if (refAdapter.get() != null)
+				refAdapter.get().notifyDataSetChanged();
+		}
+
+	}
+	List<PagerAdapterRefreshHandler> pagerAdapterHandlers = new ArrayList<PagerAdapterRefreshHandler>();
+	@Override
+	public void bind(String fullUri, PagerAdapter adapter) {
+		Logger.check(adapter != null, "Parameter adapter cannot be null !");
+		Bitmap bitmap = loadBitmap(fullUri);
+		if (bitmap == null){
+			PagerAdapterRefreshHandler handler = null;
+			Iterator<PagerAdapterRefreshHandler> it = pagerAdapterHandlers.iterator();
+			while(it.hasNext()){
+				PagerAdapterRefreshHandler h = it.next();
+				if (h.getAdapter() == null) 
+					it.remove();
+				else if (h.getAdapter() == adapter){
+					handler = h;
+					break;
+				}				
+			}
+			if (handler == null){
+				handler = new PagerAdapterRefreshHandler(adapter);
+				pagerAdapterHandlers.add(handler);
+			}
+			addImageEventHandler(fullUri, handler);
+		}
 	}
 }

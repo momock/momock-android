@@ -18,6 +18,7 @@ package com.momock.service;
 import java.io.File;
 
 import android.graphics.Bitmap;
+import android.support.v4.view.PagerAdapter;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -71,4 +72,6 @@ public interface IImageService extends IService{
 	void bind(String fullUri, ViewGroup viewGroup);
 	
 	void bind(String fullUri, BaseAdapter adapter);
+	
+	void bind(String fullUri, PagerAdapter adapter);
 }

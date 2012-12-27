@@ -18,6 +18,7 @@ package com.momock.binder;
 import android.widget.Gallery;
 
 import com.momock.data.IDataList;
+import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.event.ItemEventArgs;
 import com.momock.widget.IndexIndicator;
@@ -34,6 +35,16 @@ public class GalleryBinder extends AdapterViewBinder<Gallery> {
 					ItemEventArgs args) {
 				if (indicator != null)
 					indicator.setCurrentIndex(args.getIndex());
+			}
+			
+		});
+		this.getDataChangedEvent().addEventHandler(new IEventHandler<EventArgs>(){
+
+			@Override
+			public void process(Object sender, EventArgs args) {
+				if (indicator != null){
+					indicator.setCount(getAdapter().getCount());
+				}
 			}
 			
 		});

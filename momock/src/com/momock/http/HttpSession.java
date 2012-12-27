@@ -344,7 +344,14 @@ public class HttpSession{
 		downloadedLength = 0;
 		contentLength = -1;		
 		if (downloadMode){
-			request = new HttpGet(url);
+			try{
+				request = new HttpGet(url);
+			}catch(Exception e){
+				error = e;
+				setState(STATE_ERROR);	
+				setState(STATE_FINISHED);				
+				return;
+			}
 			if (fileData.exists() && fileInfo.exists()) {
 				request.setHeader("Range", "bytes=" + fileData.length() + "-");
 				downloadedLength = fileData.length();
