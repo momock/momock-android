@@ -15,7 +15,7 @@
  ******************************************************************************/
 package com.momock.widget;
 
-public interface IndexIndicator {
-	void setCurrentIndex(int index);
-	void setCount(int count);
+public interface IRoundAdapter {
+	int getRealCount();
+	int getRealPosition(int position);
 }

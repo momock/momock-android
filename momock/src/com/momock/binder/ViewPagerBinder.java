@@ -21,7 +21,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.GestureDetector;
-import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +32,9 @@ import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 import com.momock.event.ItemEventArgs;
 import com.momock.util.Logger;
-import com.momock.widget.IndexIndicator;
+import com.momock.widget.IIndexIndicator;
+import com.momock.widget.IRoundAdapter;
+import com.momock.widget.RoundPagerAdapter;
 
 public class ViewPagerBinder {
 
@@ -58,7 +59,12 @@ public class ViewPagerBinder {
 		itemClickedEvent.addEventHandler(handler);
 		return this;
 	}
-
+	int viewPagerState = ViewPager.SCROLL_STATE_IDLE;
+	
+	public boolean isDragging(){
+		return viewPagerState != ViewPager.SCROLL_STATE_IDLE;
+	}
+	
 	protected ItemViewBinder binder;
 
 	public ViewPagerBinder(ItemViewBinder binder) {
@@ -70,9 +76,9 @@ public class ViewPagerBinder {
 		return adapter;
 	}
 	public void bind(ViewPager view, IDataList<?> list){
-		bind(view, list, null);
+		bind(view, list, null, false);
 	}
-	public void bind(final ViewPager view, final IDataList<?> list, final IndexIndicator indicator) {
+	public void bind(final ViewPager view, final IDataList<?> list, final IIndexIndicator indicator, boolean round) {
 		if (view != null) {
 			if (indicator != null){
 				indicator.setCount(list.getItemCount());
@@ -81,8 +87,9 @@ public class ViewPagerBinder {
 				
 				@Override
 				public void onPageSelected(int position) {
-					ItemEventArgs args = new ItemEventArgs(view, position,
-							list.getItem(position));
+					position = adapter instanceof IRoundAdapter ? ((IRoundAdapter)adapter).getRealPosition(position) : position;
+					Object item = list.getItem(position);
+					ItemEventArgs args = new ItemEventArgs(view, position, item);
 					itemSelectedEvent.fireEvent(view, args);
 					if (indicator != null)
 						indicator.setCurrentIndex(position);
@@ -96,28 +103,28 @@ public class ViewPagerBinder {
 				
 				@Override
 				public void onPageScrollStateChanged(int state) {
-					
+					viewPagerState = state;
 				}
 			});
 			view.setOnTouchListener(new View.OnTouchListener() {
 				GestureDetector detector = null;
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
+					view.getParent().requestDisallowInterceptTouchEvent(true);
 					if (detector == null){
 						detector = new GestureDetector(v.getContext(), new GestureDetector.SimpleOnGestureListener(){
 
 							@Override
 							public boolean onSingleTapConfirmed(MotionEvent e) {
-								ItemEventArgs args = new ItemEventArgs(view, view.getCurrentItem(),
-										list.getItem(view.getCurrentItem()));
+								Object item = list.getItem(adapter instanceof IRoundAdapter ? ((IRoundAdapter)adapter).getRealPosition(view.getCurrentItem()) : view.getCurrentItem());
+								ItemEventArgs args = new ItemEventArgs(view, view.getCurrentItem(), item);
 								itemClickedEvent.fireEvent(view, args);
 								return true;
 							}
 							
 						});
 					}
-					detector.onTouchEvent(event);
-					return false;
+					return detector.onTouchEvent(event);
 				}
 			});
 			adapter = new PagerAdapter(){
@@ -186,6 +193,8 @@ public class ViewPagerBinder {
 					return lastDataSetChangedTick == 0 ? PagerAdapter.POSITION_UNCHANGED : PagerAdapter.POSITION_NONE;
 				}
 			};
+			if (round)
+				adapter = new RoundPagerAdapter(adapter);
 			view.setAdapter(adapter);
 		}
 	}

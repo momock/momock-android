@@ -33,7 +33,7 @@ public class CacheService implements ICacheService {
 	public CacheService() {
 	}
 
-	String getFilenameOf(String uri) {
+	protected String getFilenameOf(String uri) {
 		return uri.replaceFirst("https?:\\/\\/", "").replaceAll("[^a-zA-Z0-9.]",
 				"_");
 	}
