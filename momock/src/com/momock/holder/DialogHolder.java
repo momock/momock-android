@@ -106,20 +106,22 @@ public abstract class DialogHolder implements IHolder {
 							else
 								builder.setCustomTitle(((ViewHolder)title).getView());
 						}
-						if (okButton != null && okHandler != null) {
+						if (okButton != null) {
 							DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
-									okHandler.process(dialog, null);
+									if (okHandler != null)
+										okHandler.process(dialog, null);
 								}
 							};
 							builder.setPositiveButton(okButton.getText(), listener);						
 						}
-						if (cancelButton != null && cancelHandler != null) {
+						if (cancelButton != null) {
 							DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
-									cancelHandler.process(dialog, null);
+									if (cancelHandler != null)
+										cancelHandler.process(dialog, null);
 								}
 							};
 							builder.setNegativeButton(cancelButton.getText(), listener);

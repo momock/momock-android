@@ -60,6 +60,8 @@ public interface IApplication {
 	
 	void onDestroyActivity();
 	
+	boolean keepServiceRunning();
+	
 	void onCreateEnvironment();
 	
 	void onDestroyEnvironment();

@@ -22,6 +22,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.momock.util.Logger;
 
@@ -48,9 +49,11 @@ public class CaseFragment extends Fragment{
 		Logger.info((getCase() == null ? this.toString() : getCase().getFullName()) + "(" + Integer.toHexString(this.hashCode()) +") : " + msg);
 	}
 	
+	View contentFrame = null;
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		log("onViewCreated");
+		contentFrame = view;
 		super.onViewCreated(view, savedInstanceState);
 		if (getCase() != null)
 			getCase().attach(this);
@@ -61,6 +64,9 @@ public class CaseFragment extends Fragment{
 		super.onDestroyView();
 		if (getCase() != null)
 			getCase().detach();
+		nullViewDrawablesRecursive(contentFrame);
+		contentFrame = null;
+		System.gc();
 	}
 
 	@Override
@@ -104,6 +110,7 @@ public class CaseFragment extends Fragment{
 
 	@Override
 	public void onResume() {
+	    System.gc();
 		log("onResume");
 		super.onResume();
 		getCase().onShow();
@@ -114,6 +121,7 @@ public class CaseFragment extends Fragment{
 		log("onPause");
 		super.onPause();
 		getCase().onHide();
+	    System.gc();
 	}
 
 	@Override
@@ -126,6 +134,37 @@ public class CaseFragment extends Fragment{
 	public void onLowMemory() {
 		log("onLowMemory");
 		super.onLowMemory();
+	}
+
+	private void nullViewDrawablesRecursive(View view) {
+		if (view != null) {
+			try {
+				ViewGroup viewGroup = (ViewGroup) view;
+
+				int childCount = viewGroup.getChildCount();
+				for (int index = 0; index < childCount; index++) {
+					View child = viewGroup.getChildAt(index);
+					nullViewDrawablesRecursive(child);
+				}
+			} catch (Exception e) {
+			}
+
+			nullViewDrawable(view);
+		}
+	}
+
+	private void nullViewDrawable(View view) {
+		try {
+			view.setBackgroundDrawable(null);
+		} catch (Exception e) {
+		}
+
+		try {
+			ImageView imageView = (ImageView) view;
+			imageView.setImageDrawable(null);
+			imageView.setBackgroundDrawable(null);
+		} catch (Exception e) {
+		}
 	}
 
 	@Override

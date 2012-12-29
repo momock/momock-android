@@ -25,19 +25,16 @@ public class DataListView<T> extends DataViewBase<T> {
 	}
 	public DataListView(IDataList<T> source){		
 		this.source = source;
-		refresh();
 	}
 	public DataListView(IDataList<T> source, IFilter<T> filter) {
 		this.filter = filter;
 		this.source = source;
-		refresh();
 	}
 
 	public DataListView(IDataList<T> source, IFilter<T> filter, IOrder<T> order) {
 		this.filter = filter;
 		this.source = source;
 		this.order = order;
-		refresh();
 	}
 	@SuppressWarnings("unchecked")
 	@Override
@@ -82,7 +79,6 @@ public class DataListView<T> extends DataViewBase<T> {
 	}
 	public void setSource(IDataList<T> source) {
 		this.source = source;
-		refresh();
 	}
 
 }

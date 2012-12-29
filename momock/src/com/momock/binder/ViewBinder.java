@@ -73,7 +73,11 @@ public class ViewBinder {
 										.getAsBitmap());
 								return true;
 							} else {
-								((ImageView) view).setImageBitmap(null);
+								int pos = key.indexOf('|');
+								if (pos == -1)
+									((ImageView) view).setImageBitmap(null);
+								else
+									((ImageView) view).setImageBitmap(ImageHolder.get(Convert.toInteger(key.substring(pos + 1).trim())).getAsBitmap());
 								if (parent instanceof AdapterView)
 									App.get().getImageService().bind(uri, (AdapterView) parent);
 								else
@@ -171,10 +175,15 @@ public class ViewBinder {
 			String name = pv.propName;
 			Object tagOrId = pv.viewIdOrTag;
 			Object val = null;
-			if (map != null && map.hasProperty(name))
-				val = map.getProperty(name);
+			String key = name;
+			int pos = key.indexOf('|');
+			if (pos != -1){
+				key = key.substring(0, pos).trim();
+			}
+			if (map != null && map.hasProperty(key))
+				val = map.getProperty(key);
 			if (val == null)
-				val = BeanHelper.getProperty(target, name, null);
+				val = BeanHelper.getProperty(target, key, null);
 			View cv = null;
 			boolean set = false;
 			if (tagOrId instanceof String)

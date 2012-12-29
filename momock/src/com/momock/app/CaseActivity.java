@@ -19,6 +19,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.momock.util.Logger;
 
@@ -62,12 +65,46 @@ public abstract class CaseActivity extends FragmentActivity {
 		super.onStop();
 	}
 
+	private void nullViewDrawablesRecursive(View view) {
+		if (view != null) {
+			try {
+				ViewGroup viewGroup = (ViewGroup) view;
+
+				int childCount = viewGroup.getChildCount();
+				for (int index = 0; index < childCount; index++) {
+					View child = viewGroup.getChildAt(index);
+					nullViewDrawablesRecursive(child);
+				}
+			} catch (Exception e) {
+			}
+
+			nullViewDrawable(view);
+		}
+	}
+
+	private void nullViewDrawable(View view) {
+		try {
+			view.setBackgroundDrawable(null);
+		} catch (Exception e) {
+		}
+
+		try {
+			ImageView imageView = (ImageView) view;
+			imageView.setImageDrawable(null);
+			imageView.setBackgroundDrawable(null);
+		} catch (Exception e) {
+		}
+	}
+
 	@Override
 	protected void onDestroy() {
 		log("onDestroy");
 		super.onDestroy();
 		getCase().detach();
 		App.get().onDestroyActivity();
+		ViewGroup contentFrame = (ViewGroup) findViewById(android.R.id.content);
+		nullViewDrawablesRecursive(contentFrame);
+		System.gc();
 	}
 
 	@Override
@@ -81,10 +118,12 @@ public abstract class CaseActivity extends FragmentActivity {
 		log("onPause");
 		super.onPause();
 		getCase().onHide();
+	    System.gc();
 	}
 
 	@Override
 	protected void onResume() {
+	    System.gc();
 		log("onResume");
 		super.onResume();
 		getCase().onShow();

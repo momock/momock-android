@@ -65,6 +65,8 @@ public interface IImageService extends IService{
 	
 	Bitmap loadBitmap(String fullUri);	
 	
+	void clearCache();
+	
 	void bind(String fullUri, IEventHandler<ImageEventArgs> handler);
 	
 	void bind(String fullUri, ImageView view);

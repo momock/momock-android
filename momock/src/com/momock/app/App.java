@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.WeakHashMap;
 
 import android.annotation.SuppressLint;
@@ -31,6 +33,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
+import android.os.Debug;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
@@ -380,22 +383,18 @@ public abstract class App extends android.app.Application implements
 	}
 	Handler executeHandler = null;
 	boolean environmentCreated = false;
+	boolean servicesCreated = false;
 	protected void onPreCreateEnvironment() {
 		
 	}
 	protected void onPostCreateEnvironment() {
 		
 	}
-	@Override
-	public void onCreateEnvironment() {
-		Logger.debug("onCreateEnvironment");
-		if (environmentCreated) return;
-		onPreCreateEnvironment();
-		environmentCreated = true;
-		onRegisterShortNames();
+	protected void createServices(){
+		if (servicesCreated) return;
+		servicesCreated = true;
 		onAddServices();
-		onAddCases();
-		executeHandler = new Handler();
+
 		List<Class<?>> startedServices = new ArrayList<Class<?>>();
 		List<IService> waitingServices = new ArrayList<IService>();
 		for(Map.Entry<Class<?>, IService> e : services.entrySet()){
@@ -435,27 +434,68 @@ public abstract class App extends android.app.Application implements
 			}
 			Logger.check(started != 0, "Some dependency services are missing!");
 		}
+	}
+	
+	public boolean keepServiceRunning(){
+		return true;
+	}
+	protected void destroyServices(){
+		for(Map.Entry<Class<?>, IService> e : services.entrySet()){
+			e.getValue().stop();
+		}
+		services.clear();
+		servicesCreated = false;
+	}
+	Timer timerMem = null;
+	protected boolean printMemoryUsage(){
+		return false;
+	}
+	@Override
+	public void onCreateEnvironment() {
+		Logger.debug("onCreateEnvironment");
+		if (environmentCreated) return;
+		environmentCreated = true;
+		executeHandler = new Handler();
+		onPreCreateEnvironment();
+		onRegisterShortNames();
+		createServices();
+		onAddCases();
 		onPostCreateEnvironment();
+		if (printMemoryUsage()){
+			timerMem = new Timer();
+			timerMem.scheduleAtFixedRate(new TimerTask(){
+
+				@SuppressLint("DefaultLocale")
+				@Override
+				public void run() {
+					  int usedMem = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
+					  Logger.debug(String.format("Memory Used: %d KB", usedMem));				
+				}
+				
+			}, 0, 1000);	
+		}
 	}
 
 	@Override
 	public void onDestroyEnvironment() {
 		Logger.debug("onDestroyEnvironment");
 		if (!environmentCreated) return;
-		environmentCreated = false;
-		for(Map.Entry<Class<?>, IService> e : services.entrySet()){
-			e.getValue().stop();
-		}
+		environmentCreated = false;		
 		activeCase = null;
 		cachedLayoutInflater.clear();
 		cases.clear();
 		outlets.clear();
 		plugs.clear();
-		services.clear();
 		shortNames.clear();
 		ds = null;
 		executeHandler = null;
 		messageBox = null;
+		if (!keepServiceRunning())
+			destroyServices();
+		if (printMemoryUsage()){
+			timerMem.cancel();
+			timerMem = null;
+		}
 	}
 
 	@Override
@@ -522,4 +562,12 @@ public abstract class App extends android.app.Application implements
 		return "?";
 	}
 
+	@Override
+	public void onLowMemory() {
+		Logger.debug("onLowMemory");
+		super.onLowMemory();
+		IImageService imageService = getService(IImageService.class);
+		if (imageService != null)
+			imageService.clearCache();
+	}
 }

@@ -32,8 +32,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.momock.app.App;
-import com.momock.cache.ICache;
-import com.momock.cache.SimpleCache;
+import com.momock.cache.BitmapCache;
 import com.momock.event.Event;
 import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
@@ -47,8 +46,14 @@ import com.momock.widget.IPlainAdapterView;
 
 public class ImageService implements IImageService {
 	Map<String, IEvent<ImageEventArgs>> allImageHandlers = new HashMap<String, IEvent<ImageEventArgs>>();
-	ICache<String, Bitmap> bitmapCache = new SimpleCache<String, Bitmap>();
+	BitmapCache<String> bitmapCache;
 	Map<String, HttpSession> sessions = new HashMap<String, HttpSession>();
+	public ImageService(){
+		this(1024 * 1024 * 16);
+	}
+	public ImageService(long cacheSize){
+		bitmapCache = new BitmapCache<String>(cacheSize);
+	}
 	IHttpService getHttpService(){
 		return App.get().getService(IHttpService.class);
 	}
@@ -87,7 +92,28 @@ public class ImageService implements IImageService {
 	}
 	
 	@Override
+	public void clearCache(){
+		Logger.debug("Clear cache in ImageService!");
+		bitmapCache.clear();
+		System.gc();		
+	}
+	
+	@Override
 	public Bitmap loadBitmap(final String fullUri) {
+		try {
+			try {
+				return load(fullUri);
+			} catch (OutOfMemoryError e) {
+				Logger.error(e.getMessage());
+				clearCache();
+				return load(fullUri);
+			}
+		} catch (Throwable t) {
+			Logger.error(t.getMessage());
+			return null;
+		}
+	}
+	protected Bitmap load(final String fullUri) {
 		final int expectedWidth;
 		final int expectedHeight;
 		String uri = fullUri;
@@ -140,8 +166,18 @@ public class ImageService implements IImageService {
 									StateChangedEventArgs args) {
 								if (args.getState() == HttpSession.STATE_FINISHED){
 									if (allImageHandlers.containsKey(fullUri)) {
-										Bitmap bitmap = !args.getSession().isDownloaded() ? null : 
-											ImageHelper.fromFile(args.getSession().getFile(), expectedWidth, expectedHeight);
+										Bitmap bitmap = null;
+										try{
+											bitmap = ImageHelper.fromFile(args.getSession().getFile(), expectedWidth, expectedHeight);
+										} catch(OutOfMemoryError e){
+											Logger.error(e.getMessage());
+											clearCache();
+											try{
+												bitmap = ImageHelper.fromFile(args.getSession().getFile(), expectedWidth, expectedHeight);
+											} catch(Throwable t){
+												Logger.error(t.getMessage());
+											}
+										}
 										if (bitmap == null){
 											if (args.getSession().getError() != null){
 												Logger.error("Fails to download image (" + args.getSession().getUrl() + ") : " + args.getSession().getError().getMessage());

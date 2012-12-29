@@ -196,6 +196,8 @@ public class ViewPagerBinder {
 			if (round)
 				adapter = new RoundPagerAdapter(adapter);
 			view.setAdapter(adapter);
+			if (round)
+				view.setCurrentItem(Math.max(1000, list.getItemCount() * 1000), false);
 		}
 	}
 }

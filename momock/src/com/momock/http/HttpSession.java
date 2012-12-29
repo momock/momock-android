@@ -334,7 +334,10 @@ public class HttpSession{
 			contentLength = Convert.toInteger(val.substring(pos + 1));
 		}
 	}
-	
+	public boolean isChunked(){
+		String val = getHeader("Transfer-Encoding");
+		return "chunked".equals(val);
+	}
 	public void start() {
 		if (state != STATE_WAITING && state != STATE_FINISHED){
 			Logger.warn(url + " is executing.");
@@ -433,11 +436,9 @@ public class HttpSession{
 											if (!downloadMode) result = ((ByteArrayOutputStream)output).toByteArray();
 											output.close();
 											instream.close();
-											if (contentLength == -1)
-												contentLength = downloadedLength;
 
 											if (downloadMode){
-												if (isDownloaded()){
+												if (isDownloaded() || isChunked()){
 													if (file.exists())
 														file.delete();
 													FileHelper.copyFile(fileData, file);
