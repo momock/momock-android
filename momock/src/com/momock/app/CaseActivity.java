@@ -16,14 +16,14 @@
 package com.momock.app;
 
 import android.os.Bundle;
+import android.os.Debug;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.momock.util.Logger;
+import com.momock.util.ViewHelper;
 
 public abstract class CaseActivity extends FragmentActivity {
 
@@ -65,46 +65,17 @@ public abstract class CaseActivity extends FragmentActivity {
 		super.onStop();
 	}
 
-	private void nullViewDrawablesRecursive(View view) {
-		if (view != null) {
-			try {
-				ViewGroup viewGroup = (ViewGroup) view;
-
-				int childCount = viewGroup.getChildCount();
-				for (int index = 0; index < childCount; index++) {
-					View child = viewGroup.getChildAt(index);
-					nullViewDrawablesRecursive(child);
-				}
-			} catch (Exception e) {
-			}
-
-			nullViewDrawable(view);
-		}
-	}
-
-	private void nullViewDrawable(View view) {
-		try {
-			view.setBackgroundDrawable(null);
-		} catch (Exception e) {
-		}
-
-		try {
-			ImageView imageView = (ImageView) view;
-			imageView.setImageDrawable(null);
-			imageView.setBackgroundDrawable(null);
-		} catch (Exception e) {
-		}
-	}
-
 	@Override
 	protected void onDestroy() {
-		log("onDestroy");
+		int usedMemBegin = (int)(Debug.getNativeHeapAllocatedSize() / 1024);		
 		super.onDestroy();
 		getCase().detach();
 		App.get().onDestroyActivity();
 		ViewGroup contentFrame = (ViewGroup) findViewById(android.R.id.content);
-		nullViewDrawablesRecursive(contentFrame);
+		ViewHelper.clean(contentFrame);
 		System.gc();
+		int usedMemEnd = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
+		log("onDestroy : " + usedMemBegin + "K -> " + usedMemEnd + "K");
 	}
 
 	@Override
@@ -115,18 +86,22 @@ public abstract class CaseActivity extends FragmentActivity {
 
 	@Override
 	protected void onPause() {
-		log("onPause");
+		int usedMemBegin = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
 		super.onPause();
 		getCase().onHide();
 	    System.gc();
+		int usedMemEnd = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
+		log("onPause : " + usedMemBegin + "K -> " + usedMemEnd + "K");
 	}
 
 	@Override
 	protected void onResume() {
+		int usedMemBegin = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
 	    System.gc();
-		log("onResume");
 		super.onResume();
 		getCase().onShow();
+		int usedMemEnd = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
+		log("onResume : " + usedMemBegin + "K -> " + usedMemEnd + "K");
 	}
 
 	@Override

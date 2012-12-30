@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.WeakHashMap;
 
 import android.annotation.SuppressLint;
@@ -33,7 +31,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
-import android.os.Debug;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
@@ -446,10 +443,6 @@ public abstract class App extends android.app.Application implements
 		services.clear();
 		servicesCreated = false;
 	}
-	Timer timerMem = null;
-	protected boolean printMemoryUsage(){
-		return false;
-	}
 	@Override
 	public void onCreateEnvironment() {
 		Logger.debug("onCreateEnvironment");
@@ -461,19 +454,6 @@ public abstract class App extends android.app.Application implements
 		createServices();
 		onAddCases();
 		onPostCreateEnvironment();
-		if (printMemoryUsage()){
-			timerMem = new Timer();
-			timerMem.scheduleAtFixedRate(new TimerTask(){
-
-				@SuppressLint("DefaultLocale")
-				@Override
-				public void run() {
-					  int usedMem = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
-					  Logger.debug(String.format("Memory Used: %d KB", usedMem));				
-				}
-				
-			}, 0, 1000);	
-		}
 	}
 
 	@Override
@@ -492,10 +472,6 @@ public abstract class App extends android.app.Application implements
 		messageBox = null;
 		if (!keepServiceRunning())
 			destroyServices();
-		if (printMemoryUsage()){
-			timerMem.cancel();
-			timerMem = null;
-		}
 	}
 
 	@Override
