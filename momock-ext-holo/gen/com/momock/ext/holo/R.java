@@ -66,71 +66,71 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static int popupBackground=0x7f010009;
     }
     public static final class bool {
-        public static int hw_accel_supported=0x7f090000;
+        public static int hw_accel_supported=0x7f080000;
     }
     public static final class color {
-        public static int background_dark=0x7f0a0001;
-        public static int background_holo_dark=0x7f0a0006;
-        public static int background_holo_light=0x7f0a0007;
-        public static int background_light=0x7f0a0002;
-        public static int bright_foreground_dark=0x7f0a0003;
-        public static int bright_foreground_dark_disabled=0x7f0a0005;
-        public static int bright_foreground_disabled_holo_dark=0x7f0a000a;
-        public static int bright_foreground_disabled_holo_light=0x7f0a000b;
-        public static int bright_foreground_holo_dark=0x7f0a0008;
-        public static int bright_foreground_holo_light=0x7f0a0009;
-        public static int bright_foreground_light=0x7f0a0004;
-        public static int dim_foreground_disabled_holo_dark=0x7f0a000d;
-        public static int dim_foreground_disabled_holo_light=0x7f0a0010;
-        public static int dim_foreground_holo_dark=0x7f0a000c;
-        public static int dim_foreground_holo_light=0x7f0a000f;
-        public static int highlighted_text_holo_dark=0x7f0a0012;
-        public static int highlighted_text_holo_light=0x7f0a0013;
-        public static int hint_foreground_holo_dark=0x7f0a000e;
-        public static int hint_foreground_holo_light=0x7f0a0011;
+        public static int background_dark=0x7f090001;
+        public static int background_holo_dark=0x7f090006;
+        public static int background_holo_light=0x7f090007;
+        public static int background_light=0x7f090002;
+        public static int bright_foreground_dark=0x7f090003;
+        public static int bright_foreground_dark_disabled=0x7f090005;
+        public static int bright_foreground_disabled_holo_dark=0x7f09000a;
+        public static int bright_foreground_disabled_holo_light=0x7f09000b;
+        public static int bright_foreground_holo_dark=0x7f090008;
+        public static int bright_foreground_holo_light=0x7f090009;
+        public static int bright_foreground_light=0x7f090004;
+        public static int dim_foreground_disabled_holo_dark=0x7f09000d;
+        public static int dim_foreground_disabled_holo_light=0x7f090010;
+        public static int dim_foreground_holo_dark=0x7f09000c;
+        public static int dim_foreground_holo_light=0x7f09000f;
+        public static int highlighted_text_holo_dark=0x7f090012;
+        public static int highlighted_text_holo_light=0x7f090013;
+        public static int hint_foreground_holo_dark=0x7f09000e;
+        public static int hint_foreground_holo_light=0x7f090011;
         /**  A really bright Holo shade of blue 
          */
-        public static int holo_blue_bright=0x7f0a001d;
+        public static int holo_blue_bright=0x7f09001d;
         /**  A dark Holo shade of blue 
          */
-        public static int holo_blue_dark=0x7f0a0017;
+        public static int holo_blue_dark=0x7f090017;
         /**  A light Holo shade of blue 
          */
-        public static int holo_blue_light=0x7f0a0014;
+        public static int holo_blue_light=0x7f090014;
         /**  A dark Holo shade of green 
          */
-        public static int holo_green_dark=0x7f0a0018;
+        public static int holo_green_dark=0x7f090018;
         /**  A light Holo shade of green 
          */
-        public static int holo_green_light=0x7f0a0015;
+        public static int holo_green_light=0x7f090015;
         /**  A dark Holo shade of orange 
          */
-        public static int holo_orange_dark=0x7f0a001c;
+        public static int holo_orange_dark=0x7f09001c;
         /**  A light Holo shade of orange 
          */
-        public static int holo_orange_light=0x7f0a001b;
+        public static int holo_orange_light=0x7f09001b;
         /**  A Holo shade of purple 
          */
-        public static int holo_purple=0x7f0a001a;
+        public static int holo_purple=0x7f09001a;
         /**  A dark Holo shade of red 
          */
-        public static int holo_red_dark=0x7f0a0019;
+        public static int holo_red_dark=0x7f090019;
         /**  A light Holo shade of red 
          */
-        public static int holo_red_light=0x7f0a0016;
-        public static int primary_text_disable_only_holo_dark=0x7f0a001e;
-        public static int primary_text_holo_dark=0x7f0a001f;
-        public static int primary_text_holo_light=0x7f0a0020;
-        public static int primary_text_light_nodisable=0x7f0a0021;
-        public static int secondary_text_holo_dark=0x7f0a0022;
-        public static int secondary_text_holo_light=0x7f0a0023;
-        public static int transparent=0x7f0a0000;
+        public static int holo_red_light=0x7f090016;
+        public static int primary_text_disable_only_holo_dark=0x7f09001e;
+        public static int primary_text_holo_dark=0x7f09001f;
+        public static int primary_text_holo_light=0x7f090020;
+        public static int primary_text_light_nodisable=0x7f090021;
+        public static int secondary_text_holo_dark=0x7f090022;
+        public static int secondary_text_holo_light=0x7f090023;
+        public static int transparent=0x7f090000;
     }
     public static final class dimen {
-        public static int actionbar_button_width=0x7f070001;
-        public static int actionbar_height=0x7f070000;
-        public static int popup_window_width=0x7f070003;
-        public static int preference_horizontal_margin=0x7f070002;
+        public static int actionbar_button_width=0x7f050001;
+        public static int actionbar_height=0x7f050000;
+        public static int popup_window_width=0x7f050003;
+        public static int preference_horizontal_margin=0x7f050002;
     }
     public static final class drawable {
         public static int actionbar_back_dark=0x7f020000;
@@ -436,26 +436,26 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static int textfield_focused_holo=0x7f02012c;
     }
     public static final class id {
-        public static int action_mode_cancel=0x7f08000b;
-        public static int action_mode_container=0x7f08000a;
-        public static int action_mode_menu=0x7f08000f;
-        public static int action_mode_subtitle=0x7f08000e;
-        public static int action_mode_title=0x7f08000d;
-        public static int action_mode_title_view=0x7f08000c;
-        public static int actionbar=0x7f080000;
-        public static int actionbar_custom_view_container=0x7f080007;
-        public static int actionbar_home=0x7f080001;
-        public static int actionbar_home_as_up_indicator=0x7f080003;
-        public static int actionbar_icon=0x7f080002;
-        public static int actionbar_menu_buttons=0x7f080009;
-        public static int actionbar_progress_indeterminate=0x7f080008;
-        public static int actionbar_subtitle=0x7f080006;
-        public static int actionbar_title=0x7f080005;
-        public static int actionbar_title_view=0x7f080004;
-        public static int edit_text=0x7f080011;
-        public static int icon=0x7f080012;
-        public static int navigate=0x7f080010;
-        public static int title=0x7f080013;
+        public static int action_mode_cancel=0x7f06000b;
+        public static int action_mode_container=0x7f06000a;
+        public static int action_mode_menu=0x7f06000f;
+        public static int action_mode_subtitle=0x7f06000e;
+        public static int action_mode_title=0x7f06000d;
+        public static int action_mode_title_view=0x7f06000c;
+        public static int actionbar=0x7f060000;
+        public static int actionbar_custom_view_container=0x7f060007;
+        public static int actionbar_home=0x7f060001;
+        public static int actionbar_home_as_up_indicator=0x7f060003;
+        public static int actionbar_icon=0x7f060002;
+        public static int actionbar_menu_buttons=0x7f060009;
+        public static int actionbar_progress_indeterminate=0x7f060008;
+        public static int actionbar_subtitle=0x7f060006;
+        public static int actionbar_title=0x7f060005;
+        public static int actionbar_title_view=0x7f060004;
+        public static int edit_text=0x7f060011;
+        public static int icon=0x7f060012;
+        public static int navigate=0x7f060010;
+        public static int title=0x7f060013;
     }
     public static final class layout {
         public static int action_mode=0x7f030000;
@@ -471,166 +471,165 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static int tab_indicator_holo=0x7f03000a;
     }
     public static final class string {
-        public static int app_name=0x7f050000;
+        public static int app_name=0x7f0a0000;
     }
     public static final class style {
-        public static int AlertDialog=0x7f060073;
-        public static int AlertDialog_Holo=0x7f060074;
-        public static int AlertDialog_Holo_Light=0x7f060075;
-        public static int Animations=0x7f06007b;
+        public static int AlertDialog=0x7f070072;
+        public static int AlertDialog_Holo=0x7f070073;
+        public static int AlertDialog_Holo_Light=0x7f070074;
+        public static int Animations=0x7f07007a;
         /**  PopDownMenu 
          */
-        public static int Animations_PopDownMenu=0x7f06007c;
-        public static int Animations_PopDownMenu_Center=0x7f06007d;
-        public static int Animations_PopDownMenu_Left=0x7f06007e;
-        public static int Animations_PopDownMenu_Right=0x7f06007f;
+        public static int Animations_PopDownMenu=0x7f07007b;
+        public static int Animations_PopDownMenu_Center=0x7f07007c;
+        public static int Animations_PopDownMenu_Left=0x7f07007d;
+        public static int Animations_PopDownMenu_Right=0x7f07007e;
         /**  PopUpMenu 
          */
-        public static int Animations_PopUpMenu=0x7f060080;
-        public static int Animations_PopUpMenu_Center=0x7f060081;
-        public static int Animations_PopUpMenu_Left=0x7f060082;
-        public static int Animations_PopUpMenu_Right=0x7f060083;
-        public static int AppTheme=0x7f060000;
-        public static int DialogWindowTitle_Holo=0x7f060003;
-        public static int DialogWindowTitle_Holo_Light=0x7f060004;
+        public static int Animations_PopUpMenu=0x7f07007f;
+        public static int Animations_PopUpMenu_Center=0x7f070080;
+        public static int Animations_PopUpMenu_Left=0x7f070081;
+        public static int Animations_PopUpMenu_Right=0x7f070082;
+        public static int DialogWindowTitle_Holo=0x7f070002;
+        public static int DialogWindowTitle_Holo_Light=0x7f070003;
         /**  Text Styles 
  Dark text styles 
          */
-        public static int TextAppearance_Holo=0x7f060057;
-        public static int TextAppearance_Holo_DialogWindowTitle=0x7f060005;
-        public static int TextAppearance_Holo_Inverse=0x7f060058;
-        public static int TextAppearance_Holo_Large=0x7f060059;
-        public static int TextAppearance_Holo_Large_Inverse=0x7f06005c;
+        public static int TextAppearance_Holo=0x7f070056;
+        public static int TextAppearance_Holo_DialogWindowTitle=0x7f070004;
+        public static int TextAppearance_Holo_Inverse=0x7f070057;
+        public static int TextAppearance_Holo_Large=0x7f070058;
+        public static int TextAppearance_Holo_Large_Inverse=0x7f07005b;
         /**  Light text styles 
          */
-        public static int TextAppearance_Holo_Light=0x7f060066;
-        public static int TextAppearance_Holo_Light_DialogWindowTitle=0x7f060006;
-        public static int TextAppearance_Holo_Light_Inverse=0x7f060067;
-        public static int TextAppearance_Holo_Light_Large=0x7f060068;
-        public static int TextAppearance_Holo_Light_Large_Inverse=0x7f06006b;
-        public static int TextAppearance_Holo_Light_Medium=0x7f060069;
-        public static int TextAppearance_Holo_Light_Medium_Inverse=0x7f06006c;
-        public static int TextAppearance_Holo_Light_SearchResult=0x7f06006e;
-        public static int TextAppearance_Holo_Light_SearchResult_Subtitle=0x7f060070;
-        public static int TextAppearance_Holo_Light_SearchResult_Title=0x7f06006f;
-        public static int TextAppearance_Holo_Light_Small=0x7f06006a;
-        public static int TextAppearance_Holo_Light_Small_Inverse=0x7f06006d;
-        public static int TextAppearance_Holo_Light_Widget=0x7f060071;
-        public static int TextAppearance_Holo_Light_Widget_Button=0x7f060072;
-        public static int TextAppearance_Holo_Light_Widget_DropDownHint=0x7f060039;
-        public static int TextAppearance_Holo_Medium=0x7f06005a;
-        public static int TextAppearance_Holo_Medium_Inverse=0x7f06005d;
-        public static int TextAppearance_Holo_SearchResult=0x7f06005f;
-        public static int TextAppearance_Holo_SearchResult_Subtitle=0x7f060061;
-        public static int TextAppearance_Holo_SearchResult_Title=0x7f060060;
-        public static int TextAppearance_Holo_Small=0x7f06005b;
-        public static int TextAppearance_Holo_Small_Inverse=0x7f06005e;
-        public static int TextAppearance_Holo_Widget=0x7f060062;
-        public static int TextAppearance_Holo_Widget_Button=0x7f060063;
-        public static int TextAppearance_Holo_Widget_DropDownHint=0x7f060038;
-        public static int TextAppearance_Holo_Widget_TextView=0x7f060065;
-        public static int TextAppearance_Holo_Widget_TextView_SpinnerItem=0x7f060064;
-        public static int Theme_ActionBar=0x7f060011;
-        public static int Theme_ActionBar_Dialog=0x7f060013;
-        public static int Theme_ActionBar_Light=0x7f060015;
-        public static int Theme_ActionBar_Light_DarkActionBar=0x7f060012;
-        public static int Theme_ActionBar_Light_Dialog=0x7f060014;
+        public static int TextAppearance_Holo_Light=0x7f070065;
+        public static int TextAppearance_Holo_Light_DialogWindowTitle=0x7f070005;
+        public static int TextAppearance_Holo_Light_Inverse=0x7f070066;
+        public static int TextAppearance_Holo_Light_Large=0x7f070067;
+        public static int TextAppearance_Holo_Light_Large_Inverse=0x7f07006a;
+        public static int TextAppearance_Holo_Light_Medium=0x7f070068;
+        public static int TextAppearance_Holo_Light_Medium_Inverse=0x7f07006b;
+        public static int TextAppearance_Holo_Light_SearchResult=0x7f07006d;
+        public static int TextAppearance_Holo_Light_SearchResult_Subtitle=0x7f07006f;
+        public static int TextAppearance_Holo_Light_SearchResult_Title=0x7f07006e;
+        public static int TextAppearance_Holo_Light_Small=0x7f070069;
+        public static int TextAppearance_Holo_Light_Small_Inverse=0x7f07006c;
+        public static int TextAppearance_Holo_Light_Widget=0x7f070070;
+        public static int TextAppearance_Holo_Light_Widget_Button=0x7f070071;
+        public static int TextAppearance_Holo_Light_Widget_DropDownHint=0x7f070038;
+        public static int TextAppearance_Holo_Medium=0x7f070059;
+        public static int TextAppearance_Holo_Medium_Inverse=0x7f07005c;
+        public static int TextAppearance_Holo_SearchResult=0x7f07005e;
+        public static int TextAppearance_Holo_SearchResult_Subtitle=0x7f070060;
+        public static int TextAppearance_Holo_SearchResult_Title=0x7f07005f;
+        public static int TextAppearance_Holo_Small=0x7f07005a;
+        public static int TextAppearance_Holo_Small_Inverse=0x7f07005d;
+        public static int TextAppearance_Holo_Widget=0x7f070061;
+        public static int TextAppearance_Holo_Widget_Button=0x7f070062;
+        public static int TextAppearance_Holo_Widget_DropDownHint=0x7f070037;
+        public static int TextAppearance_Holo_Widget_TextView=0x7f070064;
+        public static int TextAppearance_Holo_Widget_TextView_SpinnerItem=0x7f070063;
+        public static int Theme_ActionBar=0x7f070010;
+        public static int Theme_ActionBar_Dialog=0x7f070012;
+        public static int Theme_ActionBar_Light=0x7f070014;
+        public static int Theme_ActionBar_Light_DarkActionBar=0x7f070011;
+        public static int Theme_ActionBar_Light_Dialog=0x7f070013;
         /**  Dialog attributes 
  <item name="android:alertDialogStyle">@style/AlertDialog.Holo</item> 
          */
-        public static int Theme_Holo=0x7f060076;
+        public static int Theme_Holo=0x7f070075;
         /**  Dialog attributes 
  <item name="android:alertDialogStyle">@style/AlertDialog.Holo</item> 
          */
-        public static int Theme_Holo_Dialog=0x7f060079;
+        public static int Theme_Holo_Dialog=0x7f070078;
         /**  Dialog attributes 
  <item name="android:alertDialogStyle">@style/AlertDialog.Holo.Light</item> 
          */
-        public static int Theme_Holo_Light=0x7f060077;
+        public static int Theme_Holo_Light=0x7f070076;
         /**  Dialog attributes 
  <item name="android:alertDialogStyle">@style/AlertDialog.Holo.Light</item> 
          */
-        public static int Theme_Holo_Light_DarkActionBar=0x7f060078;
+        public static int Theme_Holo_Light_DarkActionBar=0x7f070077;
         /**  Dialog attributes 
  <item name="android:alertDialogStyle">@style/AlertDialog.Holo.Light</item> 
          */
-        public static int Theme_Holo_Light_Dialog=0x7f06007a;
-        public static int Widget_ActionBar=0x7f060007;
-        public static int Widget_ActionBar_Light=0x7f060008;
-        public static int Widget_ActionBar_Light_Solid_Inverse=0x7f060009;
-        public static int Widget_ActionBarHomeItem=0x7f060010;
-        public static int Widget_ActionBarHomeItem_Light=0x7f06000b;
-        public static int Widget_ActionBarItem=0x7f06000f;
-        public static int Widget_ActionBarItem_Light=0x7f06000a;
-        public static int Widget_ActionBarTitle=0x7f06000d;
-        public static int Widget_ActionBarTitle_Inverse=0x7f06000e;
-        public static int Widget_ActionBarTitleBase=0x7f06000c;
-        public static int Widget_Holo=0x7f060016;
-        public static int Widget_Holo_AutoCompleteTextView=0x7f060037;
-        public static int Widget_Holo_Button=0x7f060018;
-        public static int Widget_Holo_Button_Inset=0x7f06001a;
-        public static int Widget_Holo_Button_Small=0x7f060019;
-        public static int Widget_Holo_Button_Toggle=0x7f06001b;
-        public static int Widget_Holo_CompoundButton_CheckBox=0x7f060024;
-        public static int Widget_Holo_CompoundButton_RadioButton=0x7f060026;
-        public static int Widget_Holo_CompoundButton_Star=0x7f06004a;
-        public static int Widget_Holo_EditText=0x7f06001c;
-        public static int Widget_Holo_ExpandableListView=0x7f06003a;
-        public static int Widget_Holo_ExpandableListView_White=0x7f060048;
-        public static int Widget_Holo_GridView=0x7f060049;
-        public static int Widget_Holo_ImageButton=0x7f06001d;
-        public static int Widget_Holo_Light=0x7f060017;
-        public static int Widget_Holo_Light_AutoCompleteTextView=0x7f060056;
-        public static int Widget_Holo_Light_Button=0x7f06001e;
-        public static int Widget_Holo_Light_Button_Inset=0x7f060020;
-        public static int Widget_Holo_Light_Button_Small=0x7f06001f;
-        public static int Widget_Holo_Light_Button_Toggle=0x7f060021;
-        public static int Widget_Holo_Light_CompoundButton_CheckBox=0x7f060025;
-        public static int Widget_Holo_Light_CompoundButton_RadioButton=0x7f060027;
-        public static int Widget_Holo_Light_CompoundButton_Star=0x7f06004b;
-        public static int Widget_Holo_Light_EditText=0x7f060022;
-        public static int Widget_Holo_Light_ExpandableListView=0x7f060054;
-        public static int Widget_Holo_Light_ExpandableListView_White=0x7f060055;
-        public static int Widget_Holo_Light_GridView=0x7f060053;
-        public static int Widget_Holo_Light_ImageButton=0x7f060023;
-        public static int Widget_Holo_Light_ListView=0x7f06002a;
-        public static int Widget_Holo_Light_ListView_DropDown=0x7f06002b;
-        public static int Widget_Holo_Light_ProgressBar=0x7f060051;
-        public static int Widget_Holo_Light_ProgressBar_Horizontal=0x7f060032;
-        public static int Widget_Holo_Light_ProgressBar_Inverse=0x7f060045;
-        public static int Widget_Holo_Light_ProgressBar_Large=0x7f060044;
-        public static int Widget_Holo_Light_ProgressBar_Large_Inverse=0x7f060047;
-        public static int Widget_Holo_Light_ProgressBar_Small=0x7f060042;
-        public static int Widget_Holo_Light_ProgressBar_Small_Inverse=0x7f060046;
-        public static int Widget_Holo_Light_ProgressBar_Small_Title=0x7f060043;
-        public static int Widget_Holo_Light_RatingBar=0x7f06004f;
-        public static int Widget_Holo_Light_RatingBar_Indicator=0x7f060050;
-        public static int Widget_Holo_Light_RatingBar_Small=0x7f060052;
-        public static int Widget_Holo_Light_SeekBar=0x7f06002d;
-        public static int Widget_Holo_Light_Spinner=0x7f060034;
-        public static int Widget_Holo_Light_TextView_SpinnerItem=0x7f060036;
-        public static int Widget_Holo_ListView=0x7f060028;
-        public static int Widget_Holo_ListView_DropDown=0x7f060029;
-        public static int Widget_Holo_ProgressBar=0x7f06002e;
-        public static int Widget_Holo_ProgressBar_Horizontal=0x7f060031;
-        public static int Widget_Holo_ProgressBar_Inverse=0x7f06004c;
-        public static int Widget_Holo_ProgressBar_Large=0x7f060030;
-        public static int Widget_Holo_ProgressBar_Large_Inverse=0x7f06004e;
-        public static int Widget_Holo_ProgressBar_Small=0x7f06002f;
-        public static int Widget_Holo_ProgressBar_Small_Inverse=0x7f06004d;
-        public static int Widget_Holo_ProgressBar_Small_Title=0x7f060041;
-        public static int Widget_Holo_RatingBar=0x7f06003e;
-        public static int Widget_Holo_RatingBar_Indicator=0x7f06003f;
-        public static int Widget_Holo_RatingBar_Small=0x7f060040;
-        public static int Widget_Holo_SeekBar=0x7f06002c;
-        public static int Widget_Holo_Spinner=0x7f060033;
-        public static int Widget_Holo_Tab=0x7f06003c;
-        public static int Widget_Holo_TabText=0x7f06003d;
+        public static int Theme_Holo_Light_Dialog=0x7f070079;
+        public static int Widget_ActionBar=0x7f070006;
+        public static int Widget_ActionBar_Light=0x7f070007;
+        public static int Widget_ActionBar_Light_Solid_Inverse=0x7f070008;
+        public static int Widget_ActionBarHomeItem=0x7f07000f;
+        public static int Widget_ActionBarHomeItem_Light=0x7f07000a;
+        public static int Widget_ActionBarItem=0x7f07000e;
+        public static int Widget_ActionBarItem_Light=0x7f070009;
+        public static int Widget_ActionBarTitle=0x7f07000c;
+        public static int Widget_ActionBarTitle_Inverse=0x7f07000d;
+        public static int Widget_ActionBarTitleBase=0x7f07000b;
+        public static int Widget_Holo=0x7f070015;
+        public static int Widget_Holo_AutoCompleteTextView=0x7f070036;
+        public static int Widget_Holo_Button=0x7f070017;
+        public static int Widget_Holo_Button_Inset=0x7f070019;
+        public static int Widget_Holo_Button_Small=0x7f070018;
+        public static int Widget_Holo_Button_Toggle=0x7f07001a;
+        public static int Widget_Holo_CompoundButton_CheckBox=0x7f070023;
+        public static int Widget_Holo_CompoundButton_RadioButton=0x7f070025;
+        public static int Widget_Holo_CompoundButton_Star=0x7f070049;
+        public static int Widget_Holo_EditText=0x7f07001b;
+        public static int Widget_Holo_ExpandableListView=0x7f070039;
+        public static int Widget_Holo_ExpandableListView_White=0x7f070047;
+        public static int Widget_Holo_GridView=0x7f070048;
+        public static int Widget_Holo_ImageButton=0x7f07001c;
+        public static int Widget_Holo_Light=0x7f070016;
+        public static int Widget_Holo_Light_AutoCompleteTextView=0x7f070055;
+        public static int Widget_Holo_Light_Button=0x7f07001d;
+        public static int Widget_Holo_Light_Button_Inset=0x7f07001f;
+        public static int Widget_Holo_Light_Button_Small=0x7f07001e;
+        public static int Widget_Holo_Light_Button_Toggle=0x7f070020;
+        public static int Widget_Holo_Light_CompoundButton_CheckBox=0x7f070024;
+        public static int Widget_Holo_Light_CompoundButton_RadioButton=0x7f070026;
+        public static int Widget_Holo_Light_CompoundButton_Star=0x7f07004a;
+        public static int Widget_Holo_Light_EditText=0x7f070021;
+        public static int Widget_Holo_Light_ExpandableListView=0x7f070053;
+        public static int Widget_Holo_Light_ExpandableListView_White=0x7f070054;
+        public static int Widget_Holo_Light_GridView=0x7f070052;
+        public static int Widget_Holo_Light_ImageButton=0x7f070022;
+        public static int Widget_Holo_Light_ListView=0x7f070029;
+        public static int Widget_Holo_Light_ListView_DropDown=0x7f07002a;
+        public static int Widget_Holo_Light_ProgressBar=0x7f070050;
+        public static int Widget_Holo_Light_ProgressBar_Horizontal=0x7f070031;
+        public static int Widget_Holo_Light_ProgressBar_Inverse=0x7f070044;
+        public static int Widget_Holo_Light_ProgressBar_Large=0x7f070043;
+        public static int Widget_Holo_Light_ProgressBar_Large_Inverse=0x7f070046;
+        public static int Widget_Holo_Light_ProgressBar_Small=0x7f070041;
+        public static int Widget_Holo_Light_ProgressBar_Small_Inverse=0x7f070045;
+        public static int Widget_Holo_Light_ProgressBar_Small_Title=0x7f070042;
+        public static int Widget_Holo_Light_RatingBar=0x7f07004e;
+        public static int Widget_Holo_Light_RatingBar_Indicator=0x7f07004f;
+        public static int Widget_Holo_Light_RatingBar_Small=0x7f070051;
+        public static int Widget_Holo_Light_SeekBar=0x7f07002c;
+        public static int Widget_Holo_Light_Spinner=0x7f070033;
+        public static int Widget_Holo_Light_TextView_SpinnerItem=0x7f070035;
+        public static int Widget_Holo_ListView=0x7f070027;
+        public static int Widget_Holo_ListView_DropDown=0x7f070028;
+        public static int Widget_Holo_ProgressBar=0x7f07002d;
+        public static int Widget_Holo_ProgressBar_Horizontal=0x7f070030;
+        public static int Widget_Holo_ProgressBar_Inverse=0x7f07004b;
+        public static int Widget_Holo_ProgressBar_Large=0x7f07002f;
+        public static int Widget_Holo_ProgressBar_Large_Inverse=0x7f07004d;
+        public static int Widget_Holo_ProgressBar_Small=0x7f07002e;
+        public static int Widget_Holo_ProgressBar_Small_Inverse=0x7f07004c;
+        public static int Widget_Holo_ProgressBar_Small_Title=0x7f070040;
+        public static int Widget_Holo_RatingBar=0x7f07003d;
+        public static int Widget_Holo_RatingBar_Indicator=0x7f07003e;
+        public static int Widget_Holo_RatingBar_Small=0x7f07003f;
+        public static int Widget_Holo_SeekBar=0x7f07002b;
+        public static int Widget_Holo_Spinner=0x7f070032;
+        public static int Widget_Holo_Tab=0x7f07003b;
+        public static int Widget_Holo_TabText=0x7f07003c;
         /**  <item name="android:tabLayout">@android:layout/tab_indicator_holo</item>  
          */
-        public static int Widget_Holo_TabWidget=0x7f06003b;
-        public static int Widget_Holo_TextView_SpinnerItem=0x7f060035;
-        public static int WindowTitle_Holo=0x7f060001;
-        public static int WindowTitle_Holo_Inverse=0x7f060002;
+        public static int Widget_Holo_TabWidget=0x7f07003a;
+        public static int Widget_Holo_TextView_SpinnerItem=0x7f070034;
+        public static int WindowTitle_Holo=0x7f070000;
+        public static int WindowTitle_Holo_Inverse=0x7f070001;
     }
 }

@@ -35,13 +35,13 @@ public class XmlDataService implements IDataService{
 		try {
 			int i;
 			IDataNode node = XmlHelper.parse(XmlHelper.createParser(App.get().getAssets().open("PreloadData.xml"), "UTF-8"));
-			IDataView<IDataNode> cs = new DataNodeView(node, "Categories/Category");
+			IDataList<IDataNode> cs = new DataNodeView(node, "Categories/Category").getData();
 			for(i = 0; i < cs.getItemCount(); i++){
 				Category c = new Category();
 				c.copyPropertiesFrom(cs.getItem(i));
 				categories.addItem(c);
 			}
-			IDataView<IDataNode> ps = new DataNodeView(node, "Products/Product");
+			IDataList<IDataNode> ps = new DataNodeView(node, "Products/Product").getData();
 			for(i = 0; i < ps.getItemCount(); i++){
 				Product p = new Product();
 				p.copyPropertiesFrom(ps.getItem(i));
