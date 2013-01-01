@@ -18,35 +18,29 @@ package com.momock.data;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class DataNodeView extends DataViewBase<IDataNode> {
+import com.momock.event.IEventHandler;
+
+public class DataNodeView extends DataViewBase<IDataNode> implements IEventHandler<DataChangedEventArgs>{
 	String path = null;
 	IDataNode node;
 
 	public DataNodeView(IDataNode node) {
-		this.node = node;
-		refresh();
+		this(node, null);
 	}
 
 	public DataNodeView(IDataNode node, String path) {
-		this.path = path;
-		this.node = node;
-		refresh();
+		this(node, path, null);
 	}
 
 	public DataNodeView(IDataNode node, String path, IFilter<IDataNode> filter) {
-		this.path = path;
-		this.node = node;
-		this.filter = filter;
-		refresh();
+		this(node, path, filter, null);
 	}
 
-	public DataNodeView(IDataNode node, String path, IFilter<IDataNode> filter,
-			IOrder<IDataNode> order) {
-		this.path = path;
-		this.node = node;
-		this.filter = filter;
-		this.order = order;
-		refresh();
+	public DataNodeView(IDataNode node, String path, IFilter<IDataNode> filter,	IOrder<IDataNode> order) {
+		setPath(path);
+		setNode(node);
+		setFilter(filter);
+		setOrder(order);
 	}
 
 	public String getPath() {
@@ -55,8 +49,20 @@ public class DataNodeView extends DataViewBase<IDataNode> {
 
 	public void setPath(String path) {
 		this.path = path;
+		this.needRefreshData = true;
 	}
 
+	public IDataNode getNode() {
+		return node;
+	}
+
+	public void setNode(IDataNode node) {
+		if (this.node != null) this.node.removeDataChangedHandler(this);
+		this.node = node;
+		this.needRefreshData = true;
+		if (this.node != null) this.node.addDataChangedHandler(this);
+	}
+	
 	void add(IDataNode n) {
 		if (filter == null || filter.check(n)) {
 			store.addItem(n);
@@ -93,7 +99,7 @@ public class DataNodeView extends DataViewBase<IDataNode> {
 	}
 
 	@Override
-	public void refresh() {
+	public void onRefresh() {
 		store.removeAllItems();
 		visit(node, path == null ? null : path.split("/"), 0);
 		if (store.getItemCount() > 0 && order != null) {
@@ -122,5 +128,11 @@ public class DataNodeView extends DataViewBase<IDataNode> {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void process(Object sender, DataChangedEventArgs args) {
+		this.needRefreshData = true;
+		refresh();
 	}
 }

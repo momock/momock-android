@@ -23,7 +23,7 @@ import com.momock.event.Event;
 import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 
-public class DataMap<K, V> implements IDataMutableMap<K, V>, IDataChangedAware {
+public class DataMap<K, V> implements IDataMutableMap<K, V> {
 	HashMap<K, V> map = new HashMap<K, V>();
 
 	@Override

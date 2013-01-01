@@ -17,7 +17,7 @@ package com.momock.data;
 
 import java.util.Comparator;
 
-public interface IDataView<T> extends IDataList<T> {
+public interface IDataView<T> {
 	public static interface IFilter<T> {
 		boolean check(T item);
 	}
@@ -25,6 +25,8 @@ public interface IDataView<T> extends IDataList<T> {
 	public static interface IOrder<T> extends Comparator<T> {
 	}
 
+	IDataList<T> getData();
+	
 	IFilter<T> getFilter();
 
 	void setFilter(IFilter<T> filter);
@@ -40,6 +42,6 @@ public interface IDataView<T> extends IDataList<T> {
 	int getLimit();
 
 	void setLimit(int limit);
-
+	
 	void refresh();
 }

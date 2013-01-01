@@ -18,22 +18,25 @@ package com.momock.data;
 import com.momock.util.Logger;
 
 public abstract class DataViewBase<T> implements IDataView<T>{
-	protected IDataMutableList<T> store = new DataList<T>();
+	protected DataList<T> store = new DataList<T>();
 	protected int offset = 0;
 	protected int limit = -1;
-	@Override
-	public boolean hasItem(T item) {
-		return store.hasItem(item);
-	}
+	protected boolean needRefreshData = false;
+
+	protected abstract void onRefresh();
 
 	@Override
-	public T getItem(int index) {
-		return store.getItem(index);
+	public void refresh(){
+		if (needRefreshData){
+			needRefreshData = false;
+			onRefresh();
+			store.fireDataChangedEvent(this, new DataChangedEventArgs());
+		}
 	}
-
 	@Override
-	public int getItemCount() {
-		return store.getItemCount();
+	public IDataList<T> getData(){
+		refresh();
+		return store;
 	}
 
 	protected IFilter<T> filter = null;
@@ -45,6 +48,7 @@ public abstract class DataViewBase<T> implements IDataView<T>{
 	@Override
 	public void setFilter(IFilter<T> filter) {
 		this.filter = filter;
+		needRefreshData = true;
 	}
 
 	protected IOrder<T> order = null;
@@ -56,6 +60,7 @@ public abstract class DataViewBase<T> implements IDataView<T>{
 	@Override
 	public void setOrder(IOrder<T> order) {
 		this.order = order;
+		needRefreshData = true;
 	}
 
 	@Override
@@ -66,7 +71,8 @@ public abstract class DataViewBase<T> implements IDataView<T>{
 	@Override
 	public void setOffset(int offset) {
 		Logger.check(offset >= 0, "Offset must be positive!");
-		this.offset = offset;		
+		this.offset = offset;	
+		needRefreshData = true;
 	}
 
 	@Override
@@ -77,6 +83,6 @@ public abstract class DataViewBase<T> implements IDataView<T>{
 	@Override
 	public void setLimit(int limit) {
 		this.limit = limit;
+		needRefreshData = true;
 	}
-
 }

@@ -18,27 +18,28 @@ package com.momock.data;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class DataListView<T> extends DataViewBase<T> {
+import com.momock.event.IEventHandler;
+
+public class DataListView<T> extends DataViewBase<T> implements IEventHandler<DataChangedEventArgs>{
 	IDataList<T> source;
 	public DataListView(){
 		
 	}
-	public DataListView(IDataList<T> source){		
-		this.source = source;
+	public DataListView(IDataList<T> source){	
+		this(source, null);
 	}
 	public DataListView(IDataList<T> source, IFilter<T> filter) {
-		this.filter = filter;
-		this.source = source;
+		this(source, filter, null);
 	}
 
 	public DataListView(IDataList<T> source, IFilter<T> filter, IOrder<T> order) {
-		this.filter = filter;
-		this.source = source;
-		this.order = order;
+		setFilter(filter);
+		setOrder(order);
+		setSource(source);
 	}
 	@SuppressWarnings("unchecked")
 	@Override
-	public void refresh() {		
+	public void onRefresh() {		
 		store.removeAllItems();
 		if (source == null) return;
 		for (int i = 0; i < source.getItemCount(); i++) {
@@ -78,7 +79,15 @@ public class DataListView<T> extends DataViewBase<T> {
 		return source;
 	}
 	public void setSource(IDataList<T> source) {
+		if (this.source != null) this.source.removeDataChangedHandler(this);
 		this.source = source;
+		this.needRefreshData = true;
+		if (this.source != null) this.source.addDataChangedHandler(this);
+	}
+	@Override
+	public void process(Object sender, DataChangedEventArgs args) {
+		this.needRefreshData = true;
+		refresh();
 	}
 
 }

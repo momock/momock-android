@@ -17,8 +17,10 @@ package com.momock.outlet;
 
 import java.util.List;
 
+import com.momock.data.DataChangedEventArgs;
 import com.momock.data.DataMap;
 import com.momock.data.IDataMap;
+import com.momock.event.IEventHandler;
 
 public class Plug implements IPlug{
 	protected DataMap<String, Object> properties = null;
@@ -58,6 +60,26 @@ public class Plug implements IPlug{
 	@Override
 	public void onDeactivate() {
 		
+	}
+
+	@Override
+	public void fireDataChangedEvent(Object sender, DataChangedEventArgs args) {
+		if (properties != null)
+			properties.fireDataChangedEvent(sender, args);		
+	}
+
+	@Override
+	public void addDataChangedHandler(
+			IEventHandler<DataChangedEventArgs> handler) {
+		if (properties != null)
+			properties.addDataChangedHandler(handler);
+	}
+
+	@Override
+	public void removeDataChangedHandler(
+			IEventHandler<DataChangedEventArgs> handler) {
+		if (properties != null)
+			properties.removeDataChangedHandler(handler);
 	}
 
 }

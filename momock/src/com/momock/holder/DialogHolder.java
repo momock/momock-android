@@ -57,7 +57,13 @@ public abstract class DialogHolder implements IHolder {
 			final IEventHandler<IEventArgs> okHandler) {
 		return create(kase, null, title, message, okButton, okHandler, null, null);
 	}
-
+	public static DialogHolder create(final ICase<?> kase, final IHolder title,
+			final IHolder message, final TextHolder okButton,
+			final IEventHandler<IEventArgs> okHandler,
+			final TextHolder cancelButton,
+			final IEventHandler<IEventArgs> cancelHandler) {
+		return create(kase, null, title, message, okButton, okHandler, cancelButton, cancelHandler);
+	}
 	public static DialogHolder create(final ICase<?> kase, final ImageHolder icon, final IHolder title,
 			final IHolder message, final TextHolder okButton,
 			final IEventHandler<IEventArgs> okHandler,

@@ -15,7 +15,7 @@
  ******************************************************************************/
 package com.momock.data;
 
-public interface IDataNode extends IDataMutableMap<String, Object>, IDataMutableList<Object>, IDataChangedAware{
+public interface IDataNode extends IDataMutableMap<String, Object>, IDataMutableList<Object>{
 	String getName();
 	boolean isValueNode();
 	Object getValue();

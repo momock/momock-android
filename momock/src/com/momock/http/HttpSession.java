@@ -127,7 +127,7 @@ public class HttpSession{
 			this.file = cacheService.getCacheOf(this.getClass().getName(), url);
 		this.fileData = new File(file.getPath() + ".data");
 		this.fileInfo = new File(file.getPath() + ".info");
-		DownloadInfo di = getDownloadInfo(url, file);
+		DownloadInfo di = getDownloadInfo(file);
 		if (di != null){
 			this.downloadedLength = di.getDownloadedLength();
 			this.contentLength = di.getContentLength();		
@@ -135,7 +135,14 @@ public class HttpSession{
 		}
 		downloadMode = true;		
 	}
-	public static DownloadInfo getDownloadInfo(String url, File file){
+	public static void deleteDownloadFile(File file){		
+		File fileData = new File(file.getPath() + ".data");
+		File fileInfo = new File(file.getPath() + ".info");
+		if (fileInfo.exists()) fileInfo.delete();
+		if (fileData.exists()) fileData.delete();
+		if (file.exists()) file.delete();
+	}
+	public static DownloadInfo getDownloadInfo(File file){
 		if (file.exists()){
 			return new DownloadInfo(file.length(), file.length());
 		}
@@ -355,6 +362,7 @@ public class HttpSession{
 				setState(STATE_FINISHED);				
 				return;
 			}
+			if (file.exists()) file.delete();
 			if (fileData.exists() && fileInfo.exists()) {
 				request.setHeader("Range", "bytes=" + fileData.length() + "-");
 				downloadedLength = fileData.length();

@@ -15,7 +15,8 @@
  ******************************************************************************/
 package com.momock.data;
 
-public interface IDataList <T> {
+
+public interface IDataList <T> extends IDataChangedAware{
 	boolean hasItem(T item);
 	T getItem(int index);
 	int getItemCount();

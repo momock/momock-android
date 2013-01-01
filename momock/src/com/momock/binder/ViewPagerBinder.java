@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.momock.binder;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -24,6 +25,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import com.momock.data.IDataList;
 import com.momock.event.Event;
@@ -78,7 +80,22 @@ public class ViewPagerBinder {
 	public void bind(ViewPager view, IDataList<?> list){
 		bind(view, list, null, false);
 	}
+	WeakReference<ViewPager> refView = null;
+	public ViewPager getView(){
+		return refView == null ? null : refView.get();		
+	}
+	public View getViewOf(Object item){
+		ViewPager parent = getView();
+		if (parent != null){
+			for(int i = 0; i < parent.getChildCount(); i++){
+				View c = parent.getChildAt(i);
+				if (c.getTag() == item) return c;
+			}
+		}
+		return null;
+	}
 	public void bind(final ViewPager view, final IDataList<?> list, final IIndexIndicator indicator, boolean round) {
+		refView = new WeakReference<ViewPager>(view);
 		if (view != null) {
 			if (indicator != null){
 				indicator.setCount(list.getItemCount());
@@ -145,9 +162,10 @@ public class ViewPagerBinder {
 					if (savedViews.size() > 0){
 						convertView = savedViews.poll();
 					} 
-					convertView = binder.onCreateItemView(convertView, position,
-							list.getItem(position), view);
+					Object item = list.getItem(position);
+					convertView = binder.onCreateItemView(convertView, position, item, view);
 					container.addView(convertView, 0);
+					convertView.setTag(item);
 					return convertView;
 				}
 

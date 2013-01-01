@@ -17,7 +17,7 @@ package com.momock.data;
 
 import java.util.List;
 
-public interface IDataMap<K, V> {
+public interface IDataMap<K, V> extends IDataChangedAware{
 	boolean hasProperty(K name);
 	V getProperty(K name);
 	List<K> getPropertyNames();
