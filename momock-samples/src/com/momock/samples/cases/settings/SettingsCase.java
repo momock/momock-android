@@ -19,7 +19,7 @@ import android.app.Activity;
 
 import com.momock.app.App;
 import com.momock.app.Case;
-import com.momock.event.IEventArgs;
+import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.ImageHolder;
 import com.momock.holder.TextHolder;
@@ -38,9 +38,9 @@ public class SettingsCase extends Case<Activity> {
 	public void onCreate() {
 		ActionPlug self = ActionPlug.create(TextHolder.get("Settings"),
 				ImageHolder.get(R.drawable.ic_action_google_play),
-				new IEventHandler<IEventArgs>() {
+				new IEventHandler<EventArgs>() {
 					@Override
-					public void process(Object sender, IEventArgs args) {
+					public void process(Object sender, EventArgs args) {
 						run();
 					}
 				});

@@ -16,14 +16,13 @@
 package com.momock.event;
 
 
-public class EventArgs implements IEventArgs{
+public class EventArgs {
 	protected boolean consumed = false;
-	@Override
+	
 	public boolean isConsumed() {
 		return consumed;
 	}
 
-	@Override
 	public void setConsumed(boolean consumed) {
 		this.consumed = consumed;
 	}

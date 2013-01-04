@@ -22,12 +22,10 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
 import com.momock.app.ICase;
-import com.momock.event.IEventArgs;
+import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.util.Logger;
 
@@ -54,36 +52,38 @@ public abstract class DialogHolder implements IHolder {
 
 	public static DialogHolder create(final ICase<?> kase, final IHolder title,
 			final IHolder message, final TextHolder okButton,
-			final IEventHandler<IEventArgs> okHandler) {
+			final IEventHandler<EventArgs> okHandler) {
 		return create(kase, null, title, message, okButton, okHandler, null, null);
 	}
 	public static DialogHolder create(final ICase<?> kase, final IHolder title,
 			final IHolder message, final TextHolder okButton,
-			final IEventHandler<IEventArgs> okHandler,
+			final IEventHandler<EventArgs> okHandler,
 			final TextHolder cancelButton,
-			final IEventHandler<IEventArgs> cancelHandler) {
+			final IEventHandler<EventArgs> cancelHandler) {
 		return create(kase, null, title, message, okButton, okHandler, cancelButton, cancelHandler);
 	}
 	public static DialogHolder create(final ICase<?> kase, final ImageHolder icon, final IHolder title,
 			final IHolder message, final TextHolder okButton,
-			final IEventHandler<IEventArgs> okHandler,
+			final IEventHandler<EventArgs> okHandler,
 			final TextHolder cancelButton,
-			final IEventHandler<IEventArgs> cancelHandler) {
+			final IEventHandler<EventArgs> cancelHandler) {
+		return create(FragmentManagerHolder.get(kase), icon, title, message, okButton, okHandler, cancelButton, cancelHandler);
+	}
+	public static DialogHolder create(final FragmentManagerHolder fmh, final ImageHolder icon, final IHolder title,
+			final IHolder message, final TextHolder okButton,
+			final IEventHandler<EventArgs> okHandler,
+			final TextHolder cancelButton,
+			final IEventHandler<EventArgs> cancelHandler) {
 		return new DialogHolder() {
 
 			@Override
 			public FragmentManager getFragmentManager() {
-				if (kase.getAttachedObject() instanceof FragmentActivity)
-					return ((FragmentActivity) kase.getAttachedObject())
-							.getSupportFragmentManager();
-				else if (kase.getAttachedObject() instanceof Fragment)
-					return ((Fragment) kase.getAttachedObject())
-							.getFragmentManager();
-				return null;
+				return fmh.getFragmentManager();
 			}
 
 			@Override
 			protected DialogFragment getDialogFragment() {
+				final DialogHolder dh = this;
 				return new DialogFragment() {
 
 					@Override
@@ -117,7 +117,7 @@ public abstract class DialogHolder implements IHolder {
 								public void onClick(DialogInterface dialog,
 										int id) {
 									if (okHandler != null)
-										okHandler.process(dialog, null);
+										okHandler.process(dh, null);
 								}
 							};
 							builder.setPositiveButton(okButton.getText(), listener);						
@@ -127,7 +127,7 @@ public abstract class DialogHolder implements IHolder {
 								public void onClick(DialogInterface dialog,
 										int id) {
 									if (cancelHandler != null)
-										cancelHandler.process(dialog, null);
+										cancelHandler.process(dh, null);
 								}
 							};
 							builder.setNegativeButton(cancelButton.getText(), listener);

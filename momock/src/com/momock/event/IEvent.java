@@ -15,7 +15,7 @@
  ******************************************************************************/
 package com.momock.event;
 
-public interface IEvent<A extends IEventArgs> {
+public interface IEvent<A extends EventArgs> {
 	void fireEvent(Object sender, A args);
 	boolean hasEventHandler(IEventHandler<A> handler);
 	void addEventHandler(IEventHandler<A> handler);

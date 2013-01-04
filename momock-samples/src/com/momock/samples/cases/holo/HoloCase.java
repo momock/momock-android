@@ -17,7 +17,7 @@ package com.momock.samples.cases.holo;
 
 import com.momock.app.App;
 import com.momock.app.Case;
-import com.momock.event.IEventArgs;
+import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.TextHolder;
 import com.momock.outlet.action.ActionPlug;
@@ -33,9 +33,9 @@ public class HoloCase extends Case<HoloActionBarActivity>{
 	@Override
 	public void onCreate() {
 		ActionPlug self = ActionPlug.create(TextHolder.get("I'm Holo"),
-				new IEventHandler<IEventArgs>() {
+				new IEventHandler<EventArgs>() {
 					@Override
-					public void process(Object sender, IEventArgs args) {
+					public void process(Object sender, EventArgs args) {
 						run();
 					}
 				});

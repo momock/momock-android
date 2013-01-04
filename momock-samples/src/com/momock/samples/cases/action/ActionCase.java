@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 import com.momock.app.Case;
 import com.momock.app.ICase;
-import com.momock.event.IEventArgs;
+import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.TextHolder;
@@ -40,9 +40,9 @@ public class ActionCase extends Case<Fragment>{
 
 	@Override
 	public void onCreate() {	
-		getOutlet(OutletNames.SAMPLES).addPlug(ActionPlug.create(TextHolder.get("Action Sample")).addExecuteEventHandler(new IEventHandler<IEventArgs>(){
+		getOutlet(OutletNames.SAMPLES).addPlug(ActionPlug.create(TextHolder.get("Action Sample")).addExecuteEventHandler(new IEventHandler<EventArgs>(){
 			@Override
-			public void process(Object sender, IEventArgs args) {
+			public void process(Object sender, EventArgs args) {
 				run();
 			}			
 		}));

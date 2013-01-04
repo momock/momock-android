@@ -120,7 +120,7 @@ public class HttpSession{
 		ICacheService cacheService = App.get().getService(ICacheService.class);
 		Logger.check(cacheService != null, "ICacheService has not been added!");
 		this.httpClient = httpClient;
-		this.url = url;
+		this.url = getNormalizedUrl(url);
 		if (file != null)
 			this.file = file;
 		else
@@ -134,6 +134,9 @@ public class HttpSession{
 			state = STATE_FINISHED;
 		}
 		downloadMode = true;		
+	}
+	public static String getNormalizedUrl(String url){
+		return url.contains("://") ? url : "http://" + url;
 	}
 	public static void deleteDownloadFile(File file){		
 		File fileData = new File(file.getPath() + ".data");

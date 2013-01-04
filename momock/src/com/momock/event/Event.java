@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Event<A extends IEventArgs> implements IEvent<A> {
+public class Event<A extends EventArgs> implements IEvent<A> {
 	// In most cases, there is only one event handler. To reduce memory usage, handlers will refer to the handler directly 
 	Object handlers = null;
 	

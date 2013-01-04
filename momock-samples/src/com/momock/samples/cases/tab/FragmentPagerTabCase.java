@@ -19,7 +19,7 @@ import android.support.v4.app.Fragment;
 
 import com.momock.app.Case;
 import com.momock.app.ICase;
-import com.momock.event.IEventArgs;
+import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.FragmentTabHolder;
@@ -49,9 +49,9 @@ public class FragmentPagerTabCase extends Case<Fragment> {
 		IOutlet<IActionPlug, ViewHolder> outlet = getOutlet(OutletNames.SAMPLES);
 		outlet.addPlug(ActionPlug.create(
 				TextHolder.get("Fragment Pager Tab Sample"))
-				.addExecuteEventHandler(new IEventHandler<IEventArgs>() {
+				.addExecuteEventHandler(new IEventHandler<EventArgs>() {
 					@Override
-					public void process(Object sender, IEventArgs args) {
+					public void process(Object sender, EventArgs args) {
 						run();
 					}
 				}));

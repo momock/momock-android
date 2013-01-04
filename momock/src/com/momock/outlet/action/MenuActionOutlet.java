@@ -22,7 +22,7 @@ import android.view.MenuItem;
 
 import com.momock.data.IDataList;
 import com.momock.event.IEvent;
-import com.momock.event.IEventArgs;
+import com.momock.event.EventArgs;
 import com.momock.outlet.Outlet;
 
 public class MenuActionOutlet extends Outlet<IActionPlug, Menu> implements IActionOutlet<Menu>{
@@ -45,7 +45,7 @@ public class MenuActionOutlet extends Outlet<IActionPlug, Menu> implements IActi
 			{
 				mi.setIcon(plug.getIcon().getAsDrawable());
 			}
-			final IEvent<IEventArgs> event = plug.getExecuteEvent();
+			final IEvent<EventArgs> event = plug.getExecuteEvent();
 			mi.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 				
 				@Override

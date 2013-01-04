@@ -17,7 +17,7 @@ package com.momock.outlet.action;
 
 import com.momock.event.Event;
 import com.momock.event.IEvent;
-import com.momock.event.IEventArgs;
+import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.ImageHolder;
 import com.momock.holder.TextHolder;
@@ -29,7 +29,7 @@ public class ActionPlug extends Plug implements IActionPlug {
 	TextHolder text = null;
 	ImageHolder icon = null;
 	IOutlet<IActionPlug, ?> subOutlet = null;
-	IEvent<IEventArgs> event = new Event<IEventArgs>();
+	IEvent<EventArgs> event = new Event<EventArgs>();
 	
 	private ActionPlug()
 	{
@@ -75,11 +75,11 @@ public class ActionPlug extends Plug implements IActionPlug {
 	}
 	
 	@Override
-	public IEvent<IEventArgs> getExecuteEvent() {
+	public IEvent<EventArgs> getExecuteEvent() {
 		return event;
 	}
 
-	public ActionPlug addExecuteEventHandler(IEventHandler<IEventArgs> handler)
+	public ActionPlug addExecuteEventHandler(IEventHandler<EventArgs> handler)
 	{
 		event.addEventHandler(handler);
 		return this;
@@ -90,7 +90,7 @@ public class ActionPlug extends Plug implements IActionPlug {
 		ActionPlug plug = new ActionPlug();
 		return plug.setText(text);
 	}
-	public static ActionPlug create(TextHolder text, IEventHandler<IEventArgs> handler)
+	public static ActionPlug create(TextHolder text, IEventHandler<EventArgs> handler)
 	{
 		ActionPlug plug = new ActionPlug();
 		return plug.setText(text).addExecuteEventHandler(handler);
@@ -100,7 +100,7 @@ public class ActionPlug extends Plug implements IActionPlug {
 		ActionPlug plug = new ActionPlug();
 		return plug.setText(text).setIcon(icon);
 	}
-	public static ActionPlug create(TextHolder text, ImageHolder icon, IEventHandler<IEventArgs> handler)
+	public static ActionPlug create(TextHolder text, ImageHolder icon, IEventHandler<EventArgs> handler)
 	{
 		ActionPlug plug = new ActionPlug();
 		return plug.setText(text).setIcon(icon).addExecuteEventHandler(handler);

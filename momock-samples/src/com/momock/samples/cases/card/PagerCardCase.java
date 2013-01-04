@@ -23,7 +23,7 @@ import com.momock.app.App;
 import com.momock.app.Case;
 import com.momock.app.ICase;
 import com.momock.data.IDataList;
-import com.momock.event.IEventArgs;
+import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.TextHolder;
@@ -49,9 +49,9 @@ public class PagerCardCase extends Case<Fragment> implements View.OnClickListene
 	public void onCreate() {
 		IOutlet outlet = getParent().getOutlet(OutletNames.SAMPLES);
 		outlet.addPlug(ActionPlug.create(TextHolder.get("Pager Card Sample"))
-				.addExecuteEventHandler(new IEventHandler<IEventArgs>() {
+				.addExecuteEventHandler(new IEventHandler<EventArgs>() {
 					@Override
-					public void process(Object sender, IEventArgs args) {
+					public void process(Object sender, EventArgs args) {
 						run();
 					}
 				}));

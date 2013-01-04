@@ -16,7 +16,7 @@
 package com.momock.outlet.action;
 
 import com.momock.event.IEvent;
-import com.momock.event.IEventArgs;
+import com.momock.event.EventArgs;
 import com.momock.holder.ImageHolder;
 import com.momock.holder.TextHolder;
 import com.momock.outlet.IOutlet;
@@ -31,5 +31,5 @@ public interface IActionPlug extends IPlug{
 	
 	IOutlet<IActionPlug, ?> getSubOutlet();
 	
-	IEvent<IEventArgs> getExecuteEvent();
+	IEvent<EventArgs> getExecuteEvent();
 }
