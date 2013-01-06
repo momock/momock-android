@@ -21,24 +21,26 @@ import java.util.List;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.momock.app.App;
 import com.momock.data.IDataMap;
 import com.momock.holder.ImageHolder;
-import com.momock.holder.ViewHolder;
+import com.momock.service.IImageService;
 import com.momock.util.BeanHelper;
 import com.momock.util.Convert;
+import com.momock.util.Logger;
 
 public class ViewBinder {
 	public static interface Setter {
-		boolean onSet(View view, String viewProp, Object obj, String key,
-				Object val, ViewGroup parent);
+		boolean onSet(View view, String viewProp, Object obj, String key, Object val, IContainerBinder container);
 	}
 
+	static IImageService theImageService = null;
+	public static void initialize(IImageService imageService){
+		theImageService = imageService;
+	}
+	
 	static List<Setter> globalSetters = new ArrayList<Setter>();
 
 	public static void addGlobalSetter(Setter setter) {
@@ -48,8 +50,7 @@ public class ViewBinder {
 	static {
 		addGlobalSetter(new Setter() {
 			@Override
-			public boolean onSet(View view, String viewProp, Object obj,
-					String key, Object val, ViewGroup parent) {
+			public boolean onSet(View view, String viewProp, Object obj, String key, Object val, IContainerBinder container) {
 				if (view instanceof TextView
 						&& ("Text".equals(viewProp) || viewProp == null)) {
 					((TextView) view).setText(Convert.toString(val));
@@ -59,50 +60,40 @@ public class ViewBinder {
 			}
 		});
 		addGlobalSetter(new Setter() {
-			@SuppressWarnings("rawtypes")
 			@Override
-			public boolean onSet(View view, String viewProp, Object obj,
-					String key, Object val, ViewGroup parent) {
+			public boolean onSet(View view, String viewProp, Object obj, String key, Object val, IContainerBinder container) {
 				if (view instanceof ImageView) {
 					if (viewProp == null) {
 						if (val instanceof CharSequence) {
+							Logger.check(theImageService != null, "The ImageService must not be null!");
 							String uri = val.toString();
-							ImageHolder ih = ImageHolder.get(uri);
-							if (ih != null && ih.getAsBitmap() != null) {
-								((ImageView) view).setImageBitmap(ih
-										.getAsBitmap());
-								return true;
+							Bitmap bmp = theImageService.loadBitmap(uri);
+							if (bmp != null) {
+								((ImageView) view).setImageBitmap(bmp);
 							} else {
 								int pos = key.indexOf('|');
 								if (pos == -1)
 									((ImageView) view).setImageBitmap(null);
 								else
 									((ImageView) view).setImageBitmap(ImageHolder.get(Convert.toInteger(key.substring(pos + 1).trim())).getAsBitmap());
-								if (parent instanceof AdapterView)
-									App.get().getImageService().bind(uri, (AdapterView) parent);
+								if (container != null)
+									theImageService.bind(uri, container, obj);
 								else
-									App.get().getImageService().bind(uri, (ImageView) view);
+									theImageService.bind(uri, (ImageView) view);
 							}
 						} else {
 							if (val instanceof Drawable) {
-								((ImageView) view)
-										.setImageDrawable((Drawable) val);
+								((ImageView) view).setImageDrawable((Drawable) val);
 							} else {
-								((ImageView) view)
-										.setImageBitmap(val instanceof ImageHolder ? ((ImageHolder) val)
-												.getAsBitmap() : (Bitmap) val);
+								((ImageView) view).setImageBitmap(val instanceof ImageHolder ? ((ImageHolder) val).getAsBitmap() : (Bitmap) val);
 							}
 						}
 						return true;
 					} else if ("ImageDrawable".equals(viewProp)) {
-						((ImageView) view)
-								.setImageDrawable(val instanceof ImageHolder ? ((ImageHolder) val)
-										.getAsDrawable() : (Drawable) val);
+						((ImageView) view).setImageDrawable(val instanceof ImageHolder ? ((ImageHolder) val).getAsDrawable() : (Drawable) val);
 						return true;
 					} else if ("ImageBitmap".equals(viewProp)) {
-						((ImageView) view)
-								.setImageBitmap(val instanceof ImageHolder ? ((ImageHolder) val)
-										.getAsBitmap() : (Bitmap) val);
+						((ImageView) view).setImageBitmap(val instanceof ImageHolder ? ((ImageHolder) val).getAsBitmap() : (Bitmap) val);
 						return true;
 					}
 				}
@@ -154,20 +145,12 @@ public class ViewBinder {
 		return this;
 	}
 
-	public void bind(ViewHolder view, Object target) {
-		bind(view, target, null);
-	}
-
-	public void bind(ViewHolder view, Object target, ViewGroup parent) {
-		bind(view.getView(), target, parent);
-	}
-
 	public void bind(View view, Object target) {
 		bind(view, target, null);
 	}
 
 	@SuppressWarnings("unchecked")
-	public void bind(View view, Object target, ViewGroup parent) {
+	public void bind(View view, Object target, IContainerBinder container) {
 		IDataMap<String, Object> map = null;
 		if (target instanceof IDataMap)
 			map = (IDataMap<String, Object>) target;
@@ -191,13 +174,13 @@ public class ViewBinder {
 			else
 				cv = view.findViewById(Convert.toInteger(tagOrId));
 			for (Setter s : customSetters) {
-				set = s.onSet(cv, pv.viewProp, target, name, val, view instanceof ViewGroup ? (ViewGroup)view : null);
+				set = s.onSet(cv, pv.viewProp, target, name, val, container);
 				if (set)
 					break;
 			}
 			if (!set) {
 				for (Setter s : globalSetters) {
-					set = s.onSet(cv, pv.viewProp, target, name, val, view instanceof ViewGroup ? (ViewGroup)view : null);
+					set = s.onSet(cv, pv.viewProp, target, name, val, container);
 					if (set)
 						break;
 				}

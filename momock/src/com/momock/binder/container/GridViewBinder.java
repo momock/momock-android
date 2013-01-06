@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.app;
+package com.momock.binder.container;
 
-import com.momock.data.DataSet;
+import com.momock.binder.IItemBinder;
 
-public class CaseDataSet extends DataSet{
-	ICase<?> kase;
-	public CaseDataSet(ICase<?> kase){
-		this.kase = kase;
+import android.widget.GridView;
+
+public class GridViewBinder extends AdapterViewBinder<GridView>{
+
+	public GridViewBinder(IItemBinder binder) {
+		super(binder);
 	}
-	protected IApplication getApplication(){
-		return App.get();
-	}
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T getData(String name) {
-		Object data = super.getData(name);
-		if (data == null)
-			data = kase.getParent() == null ? getApplication().getDataSet().getData(name) : kase.getParent().getDataSet().getData(name);
-		return (T)data;
-	}
+
 }

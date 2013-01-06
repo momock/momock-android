@@ -18,18 +18,15 @@ package com.momock.service;
 import java.io.File;
 
 import android.graphics.Bitmap;
-import android.support.v4.view.PagerAdapter;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.momock.binder.IContainerBinder;
 import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
 
 public interface IImageService extends IService{
 	public static final String PREFIX_FILE = "file://";
 	public static final String PREFIX_RES = "res://";
-	public static final String PREFIX_ASSETS = "assets://";
 	public static final String PREFIX_HTTP = "http://";
 	public static final String PREFIX_HTTPS = "https://";
 	
@@ -69,11 +66,7 @@ public interface IImageService extends IService{
 	
 	void bind(String fullUri, IEventHandler<ImageEventArgs> handler);
 	
-	void bind(String fullUri, ImageView view);
+	void bind(String fullUri, ImageView view);	
 	
-	void bind(String fullUri, ViewGroup viewGroup);
-	
-	void bind(String fullUri, BaseAdapter adapter);
-	
-	void bind(String fullUri, PagerAdapter adapter);
+	void bind(String fullUri, IContainerBinder binder, Object item);
 }

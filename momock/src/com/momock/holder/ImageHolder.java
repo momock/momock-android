@@ -17,19 +17,26 @@ package com.momock.holder;
 
 import java.lang.ref.WeakReference;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 
-import com.momock.app.App;
 import com.momock.event.Event;
 import com.momock.event.EventArgs;
 import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 import com.momock.service.IImageService;
 import com.momock.service.IImageService.ImageEventArgs;
+import com.momock.util.Logger;
 
 public abstract class ImageHolder implements IHolder{
 	protected IEvent<EventArgs> imageLoadedEvent = null;
+	static Resources theResources = null;
+	static IImageService theImageService = null;
+	public static void initialize(Resources resources, IImageService imageService){
+		theResources = resources;
+		theImageService = imageService;
+	}
 	public ImageHolder(){
 		onCreate();
 	}
@@ -50,26 +57,19 @@ public abstract class ImageHolder implements IHolder{
 	public void removeImageLoadedEventHandler(IEventHandler<EventArgs> handler){
 		getImageLoadedEvent().removeEventHandler(handler);
 	}
-	public String getUri(){
-		return null;
-	}
 	public BitmapDrawable getAsDrawable() {
-		return new BitmapDrawable(App.get().getResources(), getAsBitmap());
+		Logger.check(theResources != null, "The Resources must not be null!");
+		return new BitmapDrawable(theResources, getAsBitmap());
 	}
 	public abstract Bitmap getAsBitmap();
 
 	public static ImageHolder get(final int id) {
-		final String uri = "android.resource://" + App.get().getPackageName() + "/" + id;
 		return new ImageHolder() {
-
-			@Override
-			public String getUri() {
-				return uri;
-			}
 			
 			@Override
 			public BitmapDrawable getAsDrawable() {
-				return (BitmapDrawable)App.get().getResources().getDrawable(id);
+				Logger.check(theResources != null, "The Resources must not be null!");
+				return (BitmapDrawable)theResources.getDrawable(id);
 			}
 
 			@Override
@@ -84,20 +84,16 @@ public abstract class ImageHolder implements IHolder{
 		return get(uri, -1, -1);
 	}
 	public static ImageHolder get(final String uri, final int expectedWidth, final int expectedHeight){
-		final IImageService is = App.get().getImageService();
-		final String fullUri = is.getFullUri(uri, expectedWidth, expectedHeight);		
+		Logger.check(theImageService != null, "The ImageService must not be null!");		
+		final String fullUri = theImageService.getFullUri(uri, expectedWidth, expectedHeight);		
 		ImageHolder holder = new ImageHolder() {	
-			WeakReference<Bitmap> refBitmap = null;
-			@Override
-			public String getUri() {
-				return uri;
-			}
+			WeakReference<Bitmap> refBitmap = null;			
 			@Override
 			public Bitmap getAsBitmap() {
 				if (refBitmap == null || refBitmap.get() == null){
 					final ImageHolder self = this;	
-					refBitmap = new WeakReference<Bitmap>(is.loadBitmap(fullUri));
-					if (refBitmap.get() == null && is.isRemote(fullUri)){
+					refBitmap = new WeakReference<Bitmap>(theImageService.loadBitmap(fullUri));
+					if (refBitmap.get() == null && theImageService.isRemote(fullUri)){
 						IEventHandler<ImageEventArgs> handler = new IEventHandler<ImageEventArgs>(){
 							@Override
 							public void process(Object sender, ImageEventArgs args) {
@@ -105,7 +101,7 @@ public abstract class ImageHolder implements IHolder{
 								getImageLoadedEvent().fireEvent(self, new EventArgs());
 							}							
 						};
-						is.addImageEventHandler(fullUri, handler);
+						theImageService.addImageEventHandler(fullUri, handler);
 					}
 				}
 				return refBitmap.get();

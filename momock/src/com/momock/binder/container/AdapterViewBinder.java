@@ -13,78 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.binder;
-
-import java.lang.ref.WeakReference;
+package com.momock.binder.container;
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
+import com.momock.binder.ContainerBinder;
+import com.momock.binder.IItemBinder;
 import com.momock.data.IDataList;
-import com.momock.event.Event;
 import com.momock.event.EventArgs;
-import com.momock.event.IEvent;
-import com.momock.event.IEventHandler;
 import com.momock.event.ItemEventArgs;
-import com.momock.holder.ViewHolder;
 import com.momock.util.Logger;
 
-public class AdapterViewBinder<T extends AdapterView<?>> {
-	IEvent<ItemEventArgs> itemClickedEvent = new Event<ItemEventArgs>();
-	IEvent<ItemEventArgs> itemSelectedEvent = new Event<ItemEventArgs>();
-	IEvent<EventArgs> dataChangedEvent = new Event<EventArgs>();
-
-	public IEvent<EventArgs> getDataChangedEvent() {
-		return dataChangedEvent;
-	}
+public class AdapterViewBinder<T extends AdapterView<?>> extends ContainerBinder<T> {
 	
-	public IEvent<ItemEventArgs> getItemClickedEvent() {
-		return itemClickedEvent;
+	public AdapterViewBinder(IItemBinder binder) {
+		super(binder);
 	}
 
-	public IEvent<ItemEventArgs> getItemSelectedEvent() {
-		return itemSelectedEvent;
-	}
-
-	public AdapterViewBinder<T> addItemClickedEventHandler(
-			IEventHandler<ItemEventArgs> handler) {
-		itemClickedEvent.addEventHandler(handler);
-		return this;
-	}
-
-	protected ItemViewBinder binder;
-
-	public AdapterViewBinder(ItemViewBinder binder) {
-		this.binder = binder;
-	}
-
-	@SuppressWarnings("unchecked")
-	public void bind(ViewHolder view, IDataList<?> list) {
-		bind((T) view.getView(), list);
-	}
 	BaseAdapter adapter = null;
 	public BaseAdapter getAdapter(){
 		return adapter;
 	}
-	WeakReference<AdapterView<?>> refView = null;
-	public AdapterView<?> getView(){
-		return refView == null ? null : refView.get();		
-	}
-	public View getViewOf(Object item){
-		AdapterView<?> parent = getView();
-		if (parent != null){
-			for(int i = 0; i < parent.getChildCount(); i++){
-				View c = parent.getChildAt(i);
-				if (c.getTag() == item) return c;
-			}
-		}
-		return null;
-	}
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void bind(T view, final IDataList<?> list) {
-		refView = new WeakReference<AdapterView<?>>(view);
+	public void onBind(T view, final IDataList<?> list) {
 		if (view != null) {
 			view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
@@ -131,7 +85,7 @@ public class AdapterViewBinder<T extends AdapterView<?>> {
 				public View getView(int position, View convertView,
 						ViewGroup parent) {
 					Object item = getItem(position);
-					View view = binder.onCreateItemView(convertView, position, item, parent);
+					View view = itemBinder.onCreateItemView(convertView, item, AdapterViewBinder.this);
 					view.setTag(item);
 					return view;
 				}

@@ -16,7 +16,6 @@
 package com.momock.app;
 
 import com.momock.data.IDataSet;
-import com.momock.message.MessageBox;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.service.IService;
@@ -48,7 +47,7 @@ public interface IApplication {
 	
 	void removePlug(String name);
 	
-	<T extends IService> T getService(Class<?> klass);
+	<T extends IService> T getService(Class<T> klass);
 	
 	void addService(Class<?> klass, IService service);
 	
@@ -64,14 +63,9 @@ public interface IApplication {
 	
 	void onCreateEnvironment();
 	
-	void onDestroyEnvironment();
-	
-	void execute(Runnable task);
-	
-	void executeDelayed(Runnable task, int delayMillis);
-	
-	MessageBox getMessageBox();
+	void onDestroyEnvironment();	
 	
 	String getVersion();	
 	
+	void inject(Object obj);
 }

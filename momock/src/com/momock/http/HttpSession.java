@@ -45,10 +45,9 @@ import android.annotation.TargetApi;
 import android.os.AsyncTask;
 import android.os.Build;
 
-import com.momock.app.App;
 import com.momock.event.Event;
 import com.momock.event.EventArgs;
-import com.momock.service.ICacheService;
+import com.momock.service.IUITaskService;
 import com.momock.util.Convert;
 import com.momock.util.FileHelper;
 import com.momock.util.Logger;
@@ -107,26 +106,33 @@ public class HttpSession{
 	HttpRequestBase request = null;
 	boolean downloadMode = false;
 	byte[] result = null;
+	IUITaskService uiTaskService;
 	
 	Event<StateChangedEventArgs> stateChangedEvent = new Event<StateChangedEventArgs>();
 
-	public HttpSession(HttpClient httpClient, HttpRequestBase request) {
+	/*
+	public HttpSession(HttpClient httpClient, HttpRequestBase request){
+		this(httpClient, request, null);
+	}*/
+	public HttpSession(HttpClient httpClient, HttpRequestBase request, IUITaskService uiTaskService) {
 		this.url = request.getURI().toString();
 		this.httpClient = httpClient;
 		this.request = request;
+		this.uiTaskService = uiTaskService;
 	}
-
-	public HttpSession(HttpClient httpClient, String url, File file) {
-		ICacheService cacheService = App.get().getService(ICacheService.class);
-		Logger.check(cacheService != null, "ICacheService has not been added!");
+	/*
+	public HttpSession(HttpClient httpClient, String url, File file){
+		this(httpClient, url, file, null);
+	}*/
+	public HttpSession(HttpClient httpClient, String url, File file, IUITaskService uiTaskService) {
+		Logger.check(file != null, "The file parameter must not be null!");
 		this.httpClient = httpClient;
 		this.url = getNormalizedUrl(url);
-		if (file != null)
-			this.file = file;
-		else
-			this.file = cacheService.getCacheOf(this.getClass().getName(), url);
+		this.file = file;			
 		this.fileData = new File(file.getPath() + ".data");
 		this.fileInfo = new File(file.getPath() + ".info");
+		this.uiTaskService = uiTaskService;
+
 		DownloadInfo di = getDownloadInfo(file);
 		if (di != null){
 			this.downloadedLength = di.getDownloadedLength();
@@ -320,13 +326,17 @@ public class HttpSession{
 		}
 		if (state == STATE_FINISHED)
 			this.request = null;
-		App.get().execute(new Runnable() {
+		Runnable task = new Runnable() {
 			@Override
 			public void run() {
 				StateChangedEventArgs args = new StateChangedEventArgs(state, HttpSession.this);
 				stateChangedEvent.fireEvent(HttpSession.this, args);
 			}
-		});
+		};
+		if (uiTaskService != null)
+			uiTaskService.run(task);
+		else
+			task.run();
 	}
 
 	public boolean isDownloaded() {
@@ -379,7 +389,7 @@ public class HttpSession{
 			Logger.debug(header.getName() + " = " + header.getValue());
 		}
 		setState(STATE_STARTED);
-		App.get().execute(new Runnable(){
+		Runnable task = new Runnable(){
 
 			@Override
 			public void run() {
@@ -494,7 +504,11 @@ public class HttpSession{
 			void executeTaskOnExecutor(AsyncTask<Void, Void, Void> task){
 	        	task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);				
 			}
-		});
+		};
+		if (uiTaskService != null)
+			uiTaskService.run(task);
+		else
+			task.run();
 	}
 
 	public void stop() {

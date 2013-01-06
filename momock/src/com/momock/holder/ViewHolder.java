@@ -24,11 +24,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.momock.app.App;
 import com.momock.app.ICase;
+import com.momock.service.ILayoutInflaterService;
 import com.momock.util.Logger;
 
 public abstract class ViewHolder implements IComponentHolder{
+	static ILayoutInflaterService theLayoutInflaterService = null;
+	public static void initialize(ILayoutInflaterService layoutInflaterService){
+		theLayoutInflaterService = layoutInflaterService;
+	}
 	public static interface OnViewCreatedHandler
 	{
 		void onViewCreated(View view);
@@ -139,7 +143,8 @@ public abstract class ViewHolder implements IComponentHolder{
 			public <T extends View> T getView() {				
 				if (ref == null || ref.get() == null)
 				{
-					LayoutInflater inflater = App.get().getLayoutInflater(refParent.get().getContext());
+					Logger.check(theLayoutInflaterService != null, "The LayoutInflaterService must not be null!");
+					LayoutInflater inflater = theLayoutInflaterService.getLayoutInflater(refParent.get().getContext());
 					ref = new WeakReference<View>(inflater.inflate(resourceId, refParent.get(), false));
 					if (handler != null)
 						handler.onViewCreated(ref.get());
@@ -166,7 +171,8 @@ public abstract class ViewHolder implements IComponentHolder{
 			public <T extends View> T getView() {				
 				if (ref == null || ref.get() == null)
 				{
-					LayoutInflater inflater = App.get().getLayoutInflater(refContext.get());
+					Logger.check(theLayoutInflaterService != null, "The LayoutInflaterService must not be null!");
+					LayoutInflater inflater = theLayoutInflaterService.getLayoutInflater(refContext.get());
 					ref = new WeakReference<View>(inflater.inflate(resourceId, null));
 					if (handler != null)
 						handler.onViewCreated(ref.get());
@@ -196,7 +202,8 @@ public abstract class ViewHolder implements IComponentHolder{
 				{
 					Object obj = kase.getAttachedObject();
 					Logger.check(obj instanceof Activity || obj instanceof Fragment, "Case must be attached to either an Activity or a Fragment");
-					LayoutInflater inflater = App.get().getLayoutInflater(obj instanceof Activity ? (Activity)obj : ((Fragment)obj).getActivity());
+					Logger.check(theLayoutInflaterService != null, "The LayoutInflaterService must not be null!");
+					LayoutInflater inflater = theLayoutInflaterService.getLayoutInflater(obj instanceof Activity ? (Activity)obj : ((Fragment)obj).getActivity());
 					ref = new WeakReference<View>(inflater.inflate(resourceId, null));
 					if (handler != null)
 						handler.onViewCreated(ref.get());

@@ -21,87 +21,47 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
+
+import javax.inject.Provider;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Build;
-import android.os.Handler;
+import android.content.res.Resources;
 import android.support.v4.app.Fragment;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.momock.binder.ViewBinder;
 import com.momock.data.DataSet;
 import com.momock.data.IDataSet;
-import com.momock.message.MessageBox;
+import com.momock.holder.ImageHolder;
+import com.momock.holder.TextHolder;
+import com.momock.holder.ViewHolder;
+import com.momock.inject.Injector;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
 import com.momock.service.IImageService;
+import com.momock.service.ILayoutInflaterService;
+import com.momock.service.IMessageService;
 import com.momock.service.IService;
+import com.momock.service.IUITaskService;
+import com.momock.service.LayoutInflaterService;
+import com.momock.service.MessageService;
+import com.momock.service.UITaskService;
 import com.momock.util.Logger;
+import com.momock.util.TextHelper;
 
 public abstract class App extends android.app.Application implements
 		IApplication {
-	public class CustomLayoutInflater extends android.view.LayoutInflater
-			implements Cloneable {
-
-		public CustomLayoutInflater(LayoutInflater original, Context newContext) {
-			super(original, newContext);
-		}
-
-		protected CustomLayoutInflater(Context context) {
-			super(context);
-		}
-
-		@Override
-		public LayoutInflater cloneInContext(Context newContext) {
-			return new CustomLayoutInflater(this, newContext);
-		}
-
-		@Override
-		protected View onCreateView(String name, AttributeSet attrs)
-				throws ClassNotFoundException {
-			if (shortNames.containsKey(name)) {
-				try {
-					return createView(name, shortNames.get(name) + ".", attrs);
-				} catch (Exception e) {
-					Logger.error(e.getMessage());
-				}
-			}
-			try {
-				return createView(name, "android.widget.", attrs);
-			} catch (ClassNotFoundException e) {
-				return createView(name, "android.view.", attrs);
-			}
-		}
-
-		@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-		@Override
-		protected View onCreateView(View parent, String name, AttributeSet attrs)
-				throws ClassNotFoundException {
-			if (shortNames.containsKey(name)) {
-				try {
-					return createView(name, shortNames.get(name) + ".", attrs);
-				} catch (Exception e) {
-					Logger.error(e.getMessage());
-				}
-			}
-			try {
-				return createView(name, "android.widget.", attrs);
-			} catch (ClassNotFoundException e) {
-				return createView(name, "android.view.", attrs);
-			}
-		}
-	}
-
+	
 	static App app = null;
+	
+	Injector injector = new Injector();
 	
 	Thread.UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
 	
@@ -117,9 +77,11 @@ public abstract class App extends android.app.Application implements
 			}
 		});
 	}
-	Map<Context, LayoutInflater> cachedLayoutInflater = new WeakHashMap<Context, LayoutInflater>();
 
 	public static App get() {
+		if (app != null && !app.environmentCreated){
+			app.onCreateEnvironment();
+		}
 		return app;
 	}
 
@@ -162,30 +124,19 @@ public abstract class App extends android.app.Application implements
 		return kase;
 	}
 
+	@SuppressLint("DefaultLocale")
+	protected String getLogFilename(){
+		return this.getClass().getName().toLowerCase() + ".log";
+	}
 	protected int getLogLevel() {
 		return Logger.LEVEL_DEBUG;
 	}
 
-	public LayoutInflater getLayoutInflater(Context context) {
-		if (cachedLayoutInflater.containsKey(context))
-			return cachedLayoutInflater.get(context);
-		LayoutInflater layoutInflater = new CustomLayoutInflater(
-				LayoutInflater.from(context), context);
-		cachedLayoutInflater.put(context, layoutInflater);
-		return layoutInflater;
-	}
-
-	public LayoutInflater getLayoutInflater(LayoutInflater inflater) {
-		if (!(inflater instanceof CustomLayoutInflater))
-			inflater = new CustomLayoutInflater(inflater, inflater.getContext());
-		return inflater;
-	}
 
 	@SuppressLint("DefaultLocale")
 	@Override
 	public void onCreate() {
-		Logger.open(this.getClass().getName().toLowerCase() + ".log",
-				getLogLevel());
+		Logger.open(getLogFilename(), getLogLevel());
 		app = this;
 		super.onCreate();
 	}
@@ -209,7 +160,7 @@ public abstract class App extends android.app.Application implements
 
 	// Helper methods
 	public Activity getCurrentActivity() {
-		Object ao = App.get().getActiveCase().getAttachedObject();
+		Object ao = getActiveCase().getAttachedObject();
 		if (ao == null)
 			return null;
 		if (ao instanceof Activity)
@@ -287,6 +238,7 @@ public abstract class App extends android.app.Application implements
 	public void addCase(ICase<?> kase) {
 		if (!cases.containsKey(kase.getName())) {
 			cases.put(kase.getName(), kase);
+			inject(kase);
 			kase.onCreate();
 		}
 	}
@@ -357,17 +309,14 @@ public abstract class App extends android.app.Application implements
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends IService> T getService(Class<?> klass) {
+	public <T extends IService> T getService(Class<T> klass) {
 		return (T) services.get(klass);
 	}
 
 	@Override
 	public void addService(Class<?> klass, IService service) {
 		services.put(klass, service);
-	}
-
-	public IImageService getImageService() {
-		return getService(IImageService.class);
+		injector.addProvider(klass, service);
 	}
 
 	IDataSet ds = null;
@@ -378,18 +327,40 @@ public abstract class App extends android.app.Application implements
 			ds = new DataSet();
 		return ds;
 	}
-	Handler executeHandler = null;
 	boolean environmentCreated = false;
 	boolean servicesCreated = false;
 	protected void onPreCreateEnvironment() {
-		
+		injector.addProvider(Resources.class, new Provider<Resources>(){
+			@Override
+			public Resources get() {
+				return getResources();
+			}			
+		});
 	}
 	protected void onPostCreateEnvironment() {
 		
 	}
+	protected void onPreCreateServices() {
+		
+	}
+	protected void onPostCreateServices() {
+		TextHelper.initialize(getResources());
+		TextHolder.initialize(getResources());
+		ImageHolder.initialize(getResources(), getService(IImageService.class));
+		ViewHolder.initialize(getService(ILayoutInflaterService.class));
+		ViewBinder.initialize(getService(IImageService.class));
+	}
+	
 	protected void createServices(){
 		if (servicesCreated) return;
 		servicesCreated = true;
+		onPreCreateServices();
+		
+		addService(ILayoutInflaterService.class, new LayoutInflaterService());
+		addService(IUITaskService.class, new UITaskService());
+		addService(IMessageService.class, new MessageService());
+		onRegisterShortNames();
+		
 		onAddServices();
 
 		List<Class<?>> startedServices = new ArrayList<Class<?>>();
@@ -399,6 +370,7 @@ public abstract class App extends android.app.Application implements
 			Class<?> classes[] = service.getDependencyServices();
 			if (classes == null || classes.length == 0){
 				Logger.debug("Start service " + service.getClass());
+				inject(service);
 				service.start();
 				startedServices.add(service.getClass());
 			} else {
@@ -423,6 +395,7 @@ public abstract class App extends android.app.Application implements
 				}
 				if (fits == classes.length){
 					Logger.debug("Start service " + service.getClass());
+					inject(service);
 					service.start();
 					startedServices.add(service.getClass());
 					waitingServices.remove(i--);
@@ -431,6 +404,7 @@ public abstract class App extends android.app.Application implements
 			}
 			Logger.check(started != 0, "Some dependency services are missing!");
 		}
+		onPostCreateServices();
 	}
 	
 	public boolean keepServiceRunning(){
@@ -448,9 +422,7 @@ public abstract class App extends android.app.Application implements
 		Logger.debug("onCreateEnvironment");
 		if (environmentCreated) return;
 		environmentCreated = true;
-		executeHandler = new Handler();
 		onPreCreateEnvironment();
-		onRegisterShortNames();
 		createServices();
 		onAddCases();
 		onPostCreateEnvironment();
@@ -462,14 +434,11 @@ public abstract class App extends android.app.Application implements
 		if (!environmentCreated) return;
 		environmentCreated = false;		
 		activeCase = null;
-		cachedLayoutInflater.clear();
 		cases.clear();
 		outlets.clear();
 		plugs.clear();
-		shortNames.clear();
+		injector.removeAllProviders();
 		ds = null;
-		executeHandler = null;
-		messageBox = null;
 		if (!keepServiceRunning())
 			destroyServices();
 	}
@@ -478,44 +447,24 @@ public abstract class App extends android.app.Application implements
 	public Object getSystemService(String name) {
 		Object service = super.getSystemService(name);
 		if (service instanceof LayoutInflater) {
-			return getLayoutInflater((LayoutInflater) service);
+			ILayoutInflaterService layoutInflaterService = getService(ILayoutInflaterService.class);
+			if (layoutInflaterService != null)
+				return layoutInflaterService.getLayoutInflater((LayoutInflater) service);
 		}
 		return service;
 	}
 
-	private static final Map<String, String> shortNames = new HashMap<String, String>();
-
 	@Override
 	public void registerShortName(String prefix, String... classess) {
-		for (String clazz : classess) {
-			shortNames.put(clazz, prefix);
-		}
-	}
-
-	@Override
-	public void execute(Runnable task) {
-		if (executeHandler != null)
-			executeHandler.post(task);		
-	}
-	
-	@Override
-	public void executeDelayed(Runnable task, int delayMillis){
-		if (executeHandler != null)
-			executeHandler.postDelayed(task, delayMillis);		
-	}
-
-	MessageBox messageBox = null;
-	@Override
-	public MessageBox getMessageBox() {
-		if (messageBox == null)
-			messageBox = new MessageBox();
-		return messageBox;
-	}
+		ILayoutInflaterService layoutInflaterService = getService(ILayoutInflaterService.class);
+		if (layoutInflaterService != null)
+			layoutInflaterService.registerShortName(prefix, classess);
+	}	
 
 	@Override
 	public void onCreateActivity() {
 		if (!environmentCreated && activeActivityCount == 0)
-			App.get().onCreateEnvironment();
+			onCreateEnvironment();
 		activeActivityCount ++;
 	}
 
@@ -523,7 +472,7 @@ public abstract class App extends android.app.Application implements
 	public void onDestroyActivity() {
 		activeActivityCount --;
 		if (environmentCreated && activeActivityCount == 0)
-			App.get().onDestroyEnvironment();
+			onDestroyEnvironment();
 	}
 
 	@Override
@@ -546,4 +495,9 @@ public abstract class App extends android.app.Application implements
 		if (imageService != null)
 			imageService.clearCache();
 	}
+	@Override
+	public void inject(Object obj){
+		injector.inject(obj);
+	}
+
 }

@@ -16,7 +16,6 @@
 package com.momock.service;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,41 +23,40 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import android.graphics.Bitmap;
-import android.support.v4.view.PagerAdapter;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-import com.momock.app.App;
+import com.momock.binder.IContainerBinder;
 import com.momock.cache.BitmapCache;
 import com.momock.event.Event;
 import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
-import com.momock.holder.ImageHolder;
 import com.momock.http.HttpSession;
 import com.momock.http.HttpSession.StateChangedEventArgs;
 import com.momock.util.Convert;
 import com.momock.util.ImageHelper;
 import com.momock.util.Logger;
-import com.momock.widget.IPlainAdapterView;
 
 public class ImageService implements IImageService {
 	Map<String, IEvent<ImageEventArgs>> allImageHandlers = new HashMap<String, IEvent<ImageEventArgs>>();
 	BitmapCache<String> bitmapCache;
 	Map<String, HttpSession> sessions = new HashMap<String, HttpSession>();
+	@Inject
+	IHttpService httpService;
+	@Inject
+	ICacheService cacheService;
 	public ImageService(){
 		this(1024 * 1024 * 16);
 	}
 	public ImageService(long cacheSize){
 		bitmapCache = new BitmapCache<String>(cacheSize);
 	}
-	IHttpService getHttpService(){
-		return App.get().getService(IHttpService.class);
-	}
-	ICacheService getCacheService(){
-		return App.get().getService(ICacheService.class);
+	public ImageService(long cacheSize, IHttpService httpService, ICacheService cacheService){
+		bitmapCache = new BitmapCache<String>(cacheSize);
+		this.httpService = httpService;
+		this.cacheService = cacheService;
 	}
 	public Bitmap getBitmap(String fullUri){
 		return bitmapCache.get(fullUri);
@@ -88,7 +86,8 @@ public class ImageService implements IImageService {
 
 	@Override
 	public File getCacheOf(String fullUri){
-		return getCacheService().getCacheOf(getClass().getName(), fullUri);
+		Logger.check(cacheService != null, "The cacheService must not be null!");
+		return cacheService.getCacheOf(getClass().getName(), fullUri);
 	}
 	
 	@Override
@@ -132,21 +131,9 @@ public class ImageService implements IImageService {
 		Bitmap bitmap = getBitmap(uri);
 		if (bitmap != null) return bitmap;
 		if (uri.startsWith(PREFIX_FILE)) {
-			bitmap = ImageHelper.fromFile(uri.substring(PREFIX_FILE.length()),
-					expectedWidth, expectedHeight);
+			bitmap = ImageHelper.fromFile(uri.substring(PREFIX_FILE.length()), expectedWidth, expectedHeight);
 		} else if (uri.startsWith(PREFIX_RES)) {
-			bitmap = ImageHelper.fromStream(ImageHolder.class
-					.getResourceAsStream(uri.substring(PREFIX_RES.length())),
-					expectedWidth, expectedHeight);
-		} else if (uri.startsWith(PREFIX_ASSETS)) {
-			try {
-				bitmap = ImageHelper.fromStream(App.get().getResources()
-						.getAssets()
-						.open(uri.substring(PREFIX_ASSETS.length())),
-						expectedWidth, expectedHeight);
-			} catch (IOException e) {
-				Logger.error(e.getMessage());
-			}
+			bitmap = ImageHelper.fromStream(ImageService.class.getResourceAsStream(uri.substring(PREFIX_RES.length())), expectedWidth, expectedHeight);
 		} else if (uri.startsWith(PREFIX_HTTP) || uri.startsWith(PREFIX_HTTPS)) {			
 			if (bitmap == null) {
 				File bmpFile = getCacheOf(fullUri);
@@ -156,7 +143,8 @@ public class ImageService implements IImageService {
 				if (bitmap == null) {
 					HttpSession session = sessions.get(uri);
 					if (session == null){
-						session = getHttpService().download(uri, bmpFile);
+						Logger.check(httpService != null, "The httpService must not be null!");
+						session = httpService.download(uri, bmpFile);
 						session.start();
 						sessions.put(uri, session);
 						session.getStateChangedEvent().addEventHandler(new IEventHandler<StateChangedEventArgs>(){
@@ -273,51 +261,41 @@ public class ImageService implements IImageService {
 		}
 	}
 
-	@Override
-	public void bind(String fullUri, ViewGroup viewGroup) {
-		Logger.check(viewGroup != null, "Parameter viewGroup cannot be null !");
-		if (viewGroup instanceof AdapterView)
-			bind(fullUri, (BaseAdapter)((AdapterView<?>)viewGroup).getAdapter());
-		else if (viewGroup instanceof IPlainAdapterView)
-			bind(fullUri, (BaseAdapter)((IPlainAdapterView)viewGroup).getAdapter());
-		else 
-			Logger.check(false, "ViewGroup must be a AdapterView or IPlainAdapterView!");
-	}
-	class AdapterRefreshHandler implements IEventHandler<ImageEventArgs>{
-		WeakReference<BaseAdapter> refAdapter; 
-		public AdapterRefreshHandler(BaseAdapter adapter){
-			refAdapter = new WeakReference<BaseAdapter>(adapter);
-		}
-		public BaseAdapter getAdapter(){
-			return refAdapter.get();
+	class BinderRefreshHandler implements IEventHandler<ImageEventArgs>{
+		public IContainerBinder binder;
+		public Object item;
+		public BinderRefreshHandler(IContainerBinder binder, Object item){
+			this.binder = binder;
+			this.item = item;
 		}
 		@Override
 		public void process(Object sender, ImageEventArgs args) {
-			if (refAdapter.get() != null && !refAdapter.get().isEmpty())
-				refAdapter.get().notifyDataSetChanged();
+			if (binder.getContainerView() != null && binder.getViewOf(item) != null){
+				binder.getItemBinder().onCreateItemView(binder.getViewOf(item), item, binder);
+			}
 		}
 
 	}
-	List<AdapterRefreshHandler> adapterHandlers = new ArrayList<AdapterRefreshHandler>();
+	List<BinderRefreshHandler> binderHandlers = new ArrayList<BinderRefreshHandler>();
 	@Override
-	public void bind(String fullUri, BaseAdapter adapter) {
-		Logger.check(adapter != null, "Parameter adapter cannot be null !");
+	public void bind(String fullUri, IContainerBinder binder, Object item) {
+		Logger.check(binder != null && item != null, "Parameter binder and item cannot be null !");
 		Bitmap bitmap = loadBitmap(fullUri);
 		if (bitmap == null){
-			AdapterRefreshHandler handler = null;
-			Iterator<AdapterRefreshHandler> it = adapterHandlers.iterator();
+			BinderRefreshHandler handler = null;
+			Iterator<BinderRefreshHandler> it = binderHandlers.iterator();
 			while(it.hasNext()){
-				AdapterRefreshHandler h = it.next();
-				if (h.getAdapter() == null) 
+				BinderRefreshHandler h = it.next();
+				if (h.binder.getContainerView() == null) 
 					it.remove();
-				else if (h.getAdapter() == adapter){
+				else if (h.binder == binder && h.item == item){
 					handler = h;
 					break;
 				}				
 			}
 			if (handler == null){
-				handler = new AdapterRefreshHandler(adapter);
-				adapterHandlers.add(handler);
+				handler = new BinderRefreshHandler(binder, item);
+				binderHandlers.add(handler);
 			}
 			addImageEventHandler(fullUri, handler);
 		}
@@ -331,49 +309,10 @@ public class ImageService implements IImageService {
 	public void stop() {
 		allImageHandlers.clear();
 		imageViewHandlers.clear();
-		adapterHandlers.clear();
+		binderHandlers.clear();
 	}
 	@Override
 	public Class<?>[] getDependencyServices() {
 		return new Class<?>[]{IHttpService.class, ICacheService.class};
-	}
-	class PagerAdapterRefreshHandler implements IEventHandler<ImageEventArgs>{
-		WeakReference<PagerAdapter> refAdapter; 
-		public PagerAdapterRefreshHandler(PagerAdapter adapter){
-			refAdapter = new WeakReference<PagerAdapter>(adapter);
-		}
-		public PagerAdapter getAdapter(){
-			return refAdapter.get();
-		}
-		@Override
-		public void process(Object sender, ImageEventArgs args) {
-			if (refAdapter.get() != null)
-				refAdapter.get().notifyDataSetChanged();
-		}
-
-	}
-	List<PagerAdapterRefreshHandler> pagerAdapterHandlers = new ArrayList<PagerAdapterRefreshHandler>();
-	@Override
-	public void bind(String fullUri, PagerAdapter adapter) {
-		Logger.check(adapter != null, "Parameter adapter cannot be null !");
-		Bitmap bitmap = loadBitmap(fullUri);
-		if (bitmap == null){
-			PagerAdapterRefreshHandler handler = null;
-			Iterator<PagerAdapterRefreshHandler> it = pagerAdapterHandlers.iterator();
-			while(it.hasNext()){
-				PagerAdapterRefreshHandler h = it.next();
-				if (h.getAdapter() == null) 
-					it.remove();
-				else if (h.getAdapter() == adapter){
-					handler = h;
-					break;
-				}				
-			}
-			if (handler == null){
-				handler = new PagerAdapterRefreshHandler(adapter);
-				pagerAdapterHandlers.add(handler);
-			}
-			addImageEventHandler(fullUri, handler);
-		}
 	}
 }

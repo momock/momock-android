@@ -13,14 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.binder;
+package com.momock.binder.container;
 
-import android.widget.GridView;
+import com.momock.binder.IItemBinder;
+import com.momock.binder.ItemBinder;
 
-public class GridViewBinder extends AdapterViewBinder<GridView>{
+import android.widget.ListView;
 
-	public GridViewBinder(ItemViewBinder binder) {
+public class ListViewBinder extends AdapterViewBinder<ListView> {
+
+	public ListViewBinder(IItemBinder binder) {
 		super(binder);
+	}
+
+	public static ListViewBinder getSimple(String propName) {
+		return new ListViewBinder(new ItemBinder(
+				android.R.layout.simple_list_item_1,
+				new int[] { android.R.id.text1 }, new String[] { propName }));
 	}
 
 }

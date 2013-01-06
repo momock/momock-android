@@ -13,11 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.binder;
+package com.momock.binder.container;
 
 import android.view.View;
 import android.view.ViewGroup;
 
-public abstract class ItemViewBinder extends ViewBinder {
-	protected abstract View onCreateItemView(View convertView, int index, Object item, ViewGroup parent);
+import com.momock.binder.IItemBinder;
+import com.momock.widget.PlainGridView;
+
+public class PlainGridViewBinder extends PlainAdapterViewBinder<PlainGridView>{
+
+
+	public PlainGridViewBinder(IItemBinder binder) {
+		super(binder);
+	}
+
+	@Override
+	public View getViewOf(Object item) {
+		ViewGroup parent = getContainerView();
+		if (parent != null){
+			for(int i = 0; i < parent.getChildCount(); i++){
+				ViewGroup line = (ViewGroup)parent.getChildAt(i);
+				for(int j = 0; j < line.getChildCount(); j++){
+					View c = line.getChildAt(j);
+					if (c.getTag() == item) return c;
+				}
+			}
+		}
+		return null;
+	}
+
 }
+

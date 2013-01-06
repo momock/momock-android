@@ -25,12 +25,12 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
 
-import com.momock.app.App;
-
 public class CacheService implements ICacheService {
 	File cacheDir;
+	Context context;
 
-	public CacheService() {
+	public CacheService(Context context) {
+		this.context = context;
 	}
 
 	protected String getFilenameOf(String uri) {
@@ -76,8 +76,6 @@ public class CacheService implements ICacheService {
 
 	@Override
 	public void start() {
-		Context context = App.get();
-
 		if (getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 			cacheDir = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ? getExternalCacheDir(context)
 					: new File(getExternalStorageDirectory().getPath()

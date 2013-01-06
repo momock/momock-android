@@ -13,46 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.binder;
+package com.momock.binder.container;
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.momock.binder.ContainerBinder;
+import com.momock.binder.IItemBinder;
 import com.momock.data.IDataList;
-import com.momock.event.Event;
 import com.momock.event.EventArgs;
-import com.momock.event.IEvent;
-import com.momock.event.IEventHandler;
 import com.momock.event.ItemEventArgs;
-import com.momock.holder.ViewHolder;
 import com.momock.util.Logger;
 import com.momock.widget.IPlainAdapterView;
 
-public class PlainAdapterViewBinder<T extends IPlainAdapterView> {
+public class PlainAdapterViewBinder<T extends IPlainAdapterView> extends ContainerBinder<ViewGroup> {
 
-	IEvent<ItemEventArgs> itemClickedEvent = new Event<ItemEventArgs>();
-
-	IEvent<EventArgs> dataChangedEvent = new Event<EventArgs>();
-
-	public IEvent<EventArgs> getDataChangedEvent() {
-		return dataChangedEvent;
-	}
-	
-	public IEvent<ItemEventArgs> getItemClickedEvent() {
-		return itemClickedEvent;
-	}
-
-	public PlainAdapterViewBinder<T> addItemClickedEventHandler(
-			IEventHandler<ItemEventArgs> handler) {
-		itemClickedEvent.addEventHandler(handler);
-		return this;
-	}
-
-	protected ItemViewBinder binder;
-
-	public PlainAdapterViewBinder(ItemViewBinder binder) {
-		this.binder = binder;
+	public PlainAdapterViewBinder(IItemBinder binder) {
+		super(binder);
 	}
 
 	BaseAdapter adapter = null;
@@ -60,13 +38,9 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> {
 		return adapter;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public void bind(ViewHolder view, IDataList<?> list) {
-		bind((T) view.getView(), list);
-	}
-
-	public void bind(final T view, final IDataList<?> list) {
-		if (view != null) {
+	public void onBind(final ViewGroup v, final IDataList<?> list) {		
+		if (v != null) {
+			final IPlainAdapterView view = (IPlainAdapterView)v;
 			view.setOnItemClickListener(new IPlainAdapterView.OnItemClickListener() {
 				@Override
 				public void onItemClick(IPlainAdapterView parent, View v,
@@ -94,10 +68,11 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> {
 				}
 
 				@Override
-				public View getView(int position, View convertView,
-						ViewGroup parent) {
-					return binder.onCreateItemView(convertView, position,
-							getItem(position), parent);
+				public View getView(int position, View convertView,	ViewGroup parent) {
+					Object item = getItem(position);
+					View view = itemBinder.onCreateItemView(convertView, item, PlainAdapterViewBinder.this);
+					view.setTag(item);
+					return view;
 				}
 
 				@Override
@@ -114,7 +89,7 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> {
 				}
 
 			};			
-			((T) view).setAdapter(adapter);
+			view.setAdapter(adapter);
 		}
 	}
 }

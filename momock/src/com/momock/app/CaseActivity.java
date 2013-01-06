@@ -22,6 +22,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.momock.service.ILayoutInflaterService;
 import com.momock.util.Logger;
 import com.momock.util.ViewHelper;
 
@@ -31,7 +32,7 @@ public abstract class CaseActivity extends FragmentActivity {
 	protected abstract void onCreate();
 	
 	protected ICase<FragmentActivity> kase = null;
-
+	
 	@SuppressWarnings("unchecked")
 	public ICase<FragmentActivity> getCase() {
 		if (kase == null) {
@@ -132,14 +133,17 @@ public abstract class CaseActivity extends FragmentActivity {
 	public Object getSystemService(String name) {
 		Object service = super.getSystemService(name);
 		if (service instanceof LayoutInflater){
-			return App.get().getLayoutInflater((LayoutInflater)service);
+			ILayoutInflaterService layoutInflaterService = getCase().getService(ILayoutInflaterService.class);
+			if (layoutInflaterService != null)
+				return layoutInflaterService.getLayoutInflater((LayoutInflater)service);
 		}
 		return service;
 	}
 	
 	@Override
 	public LayoutInflater getLayoutInflater() {
-		return App.get().getLayoutInflater(this);
+		ILayoutInflaterService layoutInflaterService = getCase().getService(ILayoutInflaterService.class);
+		return layoutInflaterService.getLayoutInflater(this);
 	}
 	@Override
 	public void onBackPressed() {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 momock.com
+ * Copyright 2013 momock.com
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.binder;
+package com.momock.service;
 
-import com.momock.widget.PlainListView;
+import android.os.Handler;
 
-public class PlainListViewBinder extends PlainAdapterViewBinder<PlainListView>{
+public class UITaskService implements IUITaskService {
+	Handler executeHandler = null;
 
-
-	public PlainListViewBinder(ItemViewBinder binder) {
-		super(binder);
+	@Override
+	public Class<?>[] getDependencyServices() {
+		return null;
 	}
 
+	@Override
+	public void start() {
+		executeHandler = new Handler();
+	}
+
+	@Override
+	public void stop() {
+		executeHandler.removeCallbacksAndMessages(null);
+		executeHandler = null;
+	}
+
+
+	@Override
+	public void run(Runnable task) {
+		if (executeHandler != null)
+			executeHandler.post(task);		
+	}
+	
+	@Override
+	public void runDelayed(Runnable task, int delay){
+		if (executeHandler != null)
+			executeHandler.postDelayed(task, delay);		
+	}
 }

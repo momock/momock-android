@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 momock.com
+ * Copyright 2013 momock.com
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.app;
+package com.momock.service;
 
-import com.momock.data.DataSet;
+import com.momock.message.IMessageHandler;
+import com.momock.message.Message;
 
-public class CaseDataSet extends DataSet{
-	ICase<?> kase;
-	public CaseDataSet(ICase<?> kase){
-		this.kase = kase;
-	}
-	protected IApplication getApplication(){
-		return App.get();
-	}
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T getData(String name) {
-		Object data = super.getData(name);
-		if (data == null)
-			data = kase.getParent() == null ? getApplication().getDataSet().getData(name) : kase.getParent().getDataSet().getData(name);
-		return (T)data;
-	}
+public interface IMessageService extends IService {
+	void addHandler(String topic, IMessageHandler handler);
+
+	void removeHandler(String topic, IMessageHandler handler);
+
+	void send(Object sender, String topic);
+
+	void send(Object sender, String topic, Object data);
+
+	void send(final Object sender, final Message msg);
 }

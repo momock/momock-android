@@ -34,11 +34,14 @@ public class CaseFragment extends Fragment{
 	protected String getCaseName(){
 		throw new RuntimeException("Case has not been assigned.");
 	}
+	protected IApplication getApplication(){
+		return App.get();
+	}
 	@SuppressWarnings("unchecked")
 	public ICase<Fragment> getCase() {
 		if (kase == null) {
 			String name = getCaseName();			
-			kase = name == null ? null : (ICase<Fragment>)App.get().getCase(name);
+			kase = name == null ? null : (ICase<Fragment>)getApplication().getCase(name);
 		}
 		return kase;
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 momock.com
+ * Copyright 2013 momock.com
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.binder;
+package com.momock.service;
 
-import android.widget.ListView;
+import android.content.Context;
+import android.view.LayoutInflater;
 
-public class ListViewBinder extends AdapterViewBinder<ListView> {
-
-	public ListViewBinder(ItemViewBinder binder) {
-		super(binder);
-	}
-
-	public static ListViewBinder getSimple(String propName) {
-		return new ListViewBinder(new SimpleItemViewBinder(
-				android.R.layout.simple_list_item_1,
-				new int[] { android.R.id.text1 }, new String[] { propName }));
-	}
-
+public interface ILayoutInflaterService extends IService {
+	void registerShortName(String prefix, String... classess);
+	LayoutInflater getLayoutInflater(Context context);
+	LayoutInflater getLayoutInflater(LayoutInflater inflater);
 }

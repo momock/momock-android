@@ -15,7 +15,9 @@
  ******************************************************************************/
 package com.momock.outlet.action;
 
-import com.momock.binder.ListViewBinder;
+import android.view.ViewGroup;
+
+import com.momock.binder.container.ListViewBinder;
 import com.momock.event.IEventHandler;
 import com.momock.event.ItemEventArgs;
 import com.momock.holder.ViewHolder;
@@ -28,7 +30,7 @@ public class ListViewActionOutlet extends Outlet<IActionPlug, ViewHolder> implem
 			@Override
 			public void onAttach(ViewHolder target) {
 				ListViewBinder binder = ListViewBinder.getSimple("Text");
-				binder.addItemClickedEventHandler(new IEventHandler<ItemEventArgs>() {
+				binder.getItemClickedEvent().addEventHandler(new IEventHandler<ItemEventArgs>() {
 
 					@Override
 					public void process(Object sender, ItemEventArgs args) {
@@ -37,7 +39,7 @@ public class ListViewActionOutlet extends Outlet<IActionPlug, ViewHolder> implem
 					}
 
 				});
-				binder.bind(target, getPlugs());
+				binder.bind((ViewGroup)target.getView(), getPlugs());
 			}
 		};
 	}

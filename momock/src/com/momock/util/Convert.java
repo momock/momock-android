@@ -20,13 +20,19 @@ public class Convert {
 	public static Boolean toBoolean(Object value) {
 		if (value instanceof Boolean) {
 			return (Boolean) value;
-		} else if (value instanceof String) {
-			String stringValue = (String) value;
+		} else if (value instanceof CharSequence) {
+			String stringValue = value.toString();
 			if ("true".equalsIgnoreCase(stringValue)) {
 				return true;
 			} else if ("false".equalsIgnoreCase(stringValue)) {
 				return false;
+			} else if ("1".equalsIgnoreCase(stringValue)) {
+				return true;
+			} else if ("0".equalsIgnoreCase(stringValue)) {
+				return false;
 			}
+		} else if (value instanceof Number){
+			return ((Number)value).intValue() != 0;
 		}
 		return null;
 	}
@@ -36,8 +42,8 @@ public class Convert {
 			return (Double) value;
 		} else if (value instanceof Number) {
 			return ((Number) value).doubleValue();
-		} else if (value instanceof String) {
-			return Double.valueOf((String) value);
+		} else if (value instanceof CharSequence) {
+			return Double.valueOf(value.toString());
 		}
 		return null;
 	}
@@ -47,8 +53,8 @@ public class Convert {
 			return (Integer) value;
 		} else if (value instanceof Number) {
 			return ((Number) value).intValue();
-		} else if (value instanceof String) {
-			return Integer.valueOf((String) value);
+		} else if (value instanceof CharSequence) {
+			return Integer.valueOf(value.toString());
 		}
 		return null;
 	}
@@ -58,8 +64,8 @@ public class Convert {
 			return (Long) value;
 		} else if (value instanceof Number) {
 			return ((Number) value).longValue();
-		} else if (value instanceof String) {
-			return Long.valueOf((String) value);
+		} else if (value instanceof CharSequence) {
+			return Long.valueOf(value.toString());
 		}
 		return null;
 	}

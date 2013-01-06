@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.momock.data.IDataSet;
-import com.momock.message.IMessageHandler;
-import com.momock.message.Message;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
@@ -46,6 +44,14 @@ public abstract class Case<A> implements ICase<A> {
 		this.parent = parent;
 		this.name = name;
 	}
+	
+	@Override
+	public IApplication getApplication(){
+		if (this.parent != null && this.parent.getApplication() != null)
+			this.parent.getApplication();
+		return App.get();
+	}
+	
 	public String getName(){
 		return name;
 	}
@@ -120,7 +126,7 @@ public abstract class Case<A> implements ICase<A> {
 
 	@Override
 	public boolean isActive(){
-		return this == (getParent() == null ? App.get().getActiveCase() : getParent().getActiveCase());
+		return this == (getParent() == null ? getApplication().getActiveCase() : getParent().getActiveCase());
 	}
 	
 	@Override
@@ -147,10 +153,10 @@ public abstract class Case<A> implements ICase<A> {
 		if (pos == -1){
 			kase = cases.get(name);	
 			if (kase == null)
-				return getParent() == null ? App.get().getCase(name) : getParent().getCase(name);
+				return getParent() == null ? getApplication().getCase(name) : getParent().getCase(name);
 		} else {
 			if (name.startsWith("/"))
-				kase = App.get().getCase(name);
+				kase = getApplication().getCase(name);
 			else{
 				kase = cases.get(name.substring(0, pos));
 				if (kase != null)
@@ -176,6 +182,7 @@ public abstract class Case<A> implements ICase<A> {
 		if (!cases.containsKey(kase.getName()))
 		{
 			cases.put(kase.getName(), kase);
+			getApplication().inject(kase);
 			kase.onCreate();
 		}
 	}
@@ -196,7 +203,7 @@ public abstract class Case<A> implements ICase<A> {
 		if (outlets.containsKey(name))
 			outlet = outlets.get(name);
 		if (outlet == null)
-			outlet = (getParent() == null ? App.get().getOutlet(name) : getParent().getOutlet(name));
+			outlet = (getParent() == null ? getApplication().getOutlet(name) : getParent().getOutlet(name));
 		if (outlet == null)
 		{
 			outlet = new PlaceholderOutlet();
@@ -252,18 +259,10 @@ public abstract class Case<A> implements ICase<A> {
 	public void removePlug(String name){
 		plugs.remove(name);
 	}
-
-	Map<Class<?>, IService> services = new HashMap<Class<?>, IService>();
-	@SuppressWarnings("unchecked")
+	
 	@Override
-	public <T extends IService> T getService(Class<?> klass) {
-		if (services.containsKey(klass))
-			return (T) services.get(klass);
-		return (T) (getParent() == null ? App.get().getService(klass) : getParent().getService(klass));
-	}
-	@Override
-	public void addService(Class<?> klass, IService service) {
-		services.put(klass, service);
+	public <T extends IService> T getService(Class<T> klass) {
+		return (T) getApplication().getService(klass);
 	}
 	@Override
 	public boolean onBack() {
@@ -278,26 +277,6 @@ public abstract class Case<A> implements ICase<A> {
 	@Override
 	public void onHide() {
 		
-	}
-	@Override
-	public void sendMessage(Object sender, String topic) {
-		App.get().getMessageBox().send(sender, topic);
-	}
-	@Override
-	public void sendMessage(Object sender, String topic, Object data) {
-		App.get().getMessageBox().send(sender, topic, data);
-	}
-	@Override
-	public void sendMessage(Object sender, Message msg) {
-		App.get().getMessageBox().send(sender, msg);
-	}
-	@Override
-	public void addMessageHandler(String topic, IMessageHandler handler) {
-		App.get().getMessageBox().addHandler(topic, handler);
-	}
-	@Override
-	public void removeMessageHandler(String topic, IMessageHandler handler) {
-		App.get().getMessageBox().removeHandler(topic, handler);		
 	}
 	@Override
 	public boolean isAttached() {

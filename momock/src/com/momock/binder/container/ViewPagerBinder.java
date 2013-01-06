@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.binder;
+package com.momock.binder.container;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.BlockingQueue;
@@ -26,78 +26,37 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.momock.binder.ContainerBinder;
+import com.momock.binder.IItemBinder;
 import com.momock.data.IDataList;
-import com.momock.event.Event;
 import com.momock.event.EventArgs;
-import com.momock.event.IEvent;
-import com.momock.event.IEventHandler;
 import com.momock.event.ItemEventArgs;
 import com.momock.util.Logger;
 import com.momock.widget.IIndexIndicator;
 import com.momock.widget.IRoundAdapter;
 import com.momock.widget.RoundPagerAdapter;
 
-public class ViewPagerBinder {
+public class ViewPagerBinder extends ContainerBinder<ViewPager>{
 
-	IEvent<ItemEventArgs> itemClickedEvent = new Event<ItemEventArgs>();
-	IEvent<ItemEventArgs> itemSelectedEvent = new Event<ItemEventArgs>();
-	IEvent<EventArgs> dataChangedEvent = new Event<EventArgs>();
-
-	public IEvent<EventArgs> getDataChangedEvent() {
-		return dataChangedEvent;
-	}
-	
-	public IEvent<ItemEventArgs> getItemClickedEvent() {
-		return itemClickedEvent;
-	}
-
-	public IEvent<ItemEventArgs> getItemSelectedEvent() {
-		return itemSelectedEvent;
-	}
-
-	public ViewPagerBinder addItemClickedEventHandler(
-			IEventHandler<ItemEventArgs> handler) {
-		itemClickedEvent.addEventHandler(handler);
-		return this;
-	}
 	int viewPagerState = ViewPager.SCROLL_STATE_IDLE;
 	
 	public boolean isDragging(){
 		return viewPagerState != ViewPager.SCROLL_STATE_IDLE;
 	}
 	
-	protected ItemViewBinder binder;
 
-	public ViewPagerBinder(ItemViewBinder binder) {
-		this.binder = binder;
+	public ViewPagerBinder(IItemBinder binder) {
+		super(binder);
 	}
 
 	PagerAdapter adapter = null;
 	public PagerAdapter getAdapter(){
 		return adapter;
 	}
-	public void bind(ViewPager view, IDataList<?> list){
-		bind(view, list, null, false);
-	}
-	WeakReference<ViewPager> refView = null;
-	public ViewPager getView(){
-		return refView == null ? null : refView.get();		
-	}
-	public View getViewOf(Object item){
-		ViewPager parent = getView();
-		if (parent != null){
-			for(int i = 0; i < parent.getChildCount(); i++){
-				View c = parent.getChildAt(i);
-				if (c.getTag() == item) return c;
-			}
-		}
-		return null;
-	}
-	public void bind(final ViewPager view, final IDataList<?> list, final IIndexIndicator indicator, boolean round) {
-		refView = new WeakReference<ViewPager>(view);
+	public void onBind(final ViewPager view, final IDataList<?> list){
 		if (view != null) {
-			if (indicator != null){
-				indicator.setCount(list.getItemCount());
+			if (refIndicator != null && refIndicator.get() != null){
+				refIndicator.get().setCount(list.getItemCount());
 			}
 			view.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 				
@@ -107,8 +66,9 @@ public class ViewPagerBinder {
 					Object item = list.getItem(position);
 					ItemEventArgs args = new ItemEventArgs(view, position, item);
 					itemSelectedEvent.fireEvent(view, args);
-					if (indicator != null)
-						indicator.setCurrentIndex(position);
+					if (refIndicator != null && refIndicator.get() != null){
+						refIndicator.get().setCurrentIndex(position);
+					}
 				}
 				
 				@Override
@@ -162,7 +122,7 @@ public class ViewPagerBinder {
 						convertView = savedViews.poll();
 					} 
 					Object item = list.getItem(position);
-					convertView = binder.onCreateItemView(convertView, position, item, view);
+					convertView = itemBinder.onCreateItemView(convertView, item, ViewPagerBinder.this);
 					container.addView(convertView, 0);
 					convertView.setTag(item);
 					return convertView;
@@ -179,8 +139,8 @@ public class ViewPagerBinder {
 				public void notifyDataSetChanged() {
 					lastDataSetChangedTick = System.nanoTime();
 					getDataChangedEvent().fireEvent(this, new EventArgs());
-					if (indicator != null){
-						indicator.setCount(list.getItemCount());
+					if (refIndicator != null && refIndicator.get() != null){
+						refIndicator.get().setCount(list.getItemCount());
 					}
 					super.notifyDataSetChanged();
 					Logger.debug("ViewPagerBinder.PagerAdapter.notifyDataSetChanged");
@@ -216,5 +176,13 @@ public class ViewPagerBinder {
 			if (round)
 				view.setCurrentItem(Math.max(1000, list.getItemCount() * 1000), false);
 		}
+	}
+
+	WeakReference<IIndexIndicator> refIndicator = null;
+	boolean round = false;
+	public void bind(final ViewPager view, final IDataList<?> list, final IIndexIndicator indicator, boolean round) {		
+		this.refIndicator = new WeakReference<IIndexIndicator>(indicator);
+		this.round = round;
+		super.bind(view, list);
 	}
 }

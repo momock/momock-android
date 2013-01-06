@@ -15,14 +15,28 @@
  ******************************************************************************/
 package com.momock.binder;
 
-import com.momock.widget.PlainGridView;
+import android.view.View;
 
-public class PlainGridViewBinder extends PlainAdapterViewBinder<PlainGridView>{
+import com.momock.holder.ViewHolder;
+import com.momock.util.Logger;
 
-
-	public PlainGridViewBinder(ItemViewBinder binder) {
-		super(binder);
+public class ItemBinder extends ViewBinder implements IItemBinder{
+	int itemViewId;
+	public ItemBinder(int itemViewId, int[] childViewIds, String[] props){
+		Logger.check(childViewIds != null && props != null && childViewIds.length == props.length, "Parameter error!");
+		this.itemViewId = itemViewId;
+		for(int i = 0; i < props.length; i++){
+			link(props[i], childViewIds[i]);
+		}
+	}
+	@Override
+	public View onCreateItemView(View convertView, Object item, IContainerBinder container) {
+		View view = convertView;
+		if (view == null) {
+			view = ViewHolder.create(container.getContainerView(), itemViewId).getView();
+		}
+		bind(view, item, container);
+		return view;
 	}
 
 }
-

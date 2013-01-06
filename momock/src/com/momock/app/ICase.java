@@ -16,13 +16,13 @@
 package com.momock.app;
 
 import com.momock.data.IDataSet;
-import com.momock.message.IMessageHandler;
-import com.momock.message.Message;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.service.IService;
 
 public interface ICase<A> {
+	IApplication getApplication();
+	
 	String getName();
 	
 	String getFullName();
@@ -83,19 +83,8 @@ public interface ICase<A> {
 	
 	IDataSet getDataSet();
 
-	<T extends IService> T getService(Class<?> klass);
-	
-	void addService(Class<?> klass, IService service);
+	<T extends IService> T getService(Class<T> klass);
 	
 	boolean onBack();
 	
-	void sendMessage(Object sender, String topic);
-	
-	void sendMessage(Object sender, String topic, Object data);
-	
-	void sendMessage(Object sender, Message msg); 
-	
-	void addMessageHandler(String topic, IMessageHandler handler);
-	
-	void removeMessageHandler(String topic, IMessageHandler handler);
 }

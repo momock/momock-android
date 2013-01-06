@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.binder;
+package com.momock.binder.container;
+
+import java.lang.ref.WeakReference;
 
 import android.widget.Gallery;
 
+import com.momock.binder.IItemBinder;
 import com.momock.data.IDataList;
 import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
@@ -25,16 +28,17 @@ import com.momock.widget.IIndexIndicator;
 
 @SuppressWarnings("deprecation")
 public class GalleryBinder extends AdapterViewBinder<Gallery> {
-	IIndexIndicator indicator;
-	public GalleryBinder(ItemViewBinder binder) {
+	WeakReference<IIndexIndicator> refIndicator = null;
+	public GalleryBinder(IItemBinder binder) {
 		super(binder);
 		this.getItemSelectedEvent().addEventHandler(new IEventHandler<ItemEventArgs>(){
 
 			@Override
 			public void process(Object sender,
 					ItemEventArgs args) {
-				if (indicator != null)
-					indicator.setCurrentIndex(args.getIndex());
+				if (refIndicator != null && refIndicator.get() != null){
+					refIndicator.get().setCurrentIndex(args.getIndex());
+				}
 			}
 			
 		});
@@ -42,22 +46,22 @@ public class GalleryBinder extends AdapterViewBinder<Gallery> {
 
 			@Override
 			public void process(Object sender, EventArgs args) {
-				if (indicator != null){
-					indicator.setCount(getAdapter().getCount());
+				if (refIndicator != null && refIndicator.get() != null){
+					refIndicator.get().setCount(getAdapter().getCount());
 				}
 			}
 			
 		});
 	}
 	@Override
-	public void bind(Gallery view, IDataList<?> list) {
-		super.bind(view, list);
-		if (indicator != null){
-			indicator.setCount(list.getItemCount());
+	public void onBind(Gallery view, IDataList<?> list) {
+		super.onBind(view, list);
+		if (refIndicator != null && refIndicator.get() != null){
+			refIndicator.get().setCount(list.getItemCount());
 		}
 	}
 	public void bind(Gallery view, IDataList<?> list, IIndexIndicator indicator){
-		this.indicator = indicator;
+		this.refIndicator = new WeakReference<IIndexIndicator>(indicator);
 		bind(view, list);
 	}
 	

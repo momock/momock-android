@@ -15,9 +15,17 @@
  ******************************************************************************/
 package com.momock.holder;
 
-import com.momock.app.App;
+import android.content.res.Resources;
+
+import com.momock.util.Logger;
 
 public abstract class TextHolder implements IHolder{
+
+	static Resources theResources = null;
+	public static void initialize(Resources resources){
+		theResources = resources;
+	}
+	
 	public abstract String getText();
 
 	@Override
@@ -42,8 +50,10 @@ public abstract class TextHolder implements IHolder{
 			String text = null;
 			public String getText()
 			{
-				if (text == null)
-					text = App.get().getResources().getString(resourceId);
+				if (text == null){
+					Logger.check(theResources != null, "The Resources must not be null!");
+					text = theResources.getString(resourceId);
+				}
 				return text;
 			}
 		};

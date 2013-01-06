@@ -22,14 +22,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import com.momock.app.App;
-import com.momock.holder.ImageHolder;
+import android.content.res.Resources;
 
 public class TextHelper {
 	public static final String PREFIX_FILE = "file://";
 	public static final String PREFIX_RES = "res://";
 	public static final String PREFIX_ASSETS = "assets://";
 
+	static Resources theResources = null;
+	public static void initialize(Resources resources){
+		theResources = resources;
+	}
+	
 	public static String read(InputStream is) {
 		return read(is, "UTF-8");
 	}
@@ -67,13 +71,12 @@ public class TextHelper {
 			}
 			return read(fis, encoding);
 		} else if (uri.startsWith(PREFIX_RES)) {
-			return read(ImageHolder.class.getResourceAsStream(uri
+			return read(TextHelper.class.getResourceAsStream(uri
 					.substring(PREFIX_RES.length())), encoding);
 		} else if (uri.startsWith(PREFIX_ASSETS)) {
+			Logger.check(theResources != null, "The Resources must not be null!");
 			try {
-				return read(
-						App.get().getResources().getAssets()
-								.open(uri.substring(PREFIX_ASSETS.length())),
+				return read(theResources.getAssets().open(uri.substring(PREFIX_ASSETS.length())),
 						encoding);
 			} catch (IOException e) {
 				Logger.error(e.getMessage());

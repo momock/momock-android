@@ -17,26 +17,33 @@ package com.momock.service;
 
 import java.io.UnsupportedEncodingException;
 
+import javax.inject.Inject;
+
 import org.apache.http.Header;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.json.JSONObject;
 
-import com.momock.app.App;
 import com.momock.event.IEventHandler;
 import com.momock.http.HttpSession;
 import com.momock.http.HttpSession.StateChangedEventArgs;
+import com.momock.util.Logger;
 
 public class JsonService implements IJsonService{
 	static final String JSON_HEADER_KEY = "Content-Type";
 	static final String JSON_HEADER_VAL = "application/json";
-	
-	IHttpService getHttpService(){
-		return App.get().getService(IHttpService.class);
+	@Inject
+	IHttpService httpService;
+	public JsonService(){
+		
+	}
+	public JsonService(IHttpService httpService){
+		this.httpService = httpService;
 	}
 	@Override
 	public void get(String url, final IEventHandler<JsonEventArgs> handler) {
-		final HttpSession session = getHttpService().get(url);
+		Logger.check(httpService != null, "The httpService must not be null!");
+		final HttpSession session = httpService.get(url);
 		session.getStateChangedEvent().addEventHandler(new IEventHandler<StateChangedEventArgs>(){
 
 			@Override
@@ -58,13 +65,14 @@ public class JsonService implements IJsonService{
 
 	@Override
 	public void post(String url, String json, final IEventHandler<JsonEventArgs> handler) { 
+		Logger.check(httpService != null, "The httpService must not be null!");
 		StringEntity entity = null;
 		Header[] headers = new Header[]{new BasicHeader(JSON_HEADER_KEY, JSON_HEADER_VAL)};
 		try {
 			entity = new StringEntity(json, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 		}
-		final HttpSession session = getHttpService().post(url, headers, entity);
+		final HttpSession session = httpService.post(url, headers, entity);
 		session.getStateChangedEvent().addEventHandler(new IEventHandler<StateChangedEventArgs>(){
 
 			@Override
@@ -86,13 +94,14 @@ public class JsonService implements IJsonService{
 
 	@Override
 	public void put(String url, String json, final IEventHandler<JsonEventArgs> handler) {
+		Logger.check(httpService != null, "The httpService must not be null!");
 		StringEntity entity = null;
 		Header[] headers = new Header[]{new BasicHeader(JSON_HEADER_KEY, JSON_HEADER_VAL)};
 		try {
 			entity = new StringEntity(json, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 		}
-		final HttpSession session = getHttpService().put(url, headers, entity);
+		final HttpSession session = httpService.put(url, headers, entity);
 		session.getStateChangedEvent().addEventHandler(new IEventHandler<StateChangedEventArgs>(){
 
 			@Override
@@ -109,7 +118,8 @@ public class JsonService implements IJsonService{
 
 	@Override
 	public void delete(String url, final IEventHandler<JsonEventArgs> handler) {
-		final HttpSession session = getHttpService().delete(url);
+		Logger.check(httpService != null, "The httpService must not be null!");
+		final HttpSession session = httpService.delete(url);
 		session.getStateChangedEvent().addEventHandler(new IEventHandler<StateChangedEventArgs>(){
 
 			@Override
