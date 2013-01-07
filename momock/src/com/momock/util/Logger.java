@@ -17,6 +17,8 @@ package com.momock.util;
 
 import static android.os.Environment.getExternalStorageState;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -24,7 +26,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
+
+import com.momock.event.Event;
+import com.momock.event.EventArgs;
+import com.momock.event.IEvent;
+import com.momock.event.IEventHandler;
 
 public class Logger {
 
@@ -41,19 +51,41 @@ public class Logger {
 	static int logLevel = LEVEL_DEBUG;
 	static boolean enabled = true;
 
-	public static void open(String logfilename, int level) {
+	public static class LogEventArgs extends EventArgs{
+		String message;
+		public LogEventArgs(String message){
+			this.message = message;
+		}
+		public String getMessage() {
+			return message;
+		}
+	}
+	static IEvent<LogEventArgs> event = new Event<LogEventArgs>();
+	
+	public static void addErrorLogHandler(IEventHandler<LogEventArgs> handler){
+		event.addEventHandler(handler);
+	}
+	@TargetApi(Build.VERSION_CODES.FROYO)
+	static File getExternalCacheDir(final Context context) {
+		return context.getExternalCacheDir();
+	}
+	public static void open(Context context, String logfilename, int level) {
 		if (!enabled) return;
 		logFileName = logfilename;
 		if (logStream == null) {
-
-			try {				
+			logStream = System.out;		
+			File logDir = null;
+			try {								
 				if (getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-					logStream = new PrintStream(new FileOutputStream(Environment.getExternalStorageDirectory() + "/" + logFileName, false));
-				} else {
-					logStream = new PrintStream(new FileOutputStream("/" + logFileName, false));
+					logDir = Environment.getExternalStorageDirectory();
+				} else if (context != null){
+					logDir = context.getCacheDir();
+				} 
+				if (logDir != null){
+					android.util.Log.d("Logger", logDir.getAbsolutePath());
+					logStream = new PrintStream(new FileOutputStream(new File(logDir, logFileName), false));
 				}
 			} catch (IOException e) {
-				logStream = System.out;
 				android.util.Log.e("Logger", "Fails to create log file!", e);
 			}
 		}
@@ -73,7 +105,7 @@ public class Logger {
 	static void checkLogFile()
 	{
 		if (enabled && logStream == null)
-			open("log.txt", LEVEL_DEBUG);
+			open(null, "log.txt", LEVEL_DEBUG);
 	}
 	static String getLog(String level, String msg)
 	{
@@ -128,8 +160,25 @@ public class Logger {
 		checkLogFile();
 		logStream.println(getLog("ERROR", msg));
 		logStream.flush();
+		event.fireEvent(null, new LogEventArgs(msg));
 	}
-
+	public static String getStackTrace(Throwable e){
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(baos);
+		e.printStackTrace(ps);
+		return new String(baos.toByteArray());
+	}
+	public static void error(Throwable e) {
+		if (!enabled && logLevel > LEVEL_ERROR) return;
+		String msg = e.getMessage() + " : " + getStackTrace(e);
+		Throwable t = new Throwable(); 
+		StackTraceElement trace = t.getStackTrace()[1];
+		android.util.Log.e(getSourceInfo(trace), msg);
+		checkLogFile();
+		logStream.println(getLog("ERROR", msg));
+		logStream.flush();
+		event.fireEvent(null, new LogEventArgs(msg));
+	}
 	public static void check(boolean condition, String msg){
 		if (!condition)	{
 			if (!enabled && logLevel > LEVEL_ERROR) return;

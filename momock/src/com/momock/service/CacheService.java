@@ -77,10 +77,9 @@ public class CacheService implements ICacheService {
 	@Override
 	public void start() {
 		if (getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-			cacheDir = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ? getExternalCacheDir(context)
-					: new File(getExternalStorageDirectory().getPath()
-							+ "/Android/data/" + context.getPackageName()
-							+ "/cache/");
+			cacheDir = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ? 
+					getExternalCacheDir(context)
+					: new File(getExternalStorageDirectory().getPath() + "/Android/data/" + context.getPackageName() + "/cache/");
 		} else {
 			cacheDir = context.getCacheDir();
 		}

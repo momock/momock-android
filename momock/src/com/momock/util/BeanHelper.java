@@ -85,7 +85,7 @@ public class BeanHelper {
 		try {
 			val = m.invoke(obj);
 		} catch (Exception e) {
-			Logger.error(e.getMessage());
+			Logger.error(e);
 		}
 		return val == null ? def : val;
 	}
@@ -114,7 +114,7 @@ public class BeanHelper {
 		try {
 			m.invoke(obj, val);
 		} catch (Exception e) {
-			Logger.error(e.getMessage());
+			Logger.error(e);
 		}
 	}
 	@SuppressWarnings("rawtypes")

@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.momock.app;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +43,10 @@ import com.momock.inject.Injector;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
+import com.momock.service.AsyncTaskService;
+import com.momock.service.CrashResportService;
+import com.momock.service.IAsyncTaskService;
+import com.momock.service.ICrashReportService;
 import com.momock.service.IImageService;
 import com.momock.service.ILayoutInflaterService;
 import com.momock.service.IMessageService;
@@ -63,21 +65,6 @@ public abstract class App extends android.app.Application implements
 	
 	Injector injector = new Injector();
 	
-	Thread.UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
-	
-	public App(){
-		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-			@Override
-			public void uncaughtException(Thread thread, Throwable ex) {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				PrintStream ps = new PrintStream(baos);
-				ex.printStackTrace(ps);
-				Logger.error(thread + ":" + new String(baos.toByteArray()));
-				handler.uncaughtException(thread, ex);
-			}
-		});
-	}
-
 	public static App get() {
 		if (app != null && !app.environmentCreated){
 			app.onCreateEnvironment();
@@ -136,7 +123,7 @@ public abstract class App extends android.app.Application implements
 	@SuppressLint("DefaultLocale")
 	@Override
 	public void onCreate() {
-		Logger.open(getLogFilename(), getLogLevel());
+		Logger.open(this, getLogFilename(), getLogLevel());
 		app = this;
 		super.onCreate();
 	}
@@ -356,7 +343,9 @@ public abstract class App extends android.app.Application implements
 		servicesCreated = true;
 		onPreCreateServices();
 		
+		addService(ICrashReportService.class, new CrashResportService());
 		addService(ILayoutInflaterService.class, new LayoutInflaterService());
+		addService(IAsyncTaskService.class, new AsyncTaskService());
 		addService(IUITaskService.class, new UITaskService());
 		addService(IMessageService.class, new MessageService());
 		onRegisterShortNames();
@@ -482,7 +471,7 @@ public abstract class App extends android.app.Application implements
 			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
 			return pInfo.versionName;
 		} catch (NameNotFoundException e) {
-			Logger.error(e.getMessage());
+			Logger.error(e);
 		}
 		return "?";
 	}

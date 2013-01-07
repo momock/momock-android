@@ -22,8 +22,10 @@ import android.widget.BaseAdapter;
 
 import com.momock.binder.ContainerBinder;
 import com.momock.binder.IItemBinder;
+import com.momock.data.DataChangedEventArgs;
 import com.momock.data.IDataList;
 import com.momock.event.EventArgs;
+import com.momock.event.IEventHandler;
 import com.momock.event.ItemEventArgs;
 import com.momock.util.Logger;
 
@@ -38,14 +40,14 @@ public class AdapterViewBinder<T extends AdapterView<?>> extends ContainerBinder
 		return adapter;
 	}
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void onBind(T view, final IDataList<?> list) {
+	public void onBind(T view, final IDataList<?> dataSource) {
 		if (view != null) {
 			view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int position, long id) {
 					ItemEventArgs args = new ItemEventArgs(parent, position,
-							list.getItem(position));
+							dataSource.getItem(position));
 					itemClickedEvent.fireEvent(view, args);
 				}
 			});
@@ -55,7 +57,7 @@ public class AdapterViewBinder<T extends AdapterView<?>> extends ContainerBinder
 				public void onItemSelected(AdapterView<?> parent, View view,
 						int position, long id) {
 					ItemEventArgs args = new ItemEventArgs(parent, position,
-							list.getItem(position));
+							dataSource.getItem(position));
 					itemSelectedEvent.fireEvent(view, args);
 				}
 
@@ -68,12 +70,12 @@ public class AdapterViewBinder<T extends AdapterView<?>> extends ContainerBinder
 
 				@Override
 				public int getCount() {
-					return list.getItemCount();
+					return dataSource.getItemCount();
 				}
 
 				@Override
 				public Object getItem(int position) {
-					return list.getItem(position);
+					return dataSource.getItem(position);
 				}
 
 				@Override
@@ -105,6 +107,14 @@ public class AdapterViewBinder<T extends AdapterView<?>> extends ContainerBinder
 
 			};
 			((AdapterView) view).setAdapter(adapter);
+			dataSource.addDataChangedHandler(new IEventHandler<DataChangedEventArgs>(){
+
+				@Override
+				public void process(Object sender, DataChangedEventArgs args) {
+					adapter.notifyDataSetChanged();
+				}
+				
+			});
 		}
 	}
 }

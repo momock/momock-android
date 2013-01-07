@@ -52,7 +52,7 @@ public class LayoutInflaterService implements ILayoutInflaterService {
 				try {
 					return createView(name, shortNames.get(name) + ".", attrs);
 				} catch (Exception e) {
-					Logger.error(e.getMessage());
+					Logger.error(e);
 				}
 			}
 			try {
@@ -70,7 +70,7 @@ public class LayoutInflaterService implements ILayoutInflaterService {
 				try {
 					return createView(name, shortNames.get(name) + ".", attrs);
 				} catch (Exception e) {
-					Logger.error(e.getMessage());
+					Logger.error(e);
 				}
 			}
 			try {

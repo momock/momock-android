@@ -50,7 +50,7 @@ public class TextHelper {
 			}
 			return sb.length() > 0 ? sb.toString() : null;
 		} catch (IOException e) {
-			Logger.error(e.getMessage());
+			Logger.error(e);
 		}
 		return null;
 	}
@@ -66,7 +66,7 @@ public class TextHelper {
 			try {
 				fis = new FileInputStream(f);
 			} catch (FileNotFoundException e) {
-				Logger.error(e.getMessage());
+				Logger.error(e);
 				return null;
 			}
 			return read(fis, encoding);
@@ -79,7 +79,7 @@ public class TextHelper {
 				return read(theResources.getAssets().open(uri.substring(PREFIX_ASSETS.length())),
 						encoding);
 			} catch (IOException e) {
-				Logger.error(e.getMessage());
+				Logger.error(e);
 				return null;
 			}
 		}

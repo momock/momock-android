@@ -31,6 +31,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpConnectionParams;
 
 import android.net.http.AndroidHttpClient;
 
@@ -40,6 +41,8 @@ import com.momock.util.HttpHelper;
 
 public class HttpService implements IHttpService {
 
+    private static final int SOCKET_OPERATION_TIMEOUT = 60 * 1000 * 5;
+    
 	String userAgent;
 
 	AndroidHttpClient httpClient = null;
@@ -59,6 +62,8 @@ public class HttpService implements IHttpService {
 	@Override
 	public void start() {
 		httpClient = AndroidHttpClient.newInstance(userAgent);
+        HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), SOCKET_OPERATION_TIMEOUT);
+        HttpConnectionParams.setSoTimeout(httpClient.getParams(), SOCKET_OPERATION_TIMEOUT);
 	}
 
 	@Override

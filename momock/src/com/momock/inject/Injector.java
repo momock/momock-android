@@ -67,7 +67,7 @@ public class Injector {
 						field.set(obj, provider.get());
 						Logger.debug(obj.getClass() + "." + field.getName() + " is injected.");
 					} catch (Exception e) {
-						Logger.error(e.getMessage());
+						Logger.error(e);
 					}
 			}
 		}

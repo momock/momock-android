@@ -36,7 +36,7 @@ public class JsonHelper {
 				try {
 					val = jobj.get(key);
 				} catch (JSONException e) {
-					Logger.error(e.getMessage());
+					Logger.error(e);
 					continue;
 				}
 	            if(val instanceof JSONObject || val instanceof JSONArray){
@@ -53,7 +53,7 @@ public class JsonHelper {
 				try {
 					val = jarr.get(i);
 				} catch (JSONException e) {
-					Logger.error(e.getMessage());
+					Logger.error(e);
 					continue;
 				}
 				if(val instanceof JSONObject || val instanceof JSONArray){
@@ -73,7 +73,7 @@ public class JsonHelper {
 		try {
 			root = tokener.nextValue();
 		} catch (JSONException e) {
-			Logger.error(e.getMessage());
+			Logger.error(e);
 			return null;
 		}
 		DataNode dn = new DataNode();

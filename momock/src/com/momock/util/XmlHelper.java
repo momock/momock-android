@@ -32,7 +32,7 @@ public class XmlHelper {
 		try {
 			fac = XmlPullParserFactory.newInstance();
 		} catch (XmlPullParserException e) {
-			Logger.error(e.getMessage());
+			Logger.error(e);
 		}
 	}
 
@@ -44,7 +44,7 @@ public class XmlHelper {
 			parser.setInput(new StringReader(xml));
 			return parser;
 		} catch (XmlPullParserException e) {
-			Logger.error(e.getMessage());
+			Logger.error(e);
 		}
 		return null;
 	}
@@ -57,7 +57,7 @@ public class XmlHelper {
 			parser.setInput(in, encode);
 			return parser;
 		} catch (XmlPullParserException e) {
-			Logger.error(e.getMessage());
+			Logger.error(e);
 		}
 		return null;
 	}
@@ -115,7 +115,7 @@ public class XmlHelper {
 				}
 			}
 		} catch (Exception e) {
-			Logger.error(e.getMessage());
+			Logger.error(e);
 		}
 		return root;
 	}

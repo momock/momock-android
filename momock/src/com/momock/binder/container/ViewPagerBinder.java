@@ -28,8 +28,10 @@ import android.view.ViewGroup;
 
 import com.momock.binder.ContainerBinder;
 import com.momock.binder.IItemBinder;
+import com.momock.data.DataChangedEventArgs;
 import com.momock.data.IDataList;
 import com.momock.event.EventArgs;
+import com.momock.event.IEventHandler;
 import com.momock.event.ItemEventArgs;
 import com.momock.util.Logger;
 import com.momock.widget.IIndexIndicator;
@@ -53,17 +55,17 @@ public class ViewPagerBinder extends ContainerBinder<ViewPager>{
 	public PagerAdapter getAdapter(){
 		return adapter;
 	}
-	public void onBind(final ViewPager view, final IDataList<?> list){
+	public void onBind(final ViewPager view, final IDataList<?> dataSource){
 		if (view != null) {
 			if (refIndicator != null && refIndicator.get() != null){
-				refIndicator.get().setCount(list.getItemCount());
+				refIndicator.get().setCount(dataSource.getItemCount());
 			}
 			view.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 				
 				@Override
 				public void onPageSelected(int position) {
 					position = adapter instanceof IRoundAdapter ? ((IRoundAdapter)adapter).getRealPosition(position) : position;
-					Object item = list.getItem(position);
+					Object item = dataSource.getItem(position);
 					ItemEventArgs args = new ItemEventArgs(view, position, item);
 					itemSelectedEvent.fireEvent(view, args);
 					if (refIndicator != null && refIndicator.get() != null){
@@ -92,7 +94,7 @@ public class ViewPagerBinder extends ContainerBinder<ViewPager>{
 
 							@Override
 							public boolean onSingleTapConfirmed(MotionEvent e) {
-								Object item = list.getItem(adapter instanceof IRoundAdapter ? ((IRoundAdapter)adapter).getRealPosition(view.getCurrentItem()) : view.getCurrentItem());
+								Object item = dataSource.getItem(adapter instanceof IRoundAdapter ? ((IRoundAdapter)adapter).getRealPosition(view.getCurrentItem()) : view.getCurrentItem());
 								ItemEventArgs args = new ItemEventArgs(view, view.getCurrentItem(), item);
 								itemClickedEvent.fireEvent(view, args);
 								return true;
@@ -107,7 +109,7 @@ public class ViewPagerBinder extends ContainerBinder<ViewPager>{
 				BlockingQueue<View> savedViews = new LinkedBlockingQueue<View>();
 				@Override
 				public int getCount() {
-					return list.getItemCount();
+					return dataSource.getItemCount();
 				}
 
 				@Override
@@ -121,7 +123,7 @@ public class ViewPagerBinder extends ContainerBinder<ViewPager>{
 					if (savedViews.size() > 0){
 						convertView = savedViews.poll();
 					} 
-					Object item = list.getItem(position);
+					Object item = dataSource.getItem(position);
 					convertView = itemBinder.onCreateItemView(convertView, item, ViewPagerBinder.this);
 					container.addView(convertView, 0);
 					convertView.setTag(item);
@@ -140,7 +142,7 @@ public class ViewPagerBinder extends ContainerBinder<ViewPager>{
 					lastDataSetChangedTick = System.nanoTime();
 					getDataChangedEvent().fireEvent(this, new EventArgs());
 					if (refIndicator != null && refIndicator.get() != null){
-						refIndicator.get().setCount(list.getItemCount());
+						refIndicator.get().setCount(dataSource.getItemCount());
 					}
 					super.notifyDataSetChanged();
 					Logger.debug("ViewPagerBinder.PagerAdapter.notifyDataSetChanged");
@@ -173,8 +175,16 @@ public class ViewPagerBinder extends ContainerBinder<ViewPager>{
 			if (round)
 				adapter = new RoundPagerAdapter(adapter);
 			view.setAdapter(adapter);
+			dataSource.addDataChangedHandler(new IEventHandler<DataChangedEventArgs>(){
+
+				@Override
+				public void process(Object sender, DataChangedEventArgs args) {
+					adapter.notifyDataSetChanged();
+				}
+				
+			});
 			if (round)
-				view.setCurrentItem(Math.max(1000, list.getItemCount() * 1000), false);
+				view.setCurrentItem(Math.max(1000, dataSource.getItemCount() * 1000), false);
 		}
 	}
 

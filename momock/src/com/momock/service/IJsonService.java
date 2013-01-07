@@ -42,7 +42,8 @@ public interface IJsonService extends IService{
 			try {
 				result = new JSONTokener(response).nextValue();
 			} catch (JSONException e) {
-				Logger.error(e.getMessage());
+				Logger.error(response);
+				Logger.error(e);
 			}
 			if (result == null) 
 				result = response;

@@ -36,7 +36,7 @@ public class DataHelper {
 				}					
 				dl.addItem(obj);
 			} catch (Exception e) {
-				Logger.error(e.getMessage());
+				Logger.error(e);
 			}
 		}
 		return dl;
@@ -60,7 +60,7 @@ public class DataHelper {
 				}					
 				dl.addItem(obj);
 			} catch (Exception e) {
-				Logger.error(e.getMessage());
+				Logger.error(e);
 			}
 		}
 		return dl;

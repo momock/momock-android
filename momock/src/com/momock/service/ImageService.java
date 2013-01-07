@@ -103,12 +103,12 @@ public class ImageService implements IImageService {
 			try {
 				return load(fullUri);
 			} catch (OutOfMemoryError e) {
-				Logger.error(e.getMessage());
+				Logger.error(e);
 				clearCache();
 				return load(fullUri);
 			}
 		} catch (Throwable t) {
-			Logger.error(t.getMessage());
+			Logger.error(t);
 			return null;
 		}
 	}
@@ -158,12 +158,12 @@ public class ImageService implements IImageService {
 										try{
 											bitmap = ImageHelper.fromFile(args.getSession().getFile(), expectedWidth, expectedHeight);
 										} catch(OutOfMemoryError e){
-											Logger.error(e.getMessage());
+											Logger.error(e);
 											clearCache();
 											try{
 												bitmap = ImageHelper.fromFile(args.getSession().getFile(), expectedWidth, expectedHeight);
 											} catch(Throwable t){
-												Logger.error(t.getMessage());
+												Logger.error(t);
 											}
 										}
 										if (bitmap == null){

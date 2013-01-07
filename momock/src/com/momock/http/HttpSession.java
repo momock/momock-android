@@ -186,7 +186,7 @@ public class HttpSession{
 				din.close();	
 				di = new DownloadInfo(downloadedLength, contentLength);
 			} catch (Exception e) {
-				Logger.error(e.getMessage());
+				Logger.error(e);
 			}
 		}
 		return di;
@@ -213,7 +213,7 @@ public class HttpSession{
 			}
 			din.close();
 		} catch (IOException e) {
-			Logger.error(e.getMessage());
+			Logger.error(e);
 		}
 	}
 
@@ -234,7 +234,7 @@ public class HttpSession{
 			}
 			dout.close();
 		} catch (IOException e) {
-			Logger.error(e.getMessage());
+			Logger.error(e);
 		}
 	}
 
@@ -272,7 +272,7 @@ public class HttpSession{
 					return new String(result, encoding == null ? "UTF-8" : encoding);
 			}
 		} catch (Exception e) {
-			Logger.error(e.getMessage());
+			Logger.error(e);
 		}
 		return null;
 	}
@@ -282,7 +282,7 @@ public class HttpSession{
 				if (file != null)
 					return new FileInputStream(file);
 			} catch (FileNotFoundException e) {
-				Logger.error(e.getMessage());
+				Logger.error(e);
 			}
 		} else {
 			if (result != null)
@@ -472,7 +472,7 @@ public class HttpSession{
 											}								
 										} catch (Exception e) {
 											error = e;
-											Logger.error(e.getMessage());
+											Logger.error(e);
 											setState(STATE_ERROR);
 										} finally {
 											setState(STATE_FINISHED);
@@ -483,7 +483,7 @@ public class HttpSession{
 							});
 						} catch (Exception e) {
 							error = e;
-							Logger.error(e.getMessage());
+							Logger.error(e);
 							setState(STATE_ERROR);
 							setState(STATE_FINISHED);		
 						}

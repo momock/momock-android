@@ -21,8 +21,10 @@ import android.widget.BaseAdapter;
 
 import com.momock.binder.ContainerBinder;
 import com.momock.binder.IItemBinder;
+import com.momock.data.DataChangedEventArgs;
 import com.momock.data.IDataList;
 import com.momock.event.EventArgs;
+import com.momock.event.IEventHandler;
 import com.momock.event.ItemEventArgs;
 import com.momock.util.Logger;
 import com.momock.widget.IPlainAdapterView;
@@ -38,7 +40,7 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> extends Contain
 		return adapter;
 	}
 	
-	public void onBind(final ViewGroup v, final IDataList<?> list) {		
+	public void onBind(final ViewGroup v, final IDataList<?> dataSource) {		
 		if (v != null) {
 			final IPlainAdapterView view = (IPlainAdapterView)v;
 			view.setOnItemClickListener(new IPlainAdapterView.OnItemClickListener() {
@@ -46,7 +48,7 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> extends Contain
 				public void onItemClick(IPlainAdapterView parent, View v,
 						int index) {
 					ItemEventArgs args = new ItemEventArgs((View) view, index,
-							list.getItem(index));
+							dataSource.getItem(index));
 					itemClickedEvent.fireEvent(v, args);
 				}
 			});
@@ -54,12 +56,12 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> extends Contain
 
 				@Override
 				public int getCount() {
-					return list.getItemCount();
+					return dataSource.getItemCount();
 				}
 
 				@Override
 				public Object getItem(int position) {
-					return list.getItem(position);
+					return dataSource.getItem(position);
 				}
 
 				@Override
@@ -90,6 +92,14 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> extends Contain
 
 			};			
 			view.setAdapter(adapter);
+			dataSource.addDataChangedHandler(new IEventHandler<DataChangedEventArgs>(){
+
+				@Override
+				public void process(Object sender, DataChangedEventArgs args) {
+					adapter.notifyDataSetChanged();
+				}
+				
+			});
 		}
 	}
 }

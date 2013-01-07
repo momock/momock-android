@@ -90,7 +90,7 @@ public class ImageHelper {
 				}
 			}
 		} catch (IOException e) {
-			Logger.error(e.getMessage());
+			Logger.error(e);
 		}
 		return null;
 	}
@@ -119,7 +119,7 @@ public class ImageHelper {
 				tempFile.delete();
 				return bitmap;
 			} catch (IOException e) {
-				Logger.error(e.getMessage());
+				Logger.error(e);
 			}
 		} else {
 			return BitmapFactory.decodeStream(in);

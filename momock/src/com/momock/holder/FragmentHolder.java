@@ -73,7 +73,7 @@ public abstract class FragmentHolder implements IComponentHolder{
 						fragment = fc.newInstance();
 						((CaseFragment)fragment).setCase(kase);
 					} catch (Exception e) {
-						Logger.error(e.getMessage());
+						Logger.error(e);
 					}
 				}
 				return fragment;
