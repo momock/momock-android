@@ -19,7 +19,7 @@ import android.support.v4.app.Fragment;
 
 import com.momock.app.Case;
 import com.momock.app.ICase;
-import com.momock.binder.ListViewBinder;
+import com.momock.binder.container.ListViewBinder;
 import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.FragmentHolder;

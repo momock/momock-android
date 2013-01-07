@@ -19,8 +19,8 @@ import android.support.v4.app.Fragment;
 
 import com.momock.app.Case;
 import com.momock.app.ICase;
-import com.momock.binder.GridViewBinder;
-import com.momock.binder.SimpleItemViewBinder;
+import com.momock.binder.ItemBinder;
+import com.momock.binder.container.GridViewBinder;
 import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.FragmentHolder;
@@ -62,7 +62,7 @@ public class GridViewCase  extends Case<Fragment>{
 	@Override
 	public void onAttach(Fragment target) {
 		IDataService ds = getService(IDataService.class);
-		GridViewBinder binder = new GridViewBinder(new SimpleItemViewBinder(R.layout.grid_item, new int[] {R.id.ivIcon, R.id.tvName}, new String[]{"IconUri", "Name"}));
+		GridViewBinder binder = new GridViewBinder(new ItemBinder(R.layout.grid_item, new int[] {R.id.ivIcon, R.id.tvName}, new String[]{"IconUri", "Name"}));
 		binder.bind(ViewHolder.get(target, R.id.gvCategories), ds.getAllCategories());
 	}
 }
