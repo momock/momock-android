@@ -25,6 +25,8 @@ import com.momock.event.Event;
 import com.momock.event.EventArgs;
 import com.momock.event.IEvent;
 import com.momock.event.ItemEventArgs;
+import com.momock.holder.ViewHolder;
+import com.momock.util.Logger;
 
 public abstract class ContainerBinder<T extends ViewGroup> implements IContainerBinder {
 	protected IItemBinder itemBinder;
@@ -67,10 +69,14 @@ public abstract class ContainerBinder<T extends ViewGroup> implements IContainer
 	}
 
 	protected abstract void onBind(T containerView, IDataList<?> dataSource);
-	
+	public void bind(ViewHolder containerViewHolder, IDataList<?> dataSource){
+		Logger.check(containerViewHolder != null && containerViewHolder.getView() instanceof ViewGroup, "containerViewHolder must be contains a ViewGroup!");		
+		bind((ViewGroup)containerViewHolder.getView(), dataSource);
+	}
 	@SuppressWarnings("unchecked")
 	@Override
 	public void bind(ViewGroup containerView, IDataList<?> dataSource) {
+		Logger.check(containerView != null && dataSource != null, "containerView and dataSource must not be null!");
 		this.dataSource = dataSource;
 		this.refContainerView = new WeakReference<ViewGroup>(containerView);
 		onBind((T)containerView, dataSource);
