@@ -33,7 +33,7 @@ import com.momock.util.Logger;
 
 public class ViewBinder {
 	public static interface Setter {
-		boolean onSet(View view, String viewProp, Object obj, String key, Object val, IContainerBinder container);
+		boolean onSet(View view, String viewProp, Object obj, String key, Object val, View parent, IContainerBinder container);
 	}
 
 	static IImageService theImageService = null;
@@ -50,7 +50,7 @@ public class ViewBinder {
 	static {
 		addGlobalSetter(new Setter() {
 			@Override
-			public boolean onSet(View view, String viewProp, Object obj, String key, Object val, IContainerBinder container) {
+			public boolean onSet(View view, String viewProp, Object obj, String key, Object val, View parent, IContainerBinder container) {
 				if (view instanceof TextView
 						&& ("Text".equals(viewProp) || viewProp == null)) {
 					((TextView) view).setText(Convert.toString(val));
@@ -61,7 +61,7 @@ public class ViewBinder {
 		});
 		addGlobalSetter(new Setter() {
 			@Override
-			public boolean onSet(View view, String viewProp, Object obj, String key, Object val, IContainerBinder container) {
+			public boolean onSet(View view, String viewProp, Object obj, String key, Object val, View parent, IContainerBinder container) {
 				if (view instanceof ImageView) {
 					if (viewProp == null) {
 						if (val instanceof CharSequence) {
@@ -174,13 +174,13 @@ public class ViewBinder {
 			else
 				cv = view.findViewById(Convert.toInteger(tagOrId));
 			for (Setter s : customSetters) {
-				set = s.onSet(cv, pv.viewProp, target, name, val, container);
+				set = s.onSet(cv, pv.viewProp, target, name, val, view, container);
 				if (set)
 					break;
 			}
 			if (!set) {
 				for (Setter s : globalSetters) {
-					set = s.onSet(cv, pv.viewProp, target, name, val, container);
+					set = s.onSet(cv, pv.viewProp, target, name, val, view, container);
 					if (set)
 						break;
 				}

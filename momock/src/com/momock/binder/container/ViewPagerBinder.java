@@ -125,8 +125,7 @@ public class ViewPagerBinder extends ContainerBinder<ViewPager>{
 					} 
 					Object item = dataSource.getItem(position);
 					convertView = itemBinder.onCreateItemView(convertView, item, ViewPagerBinder.this);
-					container.addView(convertView, 0);
-					convertView.setTag(item);
+					container.addView(convertView, 0);					
 					return convertView;
 				}
 
