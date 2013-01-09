@@ -13,44 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.momock.service;
+package com.momock.inject;
 
-import android.os.Handler;
+import javax.inject.Provider;
 
-public class UITaskService implements IUITaskService {
-	Handler executeHandler = null;
-
-	@Override
-	public Class<?>[] getDependencyServices() {
-		return null;
-	}
-
-	@Override
-	public void start() {
-		executeHandler = new Handler();
-	}
-
-	@Override
-	public void stop() {
-		executeHandler.removeCallbacksAndMessages(null);
-		executeHandler = null;
-	}
-
-
-	@Override
-	public void run(Runnable task) {
-		if (executeHandler != null)
-			executeHandler.post(task);		
-	}
-	
-	@Override
-	public void runDelayed(Runnable task, int delay){
-		if (executeHandler != null)
-			executeHandler.postDelayed(task, delay);		
-	}
-
-	@Override
-	public boolean canStop() {
-		return true;
-	}
+public interface IInjector {
+	void inject(Object obj);
+	void addProvider(Class<?> klass, final Object obj);
+	void addProvider(Class<?> klass, Provider<?> provider);
+	void removeProvider(Class<?> klass);
+	void removeAllProviders();
 }

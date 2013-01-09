@@ -33,7 +33,7 @@ public class XmlDataService implements IDataService{
 	DataList<Category> categories = new DataList<Category>();
 	public XmlDataService(){
 		try {
-			int i;
+			int i; 
 			IDataNode node = XmlHelper.parse(XmlHelper.createParser(App.get().getAssets().open("PreloadData.xml"), "UTF-8"));
 			IDataList<IDataNode> cs = new DataNodeView(node, "Categories/Category").getData();
 			for(i = 0; i < cs.getItemCount(); i++){
@@ -105,5 +105,9 @@ public class XmlDataService implements IDataService{
 	@Override
 	public Class<?>[] getDependencyServices() {
 		return null;
+	}
+	@Override
+	public boolean canStop() {
+		return true;
 	}
 }

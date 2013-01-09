@@ -171,5 +171,9 @@ public class HttpService implements IHttpService {
 	public Class<?>[] getDependencyServices() {
 		return new Class<?>[]{ IUITaskService.class };
 	}
+	@Override
+	public boolean canStop() {
+		return true;
+	}
 
 }

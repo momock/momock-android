@@ -76,4 +76,9 @@ public class AsyncTaskService implements IAsyncTaskService {
 		executor.execute(task);
 	}
 
+	@Override
+	public boolean canStop() {
+		return true;
+	}
+
 }

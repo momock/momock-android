@@ -57,9 +57,7 @@ public interface IApplication {
 	
 	void onCreateActivity();
 	
-	void onDestroyActivity();
-	
-	boolean keepServiceRunning();
+	void onDestroyActivity();	
 	
 	void onCreateEnvironment();
 	

@@ -53,11 +53,16 @@ public class Logger {
 
 	public static class LogEventArgs extends EventArgs{
 		String message;
-		public LogEventArgs(String message){
+		Throwable error;
+		public LogEventArgs(String message, Throwable error){
 			this.message = message;
+			this.error = error;
 		}
 		public String getMessage() {
 			return message;
+		}
+		public Throwable getError() {
+			return error;
 		}
 	}
 	static IEvent<LogEventArgs> event = new Event<LogEventArgs>();
@@ -160,7 +165,7 @@ public class Logger {
 		checkLogFile();
 		logStream.println(getLog("ERROR", msg));
 		logStream.flush();
-		event.fireEvent(null, new LogEventArgs(msg));
+		event.fireEvent(null, new LogEventArgs(msg, null));
 	}
 	public static String getStackTrace(Throwable e){
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -177,7 +182,7 @@ public class Logger {
 		checkLogFile();
 		logStream.println(getLog("ERROR", msg));
 		logStream.flush();
-		event.fireEvent(null, new LogEventArgs(msg));
+		event.fireEvent(null, new LogEventArgs(null, e));
 	}
 	public static void check(boolean condition, String msg){
 		if (!condition)	{

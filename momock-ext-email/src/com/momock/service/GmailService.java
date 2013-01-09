@@ -27,6 +27,7 @@ public class GmailService implements IEmailService {
 	IAsyncTaskService asyncTaskService;
 	String username;
 	String password;
+	static final String ERROR_SEPERATOR = "\r\n+++++++++++++++++++++++++++++++++++++++++++++++++\r\n";
 
 	public GmailService(String username, String password) {
 		this.username = username;
@@ -47,7 +48,7 @@ public class GmailService implements IEmailService {
 	public void stop() {
 
 	}
-
+	
 	@Override
 	public void send(final String sender, final String[] receivers, final String subject, final String body, final File[] files) {
 		asyncTaskService.run(new Runnable(){
@@ -68,11 +69,20 @@ public class GmailService implements IEmailService {
 					}
 					client.send();
 				} catch (Exception e) {
+					try {
+						Thread.sleep(10 * 1000);
+					} catch (InterruptedException ie) {
+					}
+					send(sender, receivers, subject, body, files);
 					Logger.error(e);
-				}
+				} 
 			}
 			
 		});
 	}
 
+	@Override
+	public boolean canStop() {
+		return true;
+	}
 }

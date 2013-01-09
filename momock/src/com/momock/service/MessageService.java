@@ -101,5 +101,9 @@ public class MessageService implements IMessageService{
 	public void stop() {
 		allHandlers.clear();
 	}
+	@Override
+	public boolean canStop() {
+		return true;
+	}
 
 }

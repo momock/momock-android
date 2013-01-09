@@ -125,4 +125,9 @@ public class LayoutInflaterService implements ILayoutInflaterService {
 		shortNames.clear();
 	}
 
+	@Override
+	public boolean canStop() {
+		return true;
+	}
+
 }

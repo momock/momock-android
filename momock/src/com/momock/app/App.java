@@ -17,8 +17,10 @@ package com.momock.app;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Provider;
 
@@ -64,6 +66,7 @@ public abstract class App extends android.app.Application implements
 	static App app = null;
 	
 	Injector injector = new Injector();
+	Set<Class<?>> serviceCanNotStop = new HashSet<Class<?>>();
 	
 	public static App get() {
 		if (app != null && !app.environmentCreated){
@@ -125,6 +128,14 @@ public abstract class App extends android.app.Application implements
 	public void onCreate() {
 		Logger.open(this, getLogFilename(), getLogLevel());
 		app = this;
+		injector.addProvider(IApplication.class, this);
+		injector.addProvider(Context.class, this);
+		injector.addProvider(Resources.class, new Provider<Resources>(){
+			@Override
+			public Resources get() {
+				return getResources();
+			}			
+		});
 		super.onCreate();
 	}
 
@@ -302,8 +313,13 @@ public abstract class App extends android.app.Application implements
 
 	@Override
 	public void addService(Class<?> klass, IService service) {
-		services.put(klass, service);
-		injector.addProvider(klass, service);
+		// if the service cannot be stopped in previous destroy, we should not add new service with the same interface
+		if (serviceCanNotStop.contains(klass)){ 
+			Logger.debug("Service " + service.getClass() + " is already running.");
+		} else {
+			services.put(klass, service);
+			injector.addProvider(klass, service);			
+		}
 	}
 
 	IDataSet ds = null;
@@ -341,6 +357,7 @@ public abstract class App extends android.app.Application implements
 	protected void createServices(){
 		if (servicesCreated) return;
 		servicesCreated = true;
+		destroyServices(); // try to stop the services previously keep running
 		onPreCreateServices();
 		
 		addService(ICrashReportService.class, new CrashResportService());
@@ -395,15 +412,35 @@ public abstract class App extends android.app.Application implements
 		}
 		onPostCreateServices();
 	}
-	
-	public boolean keepServiceRunning(){
-		return true;
+	void addDependentServices(Set<Class<?>> depServices, IService service){
+		if (service == null) return;
+		Class<?>[] klasses = service.getDependencyServices();
+		if (klasses == null) return;
+		for(Class<?> cls : klasses){
+			IService ds = services.get(cls);
+			Logger.debug("Dependent service " + ds.getClass() + " cannot stop.");
+			depServices.add(cls);
+			addDependentServices(depServices, ds);
+		}
 	}
 	protected void destroyServices(){
+		serviceCanNotStop.clear();
 		for(Map.Entry<Class<?>, IService> e : services.entrySet()){
-			e.getValue().stop();
+			if (!e.getValue().canStop()){
+				serviceCanNotStop.add(e.getKey());
+				Logger.debug("Service " + e.getValue().getClass() + " cannot stop.");
+				addDependentServices(serviceCanNotStop, e.getValue());
+			}
 		}
-		services.clear();
+		List<Class<?>> keys = new ArrayList<Class<?>>();
+		keys.addAll(services.keySet());
+		for(Class<?> cls : keys){
+			if (!serviceCanNotStop.contains(cls)){
+				services.get(cls).stop();		
+				services.remove(cls);		
+				injector.removeProvider(cls);
+			}
+		}		
 		servicesCreated = false;
 	}
 	@Override
@@ -426,10 +463,8 @@ public abstract class App extends android.app.Application implements
 		cases.clear();
 		outlets.clear();
 		plugs.clear();
-		injector.removeAllProviders();
 		ds = null;
-		if (!keepServiceRunning())
-			destroyServices();
+		destroyServices();
 	}
 
 	@Override

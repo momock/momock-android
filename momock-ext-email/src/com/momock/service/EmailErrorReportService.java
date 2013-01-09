@@ -22,7 +22,7 @@ import android.content.Context;
 import com.momock.app.IApplication;
 import com.momock.util.Logger;
 
-public class EmailCrashReportService extends CrashResportService {
+public class EmailErrorReportService extends ErrorReportService{
 	@Inject
 	IEmailService emailService = null;
 	@Inject 
@@ -31,25 +31,23 @@ public class EmailCrashReportService extends CrashResportService {
 	IApplication app;
 	String sender;
 	String[] receivers;
-	public EmailCrashReportService(String sender, String[] receivers){
+	public EmailErrorReportService(String sender, String[] receivers){
 		this.sender = sender;
 		this.receivers = receivers;
 	}
 	
 	@Override
-	public void onCrash(Thread thread, Throwable error) {
-		if (emailService != null){
-			String msg = EmailDeviceInfoHelper.getFullMessage(context, Logger.getStackTrace(error));
-			emailService.send(sender,
-					receivers, 
-					"CRASH > " + context.getPackageName() + " v" + app.getVersion() + " : " + error + " in " + thread,
-					msg, null);
-		}
+	public Class<?>[] getDependencyServices() {
+		return new Class<?>[] {IEmailService.class};
 	}
 
 	@Override
-	public Class<?>[] getDependencyServices() {
-		return new Class<?>[] {IEmailService.class};
+	public void onError(String errorMessage, Throwable error) {
+		if (emailService != null){
+			String msg = EmailDeviceInfoHelper.getFullMessage(context, error == null ? errorMessage : Logger.getStackTrace(error));
+			emailService.send(sender, receivers, 
+					"ERROR > " + context.getPackageName() + " v" + app.getVersion(), msg, null);
+		}
 	}
 
 }

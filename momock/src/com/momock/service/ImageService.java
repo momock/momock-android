@@ -315,4 +315,8 @@ public class ImageService implements IImageService {
 	public Class<?>[] getDependencyServices() {
 		return new Class<?>[]{IHttpService.class, ICacheService.class};
 	}
+	@Override
+	public boolean canStop() {
+		return true;
+	}
 }

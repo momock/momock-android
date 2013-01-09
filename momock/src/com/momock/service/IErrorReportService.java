@@ -15,42 +15,6 @@
  ******************************************************************************/
 package com.momock.service;
 
-import android.os.Handler;
-
-public class UITaskService implements IUITaskService {
-	Handler executeHandler = null;
-
-	@Override
-	public Class<?>[] getDependencyServices() {
-		return null;
-	}
-
-	@Override
-	public void start() {
-		executeHandler = new Handler();
-	}
-
-	@Override
-	public void stop() {
-		executeHandler.removeCallbacksAndMessages(null);
-		executeHandler = null;
-	}
-
-
-	@Override
-	public void run(Runnable task) {
-		if (executeHandler != null)
-			executeHandler.post(task);		
-	}
-	
-	@Override
-	public void runDelayed(Runnable task, int delay){
-		if (executeHandler != null)
-			executeHandler.postDelayed(task, delay);		
-	}
-
-	@Override
-	public boolean canStop() {
-		return true;
-	}
+public interface IErrorReportService extends IService{
+	void onError(String errorMessage, Throwable error);
 }

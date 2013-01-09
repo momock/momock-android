@@ -19,4 +19,5 @@ public interface IService {
 	Class<?>[] getDependencyServices();
 	void start();
 	void stop();
+	boolean canStop();
 }

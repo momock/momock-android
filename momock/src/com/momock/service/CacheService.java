@@ -97,4 +97,9 @@ public class CacheService implements ICacheService {
 		return null;
 	}
 
+	@Override
+	public boolean canStop() {
+		return true;
+	}
+
 }

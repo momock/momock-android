@@ -26,6 +26,7 @@ public class Injector {
 	HashMap<Class<?>, Provider<?>> providers = new HashMap<Class<?>, Provider<?>>();
 
 	public Injector() {
+		addProvider(Injector.class, this);
 	}
 
 	public void addProvider(Class<?> klass, Provider<?> provider) {

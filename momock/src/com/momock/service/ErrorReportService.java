@@ -15,51 +15,39 @@
  ******************************************************************************/
 package com.momock.service;
 
-import com.momock.event.Event;
-import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 import com.momock.util.Logger;
 
-public class CrashResportService implements ICrashReportService {
-	protected IEvent<CrashEventArgs> event = new Event<CrashEventArgs>();
-	
-	protected Thread.UncaughtExceptionHandler defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-	public CrashResportService(){
-		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-			@Override
-			public void uncaughtException(Thread thread, Throwable error) {
-				CrashEventArgs args = new CrashEventArgs(thread, error);
-				event.fireEvent(CrashResportService.this, args);
-				onCrash(thread, error);
-				defaultExceptionHandler.uncaughtException(thread, error);
-			}
-		});
+public class ErrorReportService implements IErrorReportService, IEventHandler<Logger.LogEventArgs>{
+
+	@Override
+	public void process(Object s, Logger.LogEventArgs args) {
+		onError(args.getMessage(), args.getError());
 	}
+
+	@Override
+	public void start() {
+		Logger.addErrorLogHandler(this);
+	}
+
+	@Override
+	public void stop() {
+		
+	}
+
 	@Override
 	public Class<?>[] getDependencyServices() {
 		return null;
 	}
 
 	@Override
-	public void start() {
-
-	}
-
-	@Override
-	public void stop() {
-
-	}
-	@Override
-	public void addCrashHandler(IEventHandler<CrashEventArgs> handler) {
-		event.addEventHandler(handler);
-	}
-	@Override
-	public void onCrash(Thread thread, Throwable error) {
-		Logger.error(error);
-	}
-	@Override
 	public boolean canStop() {
 		return false;
+	}
+
+	@Override
+	public void onError(String errorMessage, Throwable error) {
+		
 	}
 
 }

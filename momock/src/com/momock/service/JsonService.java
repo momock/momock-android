@@ -148,5 +148,9 @@ public class JsonService implements IJsonService{
 	public void stop() {
 		
 	}
+	@Override
+	public boolean canStop() {
+		return true;
+	}
 
 }
