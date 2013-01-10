@@ -39,10 +39,8 @@ public interface ICase<A> {
 
 	void removeCase(String name);
 
-	@SuppressWarnings("rawtypes")
 	IOutlet getOutlet(String name);
 
-	@SuppressWarnings("rawtypes")
 	void addOutlet(String name, IOutlet outlet);
 
 	void removeOutlet(String name);

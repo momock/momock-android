@@ -41,6 +41,7 @@ public class DataMap<K, V> implements IDataMutableMap<K, V> {
 	@Override
 	public void setProperty(K name, V val) {
 		map.put(name, val);
+		fireDataChangedEvent();
 	}
 
 	@Override
@@ -50,19 +51,26 @@ public class DataMap<K, V> implements IDataMutableMap<K, V> {
 
 	@Override
 	public void copyPropertiesFrom(IDataMap<K, V> srouce) {
+		beginBatchChange();
 		for(K name : srouce.getPropertyNames()){
 			setProperty(name, srouce.getProperty(name));
 		}
+		endBatchChange();
 	}
 	
 	// IDataChangedAware implementation
 	IEvent<DataChangedEventArgs> dataChanged = null;
+	int batchLevel = 0;
+	boolean isDataDirty = false;
 
 	@Override
-	public void fireDataChangedEvent(Object sender, DataChangedEventArgs args) {
-		if (sender == null) sender = this;
-		if (dataChanged != null)
-			dataChanged.fireEvent(sender, args);
+	public void fireDataChangedEvent() {
+		if (batchLevel > 0){
+			isDataDirty = true;
+		} else {
+			if (dataChanged != null)
+				dataChanged.fireEvent(this, new DataChangedEventArgs());
+		}
 	}
 
 	@Override
@@ -79,5 +87,19 @@ public class DataMap<K, V> implements IDataMutableMap<K, V> {
 		if (dataChanged == null)
 			return;
 		dataChanged.removeEventHandler(handler);
+	}
+
+	@Override
+	public void beginBatchChange() {
+		if (batchLevel == 0)
+			isDataDirty = false;
+		batchLevel ++;	
+	}
+
+	@Override
+	public void endBatchChange() {
+		batchLevel --;
+		if (batchLevel == 0 && isDataDirty)
+			fireDataChangedEvent();
 	}
 }

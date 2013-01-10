@@ -21,22 +21,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.momock.data.IDataList;
-import com.momock.event.IEvent;
 import com.momock.event.EventArgs;
+import com.momock.event.IEvent;
+import com.momock.outlet.IPlug;
 import com.momock.outlet.Outlet;
 
-public class MenuActionOutlet extends Outlet<IActionPlug, Menu> implements IActionOutlet<Menu>{
+public class MenuActionOutlet extends Outlet implements IActionOutlet{
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	void enableShowAsAction(final MenuItem mi){
 		mi.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);		
 	}
-	@Override
-	public void onAttach(Menu menu)
+	public void attach(Menu menu)
 	{
-		IDataList<IActionPlug> plugs = getPlugs();
+		IDataList<IPlug> plugs = getPlugs();
 		for(int i = 0; i < plugs.getItemCount(); i++)
 		{
-			final IActionPlug plug = plugs.getItem(i);
+			final IActionPlug plug = (IActionPlug)plugs.getItem(i);
 			String text = plug.getText() == null ? null : plug.getText().getText();
 			final MenuItem mi = menu.add(text == null ? "" : text);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)

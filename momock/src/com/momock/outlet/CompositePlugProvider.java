@@ -18,30 +18,29 @@ package com.momock.outlet;
 import com.momock.data.DataList;
 import com.momock.data.IDataList;
 
-// TODO : make it data aware
-public class CompositePlugProvider<P extends IPlug> implements ICompositePlugProvider<P>{
-	DataList<IOutlet<P, ?>> outlets = new DataList<IOutlet<P, ?>>();
-	DataList<P> plugs = new DataList<P>();
+public class CompositePlugProvider implements ICompositePlugProvider{
+	DataList<IOutlet> outlets = new DataList<IOutlet>();
+	DataList<IPlug> plugs = new DataList<IPlug>();
 	
 	@Override
-	public IDataList<P> getPlugs() {
+	public IDataList<IPlug> getPlugs() {
 		return plugs;
 	}
 
 	@Override
-	public void addOutlet(IOutlet<P, ?> outlet) {
+	public void addOutlet(IOutlet outlet) {
 		if (!outlets.hasItem(outlet))
 			outlets.addItem(outlet);
 	}
 
 	@Override
-	public void removeOutlet(IOutlet<P, ?> outlet) {
+	public void removeOutlet(IOutlet outlet) {
 		if (outlets.hasItem(outlet))
 			outlets.addItem(outlet);
 	}
 
 	@Override
-	public IDataList<IOutlet<P, ?>> getOutlets() {
+	public IDataList<IOutlet> getOutlets() {
 		return outlets;
 	}
 

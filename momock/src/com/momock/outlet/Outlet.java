@@ -15,106 +15,38 @@
  ******************************************************************************/
 package com.momock.outlet;
 
-import com.momock.data.DataChangedEventArgs;
 import com.momock.data.DataList;
-import com.momock.data.IDataChangedAware;
 import com.momock.data.IDataList;
 import com.momock.data.IDataMutableList;
-import com.momock.event.Event;
-import com.momock.event.IEvent;
-import com.momock.event.IEventHandler;
 
-public class Outlet<P extends IPlug, T> implements IOutlet<P, T>,
-		IDataChangedAware {
-	private IDataMutableList<P> plugs = new DataList<P>();
-	protected P activePlug = null;
+public class Outlet implements IOutlet {
+	private IDataMutableList<IPlug> plugs = new DataList<IPlug>();
+	protected IPlug activePlug = null;
 
 	@Override
-	public P addPlug(P plug) {
+	public IPlug addPlug(IPlug plug) {
 		if (!plugs.hasItem(plug))
 			plugs.addItem(plug);
 		return plug;
 	}
 
 	@Override
-	public void removePlug(P plug) {
+	public void removePlug(IPlug plug) {
 		plugs.removeItem(plug);
 	}
 
 	@Override
-	public IDataList<P> getPlugs() {
+	public IDataList<IPlug> getPlugs() {
 		return provider == null ? plugs : provider.getPlugs();
 	}
 
-	// IDataChangedAware implementation
-	IEvent<DataChangedEventArgs> dataChanged = null;
-
 	@Override
-	public void fireDataChangedEvent(Object sender, DataChangedEventArgs args) {
-		if (sender == null)
-			sender = this;
-		if (dataChanged != null)
-			dataChanged.fireEvent(sender, args);
-	}
-
-	@Override
-	public void addDataChangedHandler(
-			IEventHandler<DataChangedEventArgs> handler) {
-		if (dataChanged == null)
-			dataChanged = new Event<DataChangedEventArgs>();
-		dataChanged.addEventHandler(handler);
-	}
-
-	@Override
-	public void removeDataChangedHandler(
-			IEventHandler<DataChangedEventArgs> handler) {
-		if (dataChanged == null)
-			return;
-		dataChanged.removeEventHandler(handler);
-	}
-
-	// IAttachable implementation
-	T attachedObject = null;
-
-	@Override
-	public T getAttachedObject() {
-		return attachedObject;
-	}
-
-	@Override
-	public void attach(T target) {
-		detach();
-		if (target != null) {
-			attachedObject = target;
-			onAttach(target);
-		}
-	}
-
-	@Override
-	public void detach() {
-		if (getAttachedObject() != null) {
-			onDetach(attachedObject);
-			attachedObject = null;
-		}
-	}
-
-	@Override
-	public void onAttach(T target) {
-
-	}
-
-	@Override
-	public void onDetach(T target) {
-
-	}
-
-	@Override
-	public P getActivePlug() {
+	public IPlug getActivePlug() {
 		return activePlug;
 	}
 
 	@Override
-	public void setActivePlug(P plug) {
+	public void setActivePlug(IPlug plug) {
 		if (activePlug != plug) {
 			if (activePlug != null)
 				onDeactivate(activePlug);
@@ -125,29 +57,29 @@ public class Outlet<P extends IPlug, T> implements IOutlet<P, T>,
 	}
 
 	@Override
-	public void onActivate(P plug) {
+	public void onActivate(IPlug plug) {
 		if (plug != null) plug.onActivate();		
 	}
 
 	@Override
-	public void onDeactivate(P plug) {
+	public void onDeactivate(IPlug plug) {
 		if (plug != null) plug.onDeactivate();		
 	}
 
-	IPlugProvider<P> provider = null;
+	IPlugProvider provider = null;
 	@Override
-	public IPlugProvider<P> getPlugProvider() {
+	public IPlugProvider getPlugProvider() {
 		return provider == null ? this : provider;
 	}
 
 	@Override
-	public void setPlugProvider(IPlugProvider<P> provider) {
+	public void setPlugProvider(IPlugProvider provider) {
 		this.provider = provider;		
 	}
 
 	@Override
-	public int getIndexOf(P plug) {
-		IDataList<P> plugs = getPlugs();
+	public int getIndexOf(IPlug plug) {
+		IDataList<IPlug> plugs = getPlugs();
 		for(int i = 0; i < plugs.getItemCount(); i++){
 			if (plugs.getItem(i) == plug) return i;		
 		}		

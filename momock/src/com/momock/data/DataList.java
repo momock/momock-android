@@ -22,7 +22,7 @@ import com.momock.event.Event;
 import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 
-public class DataList<T> implements IDataMutableList<T>, IDataChangedAware{
+public class DataList<T> implements IDataMutableList<T>{
 	List<T> list = null;
 
 	public DataList(){
@@ -46,36 +46,57 @@ public class DataList<T> implements IDataMutableList<T>, IDataChangedAware{
 	@Override
 	public void addItem(T val) {
 		list.add(val);
+		fireDataChangedEvent();
 	}
 
 	@Override
 	public void insertItem(int index, T val) {
 		list.add(index, val);	
+		fireDataChangedEvent();
 	}
 
 	@Override
 	public void setItem(int index, T val) {
 		list.set(index, val);
+		fireDataChangedEvent();
 	}
 
 	@Override
 	public void removeItem(T val) {
 		list.remove(val);
+		fireDataChangedEvent();
 	}
 
 	@Override
 	public void removeItemAt(int index) {
 		list.remove(index);
+		fireDataChangedEvent();
 	}
 
-	// IDataChangedAware implementation
-	IEvent<DataChangedEventArgs> dataChanged = null;
+	@Override
+	public boolean hasItem(T item) {
+		return list.contains(item);
+	}
 
 	@Override
-	public void fireDataChangedEvent(Object sender, DataChangedEventArgs args) {
-		if (sender == null) sender = this;
-		if (dataChanged != null)
-			dataChanged.fireEvent(sender, args);
+	public void removeAllItems() {
+		list.clear();
+		fireDataChangedEvent();
+	}
+	
+	// IDataChangedAware implementation
+	IEvent<DataChangedEventArgs> dataChanged = null;
+	int batchLevel = 0;
+	boolean isDataDirty = false;
+
+	@Override
+	public void fireDataChangedEvent() {
+		if (batchLevel > 0){
+			isDataDirty = true;
+		} else {
+			if (dataChanged != null)
+				dataChanged.fireEvent(this, new DataChangedEventArgs());
+		}
 	}
 
 	@Override
@@ -95,12 +116,16 @@ public class DataList<T> implements IDataMutableList<T>, IDataChangedAware{
 	}
 
 	@Override
-	public boolean hasItem(T item) {
-		return list.contains(item);
+	public void beginBatchChange() {
+		if (batchLevel == 0)
+			isDataDirty = false;		
+		batchLevel ++;
 	}
 
 	@Override
-	public void removeAllItems() {
-		list.clear();
+	public void endBatchChange() {
+		batchLevel --;
+		if (batchLevel == 0 && isDataDirty)
+			fireDataChangedEvent();
 	}
 }

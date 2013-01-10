@@ -29,8 +29,9 @@ public abstract class DataViewBase<T> implements IDataView<T>{
 	public void refresh(){
 		if (needRefreshData){
 			needRefreshData = false;
+			store.beginBatchChange();
 			onRefresh();
-			store.fireDataChangedEvent(this, new DataChangedEventArgs());
+			store.endBatchChange();
 		}
 	}
 	@Override

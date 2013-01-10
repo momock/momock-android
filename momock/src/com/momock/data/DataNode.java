@@ -206,17 +206,30 @@ public class DataNode implements IDataNode {
 		return list.getItemCount();
 	}
 
+	@Override
+	public boolean hasItem(Object item) {
+		DataList<Object> list = getList();
+		if (list == null)
+			return false;
+		return list.hasItem(item);
+	}
+
 	// IDataChangedAware implementation
 	IEvent<DataChangedEventArgs> dataChanged = null;
+	int batchLevel = 0;
+	boolean isDataDirty = false;
 
 	@Override
-	public void fireDataChangedEvent(Object sender, DataChangedEventArgs args) {
-		if (sender == null)
-			sender = this;
-		if (dataChanged != null)
-			dataChanged.fireEvent(sender, args);
-		if (parent != null)
-			parent.fireDataChangedEvent(sender, args);
+	public void fireDataChangedEvent() {
+		if (batchLevel > 0){
+			isDataDirty = true;
+		} else { 
+			DataChangedEventArgs args = new DataChangedEventArgs();
+			if (dataChanged != null)
+				dataChanged.fireEvent(this, args);
+			if (parent != null)
+				parent.fireDataChangedEvent();
+		}
 	}
 
 	@Override
@@ -236,10 +249,16 @@ public class DataNode implements IDataNode {
 	}
 
 	@Override
-	public boolean hasItem(Object item) {
-		DataList<Object> list = getList();
-		if (list == null)
-			return false;
-		return list.hasItem(item);
+	public void beginBatchChange() {
+		if (batchLevel == 0)
+			isDataDirty = false;
+		batchLevel ++;
+	}
+
+	@Override
+	public void endBatchChange() {
+		batchLevel --;
+		if (batchLevel == 0 && isDataDirty)
+			fireDataChangedEvent();
 	}
 }

@@ -20,93 +20,66 @@ import com.momock.data.IDataList;
 import com.momock.data.IDataMutableList;
 import com.momock.util.Logger;
 
-public class PlaceholderOutlet<P extends IPlug, T> implements IOutlet<P, T> {
-	IDataMutableList<P> plugs = new DataList<P>();
+public class PlaceholderOutlet implements IOutlet {
+	IDataMutableList<IPlug> plugs = new DataList<IPlug>();
 
 	@Override
-	public P addPlug(P plug) {
+	public IPlug addPlug(IPlug plug) {
 		plugs.addItem(plug);
 		return plug;
 	}
 
 	@Override
-	public void removePlug(P plug) {
+	public void removePlug(IPlug plug) {
 		plugs.removeItem(plug);
 	}
 
 	@Override
-	public IDataList<P> getPlugs() {
+	public IDataList<IPlug> getPlugs() {
 		return provider == null ? plugs : provider.getPlugs();
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void transfer(IOutlet outlet) {
 		for (int i = 0; i < plugs.getItemCount(); i++)
 			outlet.addPlug(plugs.getItem(i));
 	}
 
 	@Override
-	public T getAttachedObject() {
-		Logger.check(false, "PlaceholderOutlet.getAttachedObject should not be called!");
-		return null;
-	}
-
-	@Override
-	public void attach(T target) {
-		Logger.check(false, "PlaceholderOutlet.attach should not be called!");
-	}
-
-	@Override
-	public void detach() {
-		Logger.check(false, "PlaceholderOutlet.detach should not be called!");
-	}
-
-	@Override
-	public void onAttach(T target) {
-		Logger.check(false, "PlaceholderOutlet.onAttach should not be called!");
-	}
-
-	@Override
-	public void onDetach(T target) {
-		Logger.check(false, "PlaceholderOutlet.onDetach should not be called!");
-	}
-
-	@Override
-	public P getActivePlug() {
+	public IPlug getActivePlug() {
 		Logger.check(false, "PlaceholderOutlet.getActivePlug should not be called!");
 		return null;
 	}
 
 	@Override
-	public void setActivePlug(P plug) {		
+	public void setActivePlug(IPlug plug) {		
 		Logger.check(false, "PlaceholderOutlet.setActivePlug should not be called!");
 	}
 
 	@Override
-	public void onActivate(P plug) {
+	public void onActivate(IPlug plug) {
 		Logger.check(false, "PlaceholderOutlet.onActivate should not be called!");
 	}
 
 	@Override
-	public void onDeactivate(P plug) {
+	public void onDeactivate(IPlug plug) {
 		Logger.check(false, "PlaceholderOutlet.onDeactivate should not be called!");
 	}
 
 
-	IPlugProvider<P> provider = null;
+	IPlugProvider provider = null;
 	@Override
-	public IPlugProvider<P> getPlugProvider() {
+	public IPlugProvider getPlugProvider() {
 		return provider == null ? this : provider;
 	}
 
 	@Override
-	public void setPlugProvider(IPlugProvider<P> provider) {
+	public void setPlugProvider(IPlugProvider provider) {
 		this.provider = provider;		
 	}
 
 	@Override
-	public int getIndexOf(P plug) {
-		IDataList<P> plugs = getPlugs();
+	public int getIndexOf(IPlug plug) {
+		IDataList<IPlug> plugs = getPlugs();
 		for(int i = 0; i < plugs.getItemCount(); i++){
 			if (plugs.getItem(i) == plug) return i;		
 		}		

@@ -26,22 +26,25 @@ import android.widget.TabWidget;
 import com.momock.data.IDataList;
 import com.momock.holder.TabHolder;
 import com.momock.holder.ViewHolder;
+import com.momock.outlet.IPlug;
 import com.momock.outlet.Outlet;
 import com.momock.util.Logger;
 
-public class PagerTabOutlet extends Outlet<ITabPlug, TabHolder> implements ITabOutlet<TabHolder>{
-	IDataList<ITabPlug> plugs;
-	@Override
-	public void onAttach(TabHolder target) {
+public class PagerTabOutlet extends Outlet implements ITabOutlet{
+	IDataList<IPlug> plugs;
+	TabHolder target;
+
+	public void attach(TabHolder target) {
 		Logger.check(target != null, "Parameter target cannot be null!");
 		Logger.check(target.getTabContent() instanceof ViewPager, "The PagerTabOutlet must contains a ViewPager content!");
+		this.target = target;
 		final TabHost tabHost = target.getTabHost();
 		final ViewPager tabContent = (ViewPager) target.getTabContent();
 		plugs = getPlugs();
 		
 		ViewPager pager = (ViewPager)target.getTabContent();
 		for(int i = 0; i < plugs.getItemCount(); i++){
-			ITabPlug plug = plugs.getItem(i);
+			ITabPlug plug = (ITabPlug)plugs.getItem(i);
 			Logger.check(plug.getContent() instanceof ViewHolder, "The plug of PagerTabOutlet must include a ViewHolder!");
 			((ViewHolder)plug.getContent()).reset(); 
 		}
@@ -59,7 +62,7 @@ public class PagerTabOutlet extends Outlet<ITabPlug, TabHolder> implements ITabO
 
 			@Override
 			public Object instantiateItem(ViewGroup container, int position) {
-				ITabPlug plug = plugs.getItem(position);
+				ITabPlug plug = (ITabPlug)plugs.getItem(position);
 				View view = ((ViewHolder)plug.getContent()).getView();
 	            container.addView(view);
 				return view;
@@ -101,13 +104,13 @@ public class PagerTabOutlet extends Outlet<ITabPlug, TabHolder> implements ITabO
 			@Override
 			public void onTabChanged(String tabId) {
 				int index = tabHost.getCurrentTab();
-				ITabPlug plug = plugs.getItem(index);
+				ITabPlug plug = (ITabPlug)plugs.getItem(index);
 				setActivePlug(plug);
 				tabContent.setCurrentItem(index, true);
 			}
 		});
 		for (int i = 0; i < plugs.getItemCount(); i++) {
-			final ITabPlug plug = plugs.getItem(i);
+			final ITabPlug plug = (ITabPlug)plugs.getItem(i);
 			Logger.check(plug.getContent() instanceof ViewHolder,
 					"Plug in PagerTabOutlet must contains a ViewHolder content!");
 
@@ -131,9 +134,9 @@ public class PagerTabOutlet extends Outlet<ITabPlug, TabHolder> implements ITabO
 	}
 
 	@Override
-	public void onActivate(ITabPlug plug) {
-		if (plug.getContent() != null){
-			TabHost tabHost = getAttachedObject().getTabHost();
+	public void onActivate(IPlug plug) {
+		if (((ITabPlug)plug).getContent() != null){
+			TabHost tabHost = target.getTabHost();
 			tabHost.setCurrentTab(getIndexOf(plug));
 		} else {
 			Logger.debug("The plug of PagerTabOutlet has not been attached !");			

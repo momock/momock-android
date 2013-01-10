@@ -15,20 +15,25 @@
  ******************************************************************************/
 package com.momock.outlet.card;
 
+import java.lang.ref.WeakReference;
+
 import android.view.View;
 import android.widget.FrameLayout;
 
 import com.momock.data.IDataList;
 import com.momock.holder.ViewHolder;
+import com.momock.outlet.IPlug;
 import com.momock.outlet.Outlet;
 import com.momock.util.Logger;
 
-public class CardOutlet extends Outlet<ICardPlug, ViewHolder> implements ICardOutlet<ViewHolder>{
-
+public class CardOutlet extends Outlet implements ICardOutlet{
+	WeakReference<FrameLayout> refContainer = null;
 	@Override
-	public void onActivate(ICardPlug plug) {
+	public void onActivate(IPlug p) {
+		ICardPlug plug = (ICardPlug)p;
+		Logger.check(refContainer != null && refContainer.get() != null, "The CardOutlet has not been attached!");
 		if (plug.getComponent() != null){
-			FrameLayout container = ((FrameLayout)getAttachedObject().getView());
+			FrameLayout container = refContainer.get();
 			for(int i = 0; i < container.getChildCount(); i++){
 				container.getChildAt(i).setVisibility(View.GONE);
 			}
@@ -42,12 +47,11 @@ public class CardOutlet extends Outlet<ICardPlug, ViewHolder> implements ICardOu
 		}
 	}
 
-	@Override
-	public void onAttach(ViewHolder target) {
-		Logger.check(target.getView() instanceof FrameLayout, "The CardOutlet must be used with a FrameLayout!");
-		IDataList<ICardPlug> plugs = getPlugs();
+	public void attach(FrameLayout target) {
+		this.refContainer = new WeakReference<FrameLayout>(target);
+		IDataList<IPlug> plugs = getPlugs();
 		for(int i = 0; i < plugs.getItemCount(); i++){
-			ICardPlug plug = plugs.getItem(i);
+			ICardPlug plug = (ICardPlug)plugs.getItem(i);
 			Logger.check(plug.getComponent() instanceof ViewHolder, "The plug of CardOutlet must include a ViewHolder!");
 			((ViewHolder)plug.getComponent()).reset(); 
 			if (plug == this.getActivePlug()){

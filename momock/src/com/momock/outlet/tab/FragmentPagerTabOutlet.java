@@ -30,16 +30,16 @@ import android.widget.TabWidget;
 import com.momock.data.IDataList;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.FragmentTabHolder;
+import com.momock.outlet.IPlug;
 import com.momock.outlet.Outlet;
 import com.momock.util.Logger;
 
-public class FragmentPagerTabOutlet extends Outlet<ITabPlug, FragmentTabHolder>
-		implements ITabOutlet<FragmentTabHolder> {
-	IDataList<ITabPlug> plugs;
-
-	@Override
-	public void onAttach(final FragmentTabHolder target) {
-		Logger.check(target != null, "Parameter target cannot be null!");
+public class FragmentPagerTabOutlet extends Outlet implements ITabOutlet{
+	IDataList<IPlug> plugs;
+	FragmentTabHolder target;
+	public void attach(final FragmentTabHolder tabHolder) {
+		Logger.check(tabHolder != null, "Parameter tabHolder cannot be null!");
+		this.target = tabHolder;
 		final TabHost tabHost = target.getTabHost();
 		plugs = getPlugs();
 		Logger.check(target.getTabContent() instanceof ViewPager,
@@ -56,7 +56,7 @@ public class FragmentPagerTabOutlet extends Outlet<ITabPlug, FragmentTabHolder>
 
 			@Override
 			public Object instantiateItem(ViewGroup container, int position) {
-				return (FragmentHolder) plugs.getItem(position).getContent();
+				return (FragmentHolder) ((ITabPlug)plugs.getItem(position)).getContent();
 			}
 
 			@Override
@@ -136,13 +136,13 @@ public class FragmentPagerTabOutlet extends Outlet<ITabPlug, FragmentTabHolder>
 			@Override
 			public void onTabChanged(String tabId) {
 				int index = tabHost.getCurrentTab();
-				ITabPlug plug = plugs.getItem(index);
+				ITabPlug plug = (ITabPlug)plugs.getItem(index);
 				setActivePlug(plug);
 				tabContent.setCurrentItem(index, true);
 			}
 		});
 		for (int i = 0; i < plugs.getItemCount(); i++) {
-			final ITabPlug plug = plugs.getItem(i);
+			final ITabPlug plug = (ITabPlug)plugs.getItem(i);
 			Logger.check(plug.getContent() instanceof FragmentHolder,
 					"Plug in PagerTabOutlet must contains a FragmentHolder content!");
 
@@ -166,9 +166,9 @@ public class FragmentPagerTabOutlet extends Outlet<ITabPlug, FragmentTabHolder>
 	}
 
 	@Override
-	public void onActivate(ITabPlug plug) {
-		if (plug.getContent() != null) {
-			TabHost tabHost = getAttachedObject().getTabHost();
+	public void onActivate(IPlug plug) {
+		if (((ITabPlug)plug).getContent() != null) {
+			TabHost tabHost = target.getTabHost();
 			tabHost.setCurrentTab(getIndexOf(plug));
 		} else {
 			Logger.debug("The plug of FragmentPagerTabOutlet has not been attached !");

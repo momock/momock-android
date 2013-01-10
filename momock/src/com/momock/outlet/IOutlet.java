@@ -15,32 +15,22 @@
  ******************************************************************************/
 package com.momock.outlet;
 
-public interface IOutlet<P extends IPlug, T> extends IPlugProvider<P> {
-	IPlugProvider<P> getPlugProvider();
+public interface IOutlet extends IPlugProvider {
+	IPlugProvider getPlugProvider();
 
-	void setPlugProvider(IPlugProvider<P> provider);
+	void setPlugProvider(IPlugProvider provider);
 
-	P addPlug(P plug);
+	IPlug addPlug(IPlug plug);
 
-	void removePlug(P plug);
+	void removePlug(IPlug plug);
 
-	T getAttachedObject();
+	IPlug getActivePlug();
 
-	void attach(T target);
+	void setActivePlug(IPlug plug);
 
-	void detach();
+	void onActivate(IPlug plug);
 
-	void onAttach(T target);
-
-	void onDetach(T target);
-
-	P getActivePlug();
-
-	void setActivePlug(P plug);
-
-	void onActivate(P plug);
-
-	void onDeactivate(P plug);
+	void onDeactivate(IPlug plug);
 	
-	int getIndexOf(P plug);
+	int getIndexOf(IPlug plug);
 }

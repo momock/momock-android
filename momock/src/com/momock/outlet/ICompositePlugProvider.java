@@ -17,12 +17,11 @@ package com.momock.outlet;
 
 import com.momock.data.IDataList;
 
-public interface ICompositePlugProvider<P extends IPlug>
-		extends IPlugProvider<P> {
+public interface ICompositePlugProvider extends IPlugProvider {
 
-	void addOutlet(IOutlet<P, ?> outlet);
+	void addOutlet(IOutlet outlet);
 
-	void removeOutlet(IOutlet<P, ?> outlet);
+	void removeOutlet(IOutlet outlet);
 
-	IDataList<IOutlet<P, ?>> getOutlets();	
+	IDataList<IOutlet> getOutlets();	
 }

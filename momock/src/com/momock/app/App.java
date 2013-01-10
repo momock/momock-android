@@ -247,10 +247,8 @@ public abstract class App extends android.app.Application implements
 			cases.remove(name);
 	}
 
-	@SuppressWarnings("rawtypes")
 	HashMap<String, IOutlet> outlets = new HashMap<String, IOutlet>();
 
-	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public IOutlet getOutlet(String name) {
 		IOutlet outlet = null;
@@ -263,15 +261,14 @@ public abstract class App extends android.app.Application implements
 		return outlet;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public void addOutlet(
 			String name, IOutlet outlet) {
 		Logger.debug("addOutlet : " + name);
 		if (outlets.containsKey(name) && outlet != null) {
-			IOutlet<?, ?> oldOutlet = outlets.get(name);
+			IOutlet oldOutlet = outlets.get(name);
 			if (oldOutlet instanceof PlaceholderOutlet)
-				((PlaceholderOutlet<?, ?>) oldOutlet).transfer(outlet);
+				((PlaceholderOutlet) oldOutlet).transfer(outlet);
 		}
 		if (outlet == null)
 			outlets.remove(name);

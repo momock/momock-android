@@ -45,22 +45,6 @@ public abstract class FragmentHolder implements IComponentHolder{
 			return name;
 		}
 	}
-	public static FragmentHolder get(final Fragment f)
-	{
-		return new FragmentHolder(){
-
-			@Override
-			public Fragment getFragment() {
-				return f;
-			}
-
-			@Override
-			public boolean isCreated() {
-				return true;
-			}
-			
-		};
-	}
 	public static <T extends Fragment> FragmentHolder create(final Class<T> fc, final ICase<Fragment> kase)
 	{
 		return new FragmentHolder(){

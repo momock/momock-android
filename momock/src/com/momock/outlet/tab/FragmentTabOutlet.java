@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.momock.outlet.tab;
 
+import java.lang.ref.WeakReference;
+
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -26,16 +28,18 @@ import android.widget.TabHost.TabContentFactory;
 import com.momock.data.IDataList;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.FragmentTabHolder;
+import com.momock.outlet.IPlug;
 import com.momock.outlet.Outlet;
 import com.momock.util.Logger;
 
-public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> implements ITabOutlet<FragmentTabHolder> {
-	Fragment lastFragment = null;	
-	@Override
-	public void onAttach(final FragmentTabHolder target) {
-		Logger.check(target != null, "Parameter target cannot be null!");
+public class FragmentTabOutlet extends Outlet implements ITabOutlet {
+	WeakReference<Fragment> refLastFragment = null;	
+	FragmentTabHolder target;
+	public void attach(FragmentTabHolder tabHolder) {
+		Logger.check(tabHolder != null, "Parameter tabHolder cannot be null!");
+		this.target = tabHolder;
 		final TabHost tabHost = target.getTabHost();
-		final IDataList<ITabPlug> plugs = getPlugs();
+		final IDataList<IPlug> plugs = getPlugs();
 		tabHost.setup();
 		tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
 			
@@ -47,11 +51,11 @@ public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> imple
 					public void run() {
 						int index = tabHost.getCurrentTab();
 						int id = target.getTabContentId();
-						ITabPlug plug = plugs.getItem(index);
+						ITabPlug plug = (ITabPlug)plugs.getItem(index);
 						setActivePlug(plug);
-						FragmentManager fm = getAttachedObject().getFragmentManager();
+						FragmentManager fm = target.getFragmentManager();
 						FragmentTransaction ft = fm.beginTransaction();
-
+						Fragment lastFragment = refLastFragment == null || refLastFragment.get() == null ? null : refLastFragment.get();
 						if (lastFragment != null) {
 							ft.detach(lastFragment);
 						}
@@ -63,9 +67,9 @@ public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> imple
 								ft.add(id, fh.getFragment());
 							else 
 								ft.attach(fh.getFragment());	
-							lastFragment = fh.getFragment();
+							refLastFragment = new WeakReference<Fragment>(fh.getFragment());
 						} else {
-							lastFragment = null;
+							refLastFragment = null;
 						}
 						ft.commit();
 						fm.executePendingTransactions();
@@ -76,7 +80,7 @@ public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> imple
 		});
 		for(int i = 0; i < plugs.getItemCount(); i++)
 		{
-			final ITabPlug plug = plugs.getItem(i);
+			final ITabPlug plug = (ITabPlug)plugs.getItem(i);
 			if (plug.getContent() instanceof FragmentHolder)
 			{
 		        TabHost.TabSpec spec = tabHost.newTabSpec("" + i);
@@ -100,9 +104,9 @@ public class FragmentTabOutlet extends Outlet<ITabPlug, FragmentTabHolder> imple
 	}
 
 	@Override
-	public void onActivate(ITabPlug plug) {
-		if (plug.getContent() != null && getAttachedObject() != null){
-			TabHost tabHost = getAttachedObject().getTabHost();
+	public void onActivate(IPlug plug) {
+		if (((ITabPlug)plug).getContent() != null && target != null){
+			TabHost tabHost = target.getTabHost();
 			tabHost.setCurrentTab(getIndexOf(plug));
 		} 
 	}

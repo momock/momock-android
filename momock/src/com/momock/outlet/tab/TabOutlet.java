@@ -22,20 +22,22 @@ import android.widget.TabHost.TabContentFactory;
 import com.momock.data.IDataList;
 import com.momock.holder.TabHolder;
 import com.momock.holder.ViewHolder;
+import com.momock.outlet.IPlug;
 import com.momock.outlet.Outlet;
 import com.momock.util.Logger;
 
-public class TabOutlet extends Outlet<ITabPlug, TabHolder> implements ITabOutlet<TabHolder>{
-	IDataList<ITabPlug> plugs;
-	@Override
-	public void onAttach(TabHolder target) {
+public class TabOutlet extends Outlet implements ITabOutlet{
+	IDataList<IPlug> plugs;
+	TabHolder target;
+	public void attach(TabHolder target) {
 		Logger.check(target != null, "Parameter target cannot be null!");
+		this.target = target;
 		final TabHost tabHost = target.getTabHost();
 		tabHost.setup();
 		plugs = getPlugs();
 		for(int i = 0; i < plugs.getItemCount(); i++)
 		{
-			final ITabPlug plug = plugs.getItem(i);
+			final ITabPlug plug = (ITabPlug)plugs.getItem(i);
 			Logger.check(plug.getContent() instanceof ViewHolder, "TabOutlet could only contains ViewHolder content");
 			((ViewHolder)plug.getContent()).reset();
 	        TabHost.TabSpec spec = tabHost.newTabSpec("");
@@ -58,15 +60,14 @@ public class TabOutlet extends Outlet<ITabPlug, TabHolder> implements ITabOutlet
 			@Override
 			public void onTabChanged(String tabId) {
 				int index = tabHost.getCurrentTab();
-				ITabPlug plug = plugs.getItem(index);
-				setActivePlug(plug);
+				setActivePlug(plugs.getItem(index));
 			}
 		});
 	}
 	@Override
-	public void onActivate(ITabPlug plug) {
-		if (plug.getContent() != null){
-			TabHost tabHost = getAttachedObject().getTabHost();
+	public void onActivate(IPlug plug) {
+		if (((ITabPlug)plug).getContent() != null){
+			TabHost tabHost = target.getTabHost();
 			tabHost.setCurrentTab(getIndexOf(plug));
 		} else {
 			Logger.debug("The plug of TabOutlet has not been attached !");			

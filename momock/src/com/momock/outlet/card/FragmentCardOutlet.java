@@ -15,48 +15,56 @@
  ******************************************************************************/
 package com.momock.outlet.card;
 
+import java.lang.ref.WeakReference;
+
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
-import com.momock.holder.FragmentContainerHolder;
 import com.momock.holder.FragmentHolder;
+import com.momock.holder.FragmentManagerHolder;
+import com.momock.holder.IComponentHolder;
+import com.momock.outlet.IPlug;
 import com.momock.outlet.Outlet;
 
-public class FragmentCardOutlet extends Outlet<ICardPlug, FragmentContainerHolder> implements ICardOutlet<FragmentContainerHolder>{	
-	Fragment lastFragment = null;
-	@Override
-	public void onAttach(FragmentContainerHolder target) {
+public class FragmentCardOutlet extends Outlet implements ICardOutlet{	
+	WeakReference<Fragment> refLastFragment = null;
+	FragmentManagerHolder fmh;
+	int containerId;
+	
+	public void attach(FragmentManagerHolder fmh, int containerId) {
+		this.fmh = fmh;
+		this.containerId = containerId;
 		setActivePlug(getActivePlug());
 	}
 	
 	@Override
-	public void setActivePlug(final ICardPlug plug) {
+	public void setActivePlug(final IPlug plug) {
 		activePlug = plug;
-		if (getAttachedObject() != null && plug != null)
+		if (fmh != null && plug != null)
 		{
 			new Handler().post(new Runnable(){
 
 				@Override
 				public void run() {
-
-					int id = getAttachedObject().getFragmentContainerId();
-					FragmentManager fm = getAttachedObject().getFragmentManager();
+					FragmentManager fm = fmh.getFragmentManager();
 					FragmentTransaction ft = fm.beginTransaction();
+					Fragment lastFragment = refLastFragment == null || refLastFragment.get() == null ? null : refLastFragment.get();
 					if (lastFragment != null) {
 						ft.detach(lastFragment);
 					}
-					if (plug != null && plug.getComponent() instanceof FragmentHolder)
+					IComponentHolder ch = ((ICardPlug)plug).getComponent();
+					if (plug != null && ch instanceof FragmentHolder)
 					{
-						FragmentHolder fh = (FragmentHolder)plug.getComponent();
+						FragmentHolder fh = (FragmentHolder)ch;
 						if (!fh.isCreated())
-							ft.add(id, fh.getFragment());
+							ft.add(containerId, fh.getFragment());
 						else 
 							ft.attach(fh.getFragment());	
-						lastFragment = fh.getFragment();
+						refLastFragment = new WeakReference<Fragment>(fh.getFragment());
 					} else {
-						lastFragment = null;
+						refLastFragment = null;
 					}
 					ft.commit();
 					fm.executePendingTransactions();

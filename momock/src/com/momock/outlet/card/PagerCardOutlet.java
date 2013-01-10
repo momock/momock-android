@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.momock.outlet.card;
 
+import java.lang.ref.WeakReference;
+
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -22,15 +24,16 @@ import android.view.ViewGroup;
 
 import com.momock.data.IDataList;
 import com.momock.holder.ViewHolder;
+import com.momock.outlet.IPlug;
 import com.momock.outlet.Outlet;
 import com.momock.util.Logger;
 
-public class PagerCardOutlet extends Outlet<ICardPlug, ViewHolder> implements ICardOutlet<ViewHolder>{
-	IDataList<ICardPlug> plugs;
-	@Override
-	public void onAttach(ViewHolder target) {
-		Logger.check(target.getView() instanceof ViewPager, "The PagerCardOutlet must be attached to a ViewPager!");
-		ViewPager pager = (ViewPager)target.getView();		
+public class PagerCardOutlet extends Outlet implements ICardOutlet{
+	IDataList<IPlug> plugs;
+	WeakReference<ViewPager> refTarget = null;
+	public void onAttach(ViewPager target) {
+		refTarget = new WeakReference<ViewPager>(target);
+		ViewPager pager = target;
 		pager.setAdapter(new PagerAdapter(){
 
 			@Override
@@ -45,7 +48,7 @@ public class PagerCardOutlet extends Outlet<ICardPlug, ViewHolder> implements IC
 
 			@Override
 			public Object instantiateItem(ViewGroup container, int position) {
-				ICardPlug plug = plugs.getItem(position);
+				ICardPlug plug = (ICardPlug)plugs.getItem(position);
 				View view = ((ViewHolder)plug.getComponent()).getView();
 	            container.addView(view);
 				return view;
@@ -59,7 +62,7 @@ public class PagerCardOutlet extends Outlet<ICardPlug, ViewHolder> implements IC
 		});
 		plugs = getPlugs();
 		for(int i = 0; i < plugs.getItemCount(); i++){
-			ICardPlug plug = plugs.getItem(i);
+			ICardPlug plug = (ICardPlug)plugs.getItem(i);
 			Logger.check(plug.getComponent() instanceof ViewHolder, "The plug of PagerCardOutlet must include a ViewHolder!");
 			((ViewHolder)plug.getComponent()).reset(); 
 			if (plug == this.getActivePlug()){
@@ -69,9 +72,9 @@ public class PagerCardOutlet extends Outlet<ICardPlug, ViewHolder> implements IC
 	}
 
 	@Override
-	public void onActivate(ICardPlug plug) {
-		if (plug.getComponent() != null){
-			ViewPager pager = (ViewPager)getAttachedObject().getView();
+	public void onActivate(IPlug plug) {
+		if (((ICardPlug)plug).getComponent() != null){
+			ViewPager pager = refTarget.get();
 			pager.setCurrentItem(getIndexOf(plug), true);
 		} else {
 			Logger.debug("The active plug in PagerCardOutlet has not been attached!");

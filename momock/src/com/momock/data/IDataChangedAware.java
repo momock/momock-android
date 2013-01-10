@@ -18,7 +18,9 @@ package com.momock.data;
 import com.momock.event.IEventHandler;
 
 public interface IDataChangedAware {
-	void fireDataChangedEvent(Object sender, DataChangedEventArgs args);
+	void beginBatchChange();
+	void fireDataChangedEvent();
+	void endBatchChange();
 	void addDataChangedHandler(IEventHandler<DataChangedEventArgs> handler);
 	void removeDataChangedHandler(IEventHandler<DataChangedEventArgs> handler);
 }
