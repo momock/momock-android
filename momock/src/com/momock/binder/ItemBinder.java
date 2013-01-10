@@ -35,7 +35,6 @@ public class ItemBinder extends ViewBinder implements IItemBinder{
 		if (view == null) {
 			view = ViewHolder.create(container.getContainerView(), itemViewId).getView();
 		}
-		view.setTag(item);
 		bind(view, item, container);
 		return view;
 	}

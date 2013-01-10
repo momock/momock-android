@@ -46,7 +46,7 @@ public class AsyncTaskService implements IAsyncTaskService {
 
 	@Override
 	public void start() {
-		executor = new ThreadPoolExecutor(3, 100, 30, TimeUnit.SECONDS, worksQueue, executionHandler);
+		executor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, worksQueue, executionHandler);
 		executor.allowCoreThreadTimeOut(true);
 	}
 

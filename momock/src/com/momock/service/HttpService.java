@@ -48,6 +48,8 @@ public class HttpService implements IHttpService {
 	AndroidHttpClient httpClient = null;
 	@Inject
 	IUITaskService uiTaskService;
+	@Inject
+	IAsyncTaskService asyncTaskService;
 	
 	public HttpService(){
 		
@@ -91,7 +93,7 @@ public class HttpService implements IHttpService {
 	}
 	@Override
 	public HttpSession download(String url, File file) {
-		return new HttpSession(httpClient, url, file, uiTaskService);
+		return new HttpSession(httpClient, url, file, uiTaskService, asyncTaskService);
 	}
 	@Override
 	public HttpSession get(String url) {
@@ -105,7 +107,7 @@ public class HttpService implements IHttpService {
 	public HttpSession get(String url, Header[] headers, IDataMap<String, String> params) {
 		HttpGet httpGet = new HttpGet(HttpHelper.getFullUrl(url, params));	
 		if (headers != null) httpGet.setHeaders(headers);
-		return new HttpSession(httpClient, httpGet, uiTaskService);
+		return new HttpSession(httpClient, httpGet, uiTaskService, asyncTaskService);
 	}
 	@Override
 	public HttpSession post(String url) {
@@ -121,14 +123,14 @@ public class HttpService implements IHttpService {
 		HttpEntity entity = getHttpEntity(params);
 		if (entity != null) httpPost.setEntity(entity);
 		if (headers != null) httpPost.setHeaders(headers);
-		return new HttpSession(httpClient, httpPost, uiTaskService);
+		return new HttpSession(httpClient, httpPost, uiTaskService, asyncTaskService);
 	}
 	@Override
 	public HttpSession post(String url, Header[] headers, HttpEntity entity) {
 		HttpPost httpPost = new HttpPost(url);
 		if (entity != null) httpPost.setEntity(entity);
 		if (headers != null) httpPost.setHeaders(headers);
-		return new HttpSession(httpClient, httpPost, uiTaskService);
+		return new HttpSession(httpClient, httpPost, uiTaskService, asyncTaskService);
 	}
 	@Override
 	public HttpSession put(String url) {
@@ -144,14 +146,14 @@ public class HttpService implements IHttpService {
 		HttpEntity entity = getHttpEntity(params);
 		if (entity != null) httpPut.setEntity(entity);
 		if (headers != null) httpPut.setHeaders(headers);
-		return new HttpSession(httpClient, httpPut, uiTaskService);
+		return new HttpSession(httpClient, httpPut, uiTaskService, asyncTaskService);
 	}
 	@Override
 	public HttpSession put(String url, Header[] headers, HttpEntity entity) {
 		HttpPut httpPut = new HttpPut(url);
 		if (entity != null) httpPut.setEntity(entity);
 		if (headers != null) httpPut.setHeaders(headers);
-		return new HttpSession(httpClient, httpPut, uiTaskService);
+		return new HttpSession(httpClient, httpPut, uiTaskService, asyncTaskService);
 	}
 	@Override
 	public HttpSession delete(String url) {
@@ -165,7 +167,7 @@ public class HttpService implements IHttpService {
 	public HttpSession delete(String url, Header[] headers,	IDataMap<String, String> params) {
 		HttpDelete httpDelete = new HttpDelete(HttpHelper.getFullUrl(url, params));	
 		if (headers != null) httpDelete.setHeaders(headers);
-		return new HttpSession(httpClient, httpDelete, uiTaskService);
+		return new HttpSession(httpClient, httpDelete, uiTaskService, asyncTaskService);
 	}
 	@Override
 	public Class<?>[] getDependencyServices() {

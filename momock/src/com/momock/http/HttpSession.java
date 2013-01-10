@@ -41,12 +41,9 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 
-import android.annotation.TargetApi;
-import android.os.AsyncTask;
-import android.os.Build;
-
 import com.momock.event.Event;
 import com.momock.event.EventArgs;
+import com.momock.service.IAsyncTaskService;
 import com.momock.service.IUITaskService;
 import com.momock.util.Convert;
 import com.momock.util.FileHelper;
@@ -107,24 +104,26 @@ public class HttpSession{
 	boolean downloadMode = false;
 	byte[] result = null;
 	IUITaskService uiTaskService;
+	IAsyncTaskService asyncTaskService;
 	
 	Event<StateChangedEventArgs> stateChangedEvent = new Event<StateChangedEventArgs>();
 
-	/*
+	
 	public HttpSession(HttpClient httpClient, HttpRequestBase request){
-		this(httpClient, request, null);
-	}*/
-	public HttpSession(HttpClient httpClient, HttpRequestBase request, IUITaskService uiTaskService) {
+		this(httpClient, request, null, null);
+	}
+	public HttpSession(HttpClient httpClient, HttpRequestBase request, IUITaskService uiTaskService, IAsyncTaskService asyncTaskService) {
 		this.url = request.getURI().toString();
 		this.httpClient = httpClient;
 		this.request = request;
 		this.uiTaskService = uiTaskService;
+		this.asyncTaskService = asyncTaskService;
 	}
-	/*
+	
 	public HttpSession(HttpClient httpClient, String url, File file){
-		this(httpClient, url, file, null);
-	}*/
-	public HttpSession(HttpClient httpClient, String url, File file, IUITaskService uiTaskService) {
+		this(httpClient, url, file, null, null);
+	}
+	public HttpSession(HttpClient httpClient, String url, File file, IUITaskService uiTaskService, IAsyncTaskService asyncTaskService) {
 		Logger.check(file != null, "The file parameter must not be null!");
 		this.httpClient = httpClient;
 		this.url = getNormalizedUrl(url);
@@ -132,6 +131,7 @@ public class HttpSession{
 		this.fileData = new File(file.getPath() + ".data");
 		this.fileInfo = new File(file.getPath() + ".info");
 		this.uiTaskService = uiTaskService;
+		this.asyncTaskService = asyncTaskService;
 
 		DownloadInfo di = getDownloadInfo(file);
 		if (di != null){
@@ -393,120 +393,99 @@ public class HttpSession{
 
 			@Override
 			public void run() {
+				try {
+					httpClient.execute(request, new ResponseHandler<Object>() {
 
-				AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>(){
+						@Override
+						public Object handleResponse(HttpResponse response) {
 
-					@Override
-					protected Void doInBackground(Void... params) {
-						try {
-							httpClient.execute(request, new ResponseHandler<Object>() {
-
-								@Override
-								public Object handleResponse(HttpResponse response) {
-
-									Logger.debug("Response headers of " + url + " : ");
-									for(Header header : response.getAllHeaders()){
-										Logger.debug(header.getName() + " = " + header.getValue());
-									}
-									
-									headers = new TreeMap<String, List<String>>();
-									for (Header h : response.getAllHeaders()) {
-										String key = h.getName();
-										List<String> vals = null;
-										if (headers.containsKey(key))
-											vals = headers.get(key);
-										else {
-											vals = new ArrayList<String>();
-											headers.put(key, vals);
-										}
-										vals.add(h.getValue());
-									}
-									if (downloadMode){
-										writeHeaders();
-									}
-									resetFromHeaders();
-									setState(STATE_HEADER_RECEIVED);
-									HttpEntity entity = response.getEntity();
-									if (entity != null) {
-										try {
-											InputStream instream = entity.getContent();
-											Header contentEncoding = response
-													.getFirstHeader("Content-Encoding");
-											if (contentEncoding != null
-													&& contentEncoding.getValue()
-															.equalsIgnoreCase("gzip")) {
-												instream = new GZIPInputStream(instream);
-											}
-											InputStream input = new BufferedInputStream(
-													instream);
-											OutputStream output = downloadMode ? new FileOutputStream(fileData, fileData.exists()) : new ByteArrayOutputStream();
-
-											byte data[] = new byte[1024 * 10];
-											int count;
-											int percent = -1;
-											while ((count = input.read(data)) != -1) {
-												downloadedLength += count;
-												if (contentLength > 0 && downloadedLength * 100 / contentLength != percent) {
-													percent = (int) (downloadedLength * 100 / contentLength);
-													setState(STATE_CONTENT_RECEIVING);
-												}
-												output.write(data, 0, count);
-											}
-
-											output.flush();
-											if (!downloadMode) result = ((ByteArrayOutputStream)output).toByteArray();
-											output.close();
-											instream.close();
-
-											if (downloadMode){
-												if (isDownloaded() || isChunked()){
-													if (file.exists())
-														file.delete();
-													FileHelper.copyFile(fileData, file);
-													fileData.delete();
-													fileInfo.delete();
-													setState(STATE_CONTENT_RECEIVED);	
-												}
-											} else {
-												setState(STATE_CONTENT_RECEIVED);														
-											}								
-										} catch (Exception e) {
-											error = e;
-											Logger.error(e);
-											setState(STATE_ERROR);
-										} finally {
-											setState(STATE_FINISHED);
-										}
-									}
-									return null;
+							Logger.debug("Response headers of " + url + " : ");
+							for(Header header : response.getAllHeaders()){
+								Logger.debug(header.getName() + " = " + header.getValue());
+							}
+							
+							headers = new TreeMap<String, List<String>>();
+							for (Header h : response.getAllHeaders()) {
+								String key = h.getName();
+								List<String> vals = null;
+								if (headers.containsKey(key))
+									vals = headers.get(key);
+								else {
+									vals = new ArrayList<String>();
+									headers.put(key, vals);
 								}
-							});
-						} catch (Exception e) {
-							error = e;
-							Logger.error(e);
-							setState(STATE_ERROR);
-							setState(STATE_FINISHED);		
+								vals.add(h.getValue());
+							}
+							if (downloadMode){
+								writeHeaders();
+							}
+							resetFromHeaders();
+							setState(STATE_HEADER_RECEIVED);
+							HttpEntity entity = response.getEntity();
+							if (entity != null) {
+								try {
+									InputStream instream = entity.getContent();
+									Header contentEncoding = response
+											.getFirstHeader("Content-Encoding");
+									if (contentEncoding != null
+											&& contentEncoding.getValue()
+													.equalsIgnoreCase("gzip")) {
+										instream = new GZIPInputStream(instream);
+									}
+									InputStream input = new BufferedInputStream(
+											instream);
+									OutputStream output = downloadMode ? new FileOutputStream(fileData, fileData.exists()) : new ByteArrayOutputStream();
+
+									byte data[] = new byte[1024 * 10];
+									int count;
+									int percent = -1;
+									while ((count = input.read(data)) != -1) {
+										downloadedLength += count;
+										if (contentLength > 0 && downloadedLength * 100 / contentLength != percent) {
+											percent = (int) (downloadedLength * 100 / contentLength);
+											setState(STATE_CONTENT_RECEIVING);
+										}
+										output.write(data, 0, count);
+									}
+
+									output.flush();
+									if (!downloadMode) result = ((ByteArrayOutputStream)output).toByteArray();
+									output.close();
+									instream.close();
+
+									if (downloadMode){
+										if (isDownloaded() || isChunked()){
+											if (file.exists())
+												file.delete();
+											FileHelper.copyFile(fileData, file);
+											fileData.delete();
+											fileInfo.delete();
+											setState(STATE_CONTENT_RECEIVED);	
+										}
+									} else {
+										setState(STATE_CONTENT_RECEIVED);														
+									}								
+								} catch (Exception e) {
+									error = e;
+									Logger.error(e);
+									setState(STATE_ERROR);
+								} finally {
+									setState(STATE_FINISHED);
+								}
+							}
+							return null;
 						}
-						return null;
-					}					
-
-				};
-
-		        if (Build.VERSION.SDK_INT < 4) {
-		        	task.execute();
-		        } else if (Build.VERSION.SDK_INT < 11) {
-		        	task.execute();
-		        } else {
-		        	executeTaskOnExecutor(task);
-		        }
-			}
-			@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-			void executeTaskOnExecutor(AsyncTask<Void, Void, Void> task){
-	        	task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);				
-			}
+					});
+				} catch (Exception e) {
+					error = e;
+					Logger.error(e);
+					setState(STATE_ERROR);
+					setState(STATE_FINISHED);		
+				}
+			};
 		};
-		if (uiTaskService != null)
-			uiTaskService.run(task);
+		if (asyncTaskService != null)
+			asyncTaskService.run(task);
 		else
 			task.run();
 	}

@@ -72,7 +72,8 @@ public class PlainAdapterViewBinder<T extends IPlainAdapterView> extends Contain
 				@Override
 				public View getView(int position, View convertView,	ViewGroup parent) {
 					Object item = getItem(position);
-					View view = itemBinder.onCreateItemView(convertView, item, PlainAdapterViewBinder.this);					
+					View view = itemBinder.onCreateItemView(convertView, item, PlainAdapterViewBinder.this);
+					view.setTag(item);
 					return view;
 				}
 

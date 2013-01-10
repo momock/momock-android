@@ -87,7 +87,8 @@ public class AdapterViewBinder<T extends AdapterView<?>> extends ContainerBinder
 				public View getView(int position, View convertView,
 						ViewGroup parent) {
 					Object item = getItem(position);
-					View view = itemBinder.onCreateItemView(convertView, item, AdapterViewBinder.this);					
+					View view = itemBinder.onCreateItemView(convertView, item, AdapterViewBinder.this);
+					view.setTag(item);
 					return view;
 				}
 

@@ -69,7 +69,12 @@ public abstract class ImageHolder implements IHolder{
 			@Override
 			public BitmapDrawable getAsDrawable() {
 				Logger.check(theResources != null, "The Resources must not be null!");
-				return (BitmapDrawable)theResources.getDrawable(id);
+				try{
+					return (BitmapDrawable)theResources.getDrawable(id);					
+				} catch (OutOfMemoryError e){
+					Logger.error(e);
+					return null;
+				}
 			}
 
 			@Override

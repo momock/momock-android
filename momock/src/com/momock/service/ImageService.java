@@ -272,7 +272,7 @@ public class ImageService implements IImageService {
 		public void process(Object sender, ImageEventArgs args) {
 			if (binder.getContainerView() != null && binder.getViewOf(item) != null){
 				binder.getItemBinder().onCreateItemView(binder.getViewOf(item), item, binder);
-			}
+			} 
 		}
 
 	}
