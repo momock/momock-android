@@ -19,7 +19,7 @@ import android.view.Menu;
 
 import com.momock.app.App;
 import com.momock.app.CaseActivity;
-import com.momock.outlet.action.IActionOutlet;
+import com.momock.outlet.action.MenuActionOutlet;
 import com.momock.samples.CaseNames;
 import com.momock.samples.OutletNames;
 import com.momock.samples.PlugNames;
@@ -33,10 +33,9 @@ public class MainActivity extends CaseActivity {
         setContentView(R.layout.case_main);        
     }
 
-    @SuppressWarnings("unchecked")
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
-    	IActionOutlet<Menu> outlet = (IActionOutlet<Menu>)getCase().getOutlet(OutletNames.MAIN_MENU);
+    	MenuActionOutlet outlet = (MenuActionOutlet)getCase().getOutlet(OutletNames.MAIN_MENU);
     	outlet.attach(menu);
         return true;
     }

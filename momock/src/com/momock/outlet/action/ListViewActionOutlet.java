@@ -20,26 +20,29 @@ import android.widget.ListView;
 import com.momock.binder.container.ListViewBinder;
 import com.momock.event.IEventHandler;
 import com.momock.event.ItemEventArgs;
+import com.momock.holder.ViewHolder;
 import com.momock.outlet.Outlet;
+import com.momock.util.Logger;
 
-public abstract class ListViewActionOutlet extends Outlet implements IActionOutlet{
-	public abstract void attach(ListView target);
-	public static ListViewActionOutlet createSimple() {
-		return new ListViewActionOutlet() {
+public class ListViewActionOutlet extends Outlet implements IActionOutlet{
+	ListViewBinder binder;
+	public ListViewActionOutlet(ListViewBinder binder){
+		this.binder = binder;
+		binder.getItemClickedEvent().addEventHandler(new IEventHandler<ItemEventArgs>() {
+
 			@Override
-			public void attach(ListView target) {
-				ListViewBinder binder = ListViewBinder.getSimple("Text");
-				binder.getItemClickedEvent().addEventHandler(new IEventHandler<ItemEventArgs>() {
-
-					@Override
-					public void process(Object sender, ItemEventArgs args) {
-						IActionPlug plug = (IActionPlug) args.getItem();
-						plug.getExecuteEvent().fireEvent(plug, null);
-					}
-
-				});
-				binder.bind(target, getPlugs());
+			public void process(Object sender, ItemEventArgs args) {
+				IActionPlug plug = (IActionPlug) args.getItem();
+				plug.getExecuteEvent().fireEvent(plug, null);
 			}
-		};
+
+		});
+	}	
+	public void attach(ViewHolder target){
+		Logger.check(target.getView() instanceof ListView, "Parameter type error!");
+		attach((ListView)target.getView());
+	}
+	public void attach(ListView target){		
+		binder.bind(target, getPlugs());
 	}
 }

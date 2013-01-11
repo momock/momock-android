@@ -18,7 +18,7 @@ package com.momock.samples.cases.main;
 import com.momock.app.App;
 import com.momock.app.Case;
 import com.momock.app.CaseActivity;
-import com.momock.holder.FragmentContainerHolder;
+import com.momock.holder.FragmentManagerHolder;
 import com.momock.outlet.action.MenuActionOutlet;
 import com.momock.outlet.card.FragmentCardOutlet;
 import com.momock.samples.OutletNames;
@@ -39,12 +39,11 @@ public class MainCase extends Case<CaseActivity>{
 	public MainCase(String name) {
 		super(name);
 	}
-
+	FragmentCardOutlet mainConainerOutlet = new FragmentCardOutlet(R.id.fragment_content);
 	@Override
 	public void onCreate() {		
 		App.get().addOutlet(OutletNames.MAIN_MENU, new MenuActionOutlet());
-			
-		addOutlet(OutletNames.MAIN_CONTAINER, new FragmentCardOutlet());
+		addOutlet(OutletNames.MAIN_CONTAINER, mainConainerOutlet);
 
 		addCase(new MainMenuCase(this));
 		addCase(new ListViewCase(this));
@@ -60,7 +59,7 @@ public class MainCase extends Case<CaseActivity>{
 
 	@Override
 	public void onAttach(CaseActivity target) {
-        getOutlet(OutletNames.MAIN_CONTAINER).attach(FragmentContainerHolder.get(this, R.id.fragment_content));
+		mainConainerOutlet.attach(FragmentManagerHolder.get(this));
         getCase(MainMenuCase.class.getName()).run();
 	}
 

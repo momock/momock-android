@@ -20,13 +20,14 @@ import android.support.v4.app.Fragment;
 import com.momock.app.App;
 import com.momock.app.Case;
 import com.momock.app.ICase;
+import com.momock.binder.container.ListViewBinder;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.ViewHolder;
 import com.momock.outlet.action.ListViewActionOutlet;
 import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
-import com.momock.samples.PlugNames;
 import com.momock.samples.OutletNames;
+import com.momock.samples.PlugNames;
 import com.momock.samples.R;
 
 public class MainMenuCase extends Case<Fragment> {
@@ -34,10 +35,10 @@ public class MainMenuCase extends Case<Fragment> {
 	public MainMenuCase(ICase<?> parent) {
 		super(parent);
 	}
-
+	ListViewActionOutlet samplesOutlet = new ListViewActionOutlet(ListViewBinder.getSimple("Text"));
 	@Override
 	public void onCreate() {
-		getParent().addOutlet(OutletNames.SAMPLES, ListViewActionOutlet.createSimple());
+		getParent().addOutlet(OutletNames.SAMPLES, samplesOutlet);
 		
 		App.get().addPlug(PlugNames.MAIN_MENU, self);
 	}
@@ -50,7 +51,7 @@ public class MainMenuCase extends Case<Fragment> {
 
 	@Override
 	public void onAttach(Fragment target) {
-        getOutlet(OutletNames.SAMPLES).attach(ViewHolder.get(target, R.id.lvMainMenu)); 
+		samplesOutlet.attach(ViewHolder.get(target, R.id.lvMainMenu)); 
 	}
 
 }

@@ -29,6 +29,7 @@ import com.momock.holder.FragmentHolder;
 import com.momock.holder.TextHolder;
 import com.momock.holder.ViewHolder;
 import com.momock.outlet.IOutlet;
+import com.momock.outlet.IPlug;
 import com.momock.outlet.action.ActionPlug;
 import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
@@ -44,7 +45,6 @@ public class PagerCardCase extends Case<Fragment> implements View.OnClickListene
 
 	PagerCardOutlet cards = new PagerCardOutlet();
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void onCreate() {
 		IOutlet outlet = getParent().getOutlet(OutletNames.SAMPLES);
@@ -81,7 +81,7 @@ public class PagerCardCase extends Case<Fragment> implements View.OnClickListene
 
 	@Override
 	public void onClick(View v) {
-		IDataList<ICardPlug> plugs = cards.getPlugs();
+		IDataList<IPlug> plugs = cards.getPlugs();
 		switch (v.getId()) {
 		case R.id.button1:
 			cards.setActivePlug(plugs.getItem(0));

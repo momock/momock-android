@@ -26,8 +26,8 @@ import com.momock.event.IEventHandler;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.TextHolder;
 import com.momock.holder.ViewHolder;
+import com.momock.outlet.IOutlet;
 import com.momock.outlet.action.ActionPlug;
-import com.momock.outlet.action.IActionOutlet;
 import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
 import com.momock.samples.OutletNames;
@@ -42,7 +42,7 @@ public class GridViewCase  extends Case<Fragment>{
 	
 	@Override
 	public void onCreate() {
-		IActionOutlet<?> outlet = (IActionOutlet<?>)getParent().getOutlet(OutletNames.SAMPLES);
+		IOutlet outlet = getParent().getOutlet(OutletNames.SAMPLES);
 		outlet.addPlug(ActionPlug.create(TextHolder.get("GridView Sample"))
 				.addExecuteEventHandler(new IEventHandler<EventArgs>() {
 					@Override

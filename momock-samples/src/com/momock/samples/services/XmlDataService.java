@@ -22,7 +22,6 @@ import com.momock.data.DataList;
 import com.momock.data.DataNodeView;
 import com.momock.data.IDataList;
 import com.momock.data.IDataNode;
-import com.momock.data.IDataView;
 import com.momock.samples.model.Category;
 import com.momock.samples.model.Product;
 import com.momock.util.Logger;

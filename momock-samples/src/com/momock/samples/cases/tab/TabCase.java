@@ -44,7 +44,6 @@ public class TabCase extends Case<Fragment> {
 
 	TabOutlet tabs = new TabOutlet();
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void onCreate() {
 		IOutlet outlet = getParent().getOutlet(OutletNames.SAMPLES);

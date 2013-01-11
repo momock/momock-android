@@ -32,10 +32,11 @@ public class FragmentCardOutlet extends Outlet implements ICardOutlet{
 	WeakReference<Fragment> refLastFragment = null;
 	FragmentManagerHolder fmh;
 	int containerId;
-	
-	public void attach(FragmentManagerHolder fmh, int containerId) {
+	public FragmentCardOutlet(int containerId){
+		this.containerId = containerId;		
+	}
+	public void attach(FragmentManagerHolder fmh) {
 		this.fmh = fmh;
-		this.containerId = containerId;
 		setActivePlug(getActivePlug());
 	}
 	

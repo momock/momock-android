@@ -23,13 +23,19 @@ import android.view.MenuItem;
 import com.momock.data.IDataList;
 import com.momock.event.EventArgs;
 import com.momock.event.IEvent;
+import com.momock.holder.ViewHolder;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.Outlet;
+import com.momock.util.Logger;
 
 public class MenuActionOutlet extends Outlet implements IActionOutlet{
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	void enableShowAsAction(final MenuItem mi){
 		mi.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);		
+	}
+	public void attach(ViewHolder target){
+		Logger.check(target.getView() instanceof Menu, "Parameter type error!");
+		attach((Menu)target.getView());
 	}
 	public void attach(Menu menu)
 	{

@@ -25,10 +25,8 @@ import com.momock.holder.FragmentHolder;
 import com.momock.holder.FragmentTabHolder;
 import com.momock.holder.ImageHolder;
 import com.momock.holder.TextHolder;
-import com.momock.holder.ViewHolder;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.action.ActionPlug;
-import com.momock.outlet.action.IActionPlug;
 import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
 import com.momock.outlet.tab.FragmentTabOutlet;
@@ -46,7 +44,7 @@ public class FragmentTabCase extends Case<Fragment> {
 
 	@Override
 	public void onCreate() {
-		IOutlet<IActionPlug, ViewHolder> outlet = getOutlet(OutletNames.SAMPLES);
+		IOutlet outlet = getOutlet(OutletNames.SAMPLES);
 		outlet.addPlug(ActionPlug.create(TextHolder.get("Fragment Tab Sample"))
 				.addExecuteEventHandler(new IEventHandler<EventArgs>() {
 					@Override

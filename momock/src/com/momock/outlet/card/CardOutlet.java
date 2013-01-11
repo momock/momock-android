@@ -47,6 +47,10 @@ public class CardOutlet extends Outlet implements ICardOutlet{
 		}
 	}
 
+	public void attach(ViewHolder target) {
+		Logger.check(target.getView() instanceof FrameLayout, "Parameter type error!");
+		attach((FrameLayout)target.getView());
+	}
 	public void attach(FrameLayout target) {
 		this.refContainer = new WeakReference<FrameLayout>(target);
 		IDataList<IPlug> plugs = getPlugs();

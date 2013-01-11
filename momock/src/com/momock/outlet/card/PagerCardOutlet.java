@@ -31,7 +31,12 @@ import com.momock.util.Logger;
 public class PagerCardOutlet extends Outlet implements ICardOutlet{
 	IDataList<IPlug> plugs;
 	WeakReference<ViewPager> refTarget = null;
-	public void onAttach(ViewPager target) {
+
+	public void attach(ViewHolder target) {
+		Logger.check(target.getView() instanceof ViewPager, "Parameter type error!");
+		attach((ViewPager)target.getView());
+	}
+	public void attach(ViewPager target) {
 		refTarget = new WeakReference<ViewPager>(target);
 		ViewPager pager = target;
 		pager.setAdapter(new PagerAdapter(){
