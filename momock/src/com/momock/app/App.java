@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.momock.app;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,9 +32,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.View;
 
 import com.momock.binder.ViewBinder;
 import com.momock.data.DataSet;
@@ -115,18 +114,14 @@ public abstract class App extends android.app.Application implements
 	}
 
 	@SuppressLint("DefaultLocale")
-	protected String getLogFilename(){
-		return this.getClass().getName().toLowerCase() + ".log";
-	}
-	protected int getLogLevel() {
-		return Logger.LEVEL_DEBUG;
-	}
-
-
-	@SuppressLint("DefaultLocale")
 	@Override
 	public void onCreate() {
-		Logger.open(this, getLogFilename(), getLogLevel());
+		LogConfig config = new LogConfig();
+		config.level = Logger.LEVEL_DEBUG;
+		config.name = getClass().getName();
+		config.maxFiles = 5;
+		onCreateLog(config);
+		Logger.open(this, config.name, config.maxFiles, config.level);
 		app = this;
 		injector.addProvider(IApplication.class, this);
 		injector.addProvider(Context.class, this);
@@ -157,26 +152,27 @@ public abstract class App extends android.app.Application implements
 	}
 
 	// Helper methods
-	public Activity getCurrentActivity() {
-		Object ao = getActiveCase().getAttachedObject();
-		if (ao == null)
-			return null;
-		if (ao instanceof Activity)
-			return (Activity) ao;
-		if (ao instanceof View)
-			return (Activity) ((View) ao).getContext();
-		if (ao instanceof Fragment)
-			return ((Fragment) ao).getActivity();
-		return null;
+
+	WeakReference<Activity> lastActivity = null;
+	@Override
+	public void setCurrentActivity(Activity activity){
+		Logger.debug("onActivityStarted : " + activity);
+		lastActivity = new WeakReference<Activity>(activity);
+	}
+	public Activity getCurrentActivity() {		
+		return lastActivity == null ? null : lastActivity.get();
 	}
 
+	public Context getCurrentContext(){
+		Activity activity = getCurrentActivity();
+		return activity == null ? this : activity;
+	}
 	public void runCase(String name) {
 		getCase(name).run();
 	}
 
 	public void startActivity(Class<?> activityClass) {
-		Context currContext = getCurrentActivity();
-		currContext.startActivity(new Intent(currContext, activityClass));
+		getCurrentContext().startActivity(new Intent(getCurrentContext(), activityClass));
 	}
 
 	// Implementation for IApplication interface
@@ -520,5 +516,4 @@ public abstract class App extends android.app.Application implements
 	public void inject(Object obj){
 		injector.inject(obj);
 	}
-
 }

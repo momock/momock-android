@@ -20,10 +20,14 @@ import static android.os.Environment.getExternalStorageState;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import android.annotation.TargetApi;
@@ -73,6 +77,45 @@ public class Logger {
 	@TargetApi(Build.VERSION_CODES.FROYO)
 	static File getExternalCacheDir(final Context context) {
 		return context.getExternalCacheDir();
+	}
+	public static void open(Context context, final String logName, int maxLogFiles, int level) {
+		if (!enabled) return;
+		logFileName = logName + "[" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "].log";
+		if (logStream == null) {
+			logStream = System.out;		
+			File logDir = null;
+			try {								
+				if (getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+					logDir = Environment.getExternalStorageDirectory();
+				} else if (context != null){
+					logDir = context.getCacheDir();
+				} 				
+				if (logDir != null){
+					android.util.Log.d("Logger", logDir.getAbsolutePath());
+					String[] fs = logDir.list(new FilenameFilter(){
+
+						@Override
+						public boolean accept(File dir, String filename) {
+							return filename.startsWith(logName + "[") && filename.endsWith("].log");
+						}
+						
+					});
+					List<String> allLogs = new ArrayList<String>();
+					for(int i = 0; i < fs.length; i++)
+						allLogs.add(fs[i]);
+					Collections.sort(allLogs);
+					for(int i = 0; i < allLogs.size() - maxLogFiles + 1; i++)
+						new File(logDir, allLogs.get(i)).delete();
+					logStream = new PrintStream(new FileOutputStream(new File(logDir, logFileName), false));
+				}
+			} catch (IOException e) {
+				android.util.Log.e("Logger", "Fails to create log file!", e);
+			}
+		}
+		logLevel = level;
+
+		logStream.println("========== Logger Begin ==========");
+		logStream.flush();
 	}
 	public static void open(Context context, String logfilename, int level) {
 		if (!enabled) return;

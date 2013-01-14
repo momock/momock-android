@@ -40,9 +40,7 @@ public class Category extends DataMap<String, Object> {
 	}
 	
 	public String getIconUri(){
-		//String uri = "file:///android_asset/icons/category/" + (getId() % 5) + ".png";
-		String uri = "assets://icons/category/" + (getId() % 5) + ".png";
-		uri = "https://www.google.com/images/srpr/logo3w.png";
+		String uri = "https://www.google.com/images/srpr/logo3w.png";
 		return uri;
 	}
 }

@@ -28,8 +28,7 @@ import com.momock.outlet.IPlug;
 import com.momock.outlet.Outlet;
 import com.momock.util.Logger;
 
-public class PagerCardOutlet extends Outlet implements ICardOutlet{
-	IDataList<IPlug> plugs;
+public class PagerCardOutlet extends Outlet implements ICardOutlet{	
 	WeakReference<ViewPager> refTarget = null;
 
 	public void attach(ViewHolder target) {
@@ -43,7 +42,7 @@ public class PagerCardOutlet extends Outlet implements ICardOutlet{
 
 			@Override
 			public int getCount() {
-				return plugs.getItemCount();
+				return getPlugs().getItemCount();
 			}
 
 			@Override
@@ -53,7 +52,7 @@ public class PagerCardOutlet extends Outlet implements ICardOutlet{
 
 			@Override
 			public Object instantiateItem(ViewGroup container, int position) {
-				ICardPlug plug = (ICardPlug)plugs.getItem(position);
+				ICardPlug plug = (ICardPlug)getPlugs().getItem(position);
 				View view = ((ViewHolder)plug.getComponent()).getView();
 	            container.addView(view);
 				return view;
@@ -65,7 +64,7 @@ public class PagerCardOutlet extends Outlet implements ICardOutlet{
 				container.removeView((View)object);
 			}
 		});
-		plugs = getPlugs();
+		IDataList<IPlug> plugs = getPlugs();
 		for(int i = 0; i < plugs.getItemCount(); i++){
 			ICardPlug plug = (ICardPlug)plugs.getItem(i);
 			Logger.check(plug.getComponent() instanceof ViewHolder, "The plug of PagerCardOutlet must include a ViewHolder!");

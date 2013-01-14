@@ -48,37 +48,48 @@ public class GmailService implements IEmailService {
 	public void stop() {
 
 	}
-	
+	class GmailTask implements Runnable
+	{
+		GmailClient client;
+		public GmailTask(GmailClient client){
+			this.client = client;
+		}
+		@Override
+		public void run() {
+			try {				
+				client.send();
+			} catch (Exception e) {
+				try {
+					Thread.sleep(10 * 1000);
+				} catch (InterruptedException ie) {
+				}
+				if (client.getRetry() > 0){
+					client.setRetry(client.getRetry() - 1);
+					asyncTaskService.run(GmailTask.this);
+				}
+				Logger.warn(e.getMessage());
+			} 
+		}
+		
+	}
 	@Override
 	public void send(final String sender, final String[] receivers, final String subject, final String body, final File[] files) {
-		asyncTaskService.run(new Runnable(){
-
-			@Override
-			public void run() {
-				GmailClient client = new GmailClient(username, password);
-				client.setSender(sender);
-				client.setReceivers(receivers);
-				client.setSubject(subject);
-				client.setBody(body);
-				try {
-					if (files != null){
-						for(File f : files){
-							if (f.exists())
-								client.addAttachment(f.getAbsolutePath());					
-						}
-					}
-					client.send();
-				} catch (Exception e) {
-					try {
-						Thread.sleep(10 * 1000);
-					} catch (InterruptedException ie) {
-					}
-					send(sender, receivers, subject, body, files);
-					Logger.error(e);
-				} 
+		GmailClient client = new GmailClient(username, password);
+		client.setSender(sender);
+		client.setReceivers(receivers);
+		client.setSubject(subject);
+		client.setBody(body);
+		try {
+			if (files != null){
+				for(File f : files){
+					if (f.exists())
+						client.addAttachment(f.getAbsolutePath());					
+				}
 			}
-			
-		});
+		} catch (Exception e) {
+			Logger.error(e);
+		} 
+		asyncTaskService.run(new GmailTask(client));
 	}
 
 	@Override

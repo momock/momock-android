@@ -21,6 +21,12 @@ import com.momock.samples.cases.main.MainCase;
 import com.momock.samples.cases.settings.SettingsCase;
 import com.momock.samples.services.IDataService;
 import com.momock.samples.services.XmlDataService;
+import com.momock.service.CacheService;
+import com.momock.service.HttpService;
+import com.momock.service.ICacheService;
+import com.momock.service.IHttpService;
+import com.momock.service.IImageService;
+import com.momock.service.ImageService;
 import com.momock.util.Logger;
 
 public class SampleApplication extends App{
@@ -40,13 +46,17 @@ public class SampleApplication extends App{
 
 	@Override
 	protected void onAddServices() {
+		addService(IHttpService.class, new HttpService()); 
+		addService(ICacheService.class, new CacheService(this));
+		addService(IImageService.class, new ImageService());
 		addService(IDataService.class, new XmlDataService());
 	}
 
 	@Override
-	protected int getLogLevel() {
-		//return Logger.LEVEL_ERROR;
-		return Logger.LEVEL_DEBUG;
+	public void onCreateLog(LogConfig config) {
+		config.level = Logger.LEVEL_DEBUG;
+		config.name = "momock-samples";
 	}
+
 
 }

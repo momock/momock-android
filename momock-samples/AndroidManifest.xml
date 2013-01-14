@@ -32,7 +32,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".cases.main.MainActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,11 +41,11 @@
         </activity>
         <activity
             android:name=".cases.settings.SettingsActivity"
-            android:label="@string/title_activity_settings" >
+            android:label="@string/app_name" >
         </activity>
         <activity
             android:name=".cases.holo.HoloActionBarActivity"
-            android:label="@string/title_activity_holo_action_bar" >
+            android:label="@string/app_name" >
         </activity>
     </application>
 

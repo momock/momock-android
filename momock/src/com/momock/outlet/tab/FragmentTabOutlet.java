@@ -38,7 +38,7 @@ public class FragmentTabOutlet extends Outlet implements ITabOutlet {
 	public void attach(FragmentTabHolder tabHolder) {
 		Logger.check(tabHolder != null, "Parameter tabHolder cannot be null!");
 		this.target = tabHolder;
-		final TabHost tabHost = target.getTabHost();
+		TabHost tabHost = target.getTabHost();
 		final IDataList<IPlug> plugs = getPlugs();
 		tabHost.setup();
 		tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
@@ -49,14 +49,14 @@ public class FragmentTabOutlet extends Outlet implements ITabOutlet {
 
 					@Override
 					public void run() {
-						int index = tabHost.getCurrentTab();
+						int index = target.getTabHost().getCurrentTab();
 						int id = target.getTabContentId();
 						ITabPlug plug = (ITabPlug)plugs.getItem(index);
 						setActivePlug(plug);
 						FragmentManager fm = target.getFragmentManager();
 						FragmentTransaction ft = fm.beginTransaction();
 						Fragment lastFragment = refLastFragment == null || refLastFragment.get() == null ? null : refLastFragment.get();
-						if (lastFragment != null) {
+						if (lastFragment != null && lastFragment.getFragmentManager() == fm) {
 							ft.detach(lastFragment);
 						}
 
@@ -89,7 +89,7 @@ public class FragmentTabOutlet extends Outlet implements ITabOutlet {
 
 					@Override
 					public View createTabContent(String tag) {
-		                View v = new View(tabHost.getContext());
+		                View v = new View(target.getTabHost().getContext());
 		                v.setMinimumWidth(0);
 		                v.setMinimumHeight(0);
 						return v;

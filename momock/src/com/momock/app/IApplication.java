@@ -15,12 +15,21 @@
  ******************************************************************************/
 package com.momock.app;
 
+import android.app.Activity;
+import android.content.Context;
+
 import com.momock.data.IDataSet;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.service.IService;
 
 public interface IApplication {
+	public static class LogConfig{
+		public String name;
+		public int level;
+		public int maxFiles;
+	};
+	
 	ICase<?> getActiveCase();
 
 	void setActiveCase(ICase<?> kase);	
@@ -64,4 +73,12 @@ public interface IApplication {
 	String getVersion();	
 	
 	void inject(Object obj);
+	
+	void onCreateLog(LogConfig config);
+	
+	Context getCurrentContext();
+	
+	Activity getCurrentActivity();
+	
+	void setCurrentActivity(Activity activity);
 }

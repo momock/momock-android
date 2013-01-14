@@ -58,5 +58,30 @@ public abstract class TextHolder implements IHolder{
 			}
 		};
 	}
-	
+
+	public static TextHolder get(final String format, final Object... args)
+	{
+		return new TextHolder()
+		{
+			public String getText()
+			{
+				return String.format(format, args);
+			}
+		};
+	}
+	public static TextHolder get(final int resourceId, final Object... args)
+	{
+		return new TextHolder()
+		{
+			String text = null;
+			public String getText()
+			{
+				if (text == null){
+					Logger.check(theResources != null, "The Resources must not be null!");
+					text = theResources.getString(resourceId);
+				}
+				return String.format(text, args);
+			}
+		};
+	}
 }

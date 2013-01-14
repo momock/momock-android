@@ -28,7 +28,17 @@ import com.momock.util.Logger;
 public abstract class FragmentHolder implements IComponentHolder{
 	public abstract boolean isCreated();
 	public abstract Fragment getFragment();
-	public static class SimpleFragment extends CaseFragment
+	public static class SimpleFragment extends Fragment{
+		public static final String RID = "RID";
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			int resourceId = getArguments().getInt(RID);
+			Logger.debug("Create SimpleFragment RID=" + resourceId);
+			return ViewHolder.create(container.getContext(), resourceId).getView();
+		}
+	}
+	public static class SimpleCaseFragment extends CaseFragment
 	{
 		public static final String RID = "RID";
 		public static final String CASE_ID = "CASE_ID";
@@ -36,7 +46,9 @@ public abstract class FragmentHolder implements IComponentHolder{
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
 			int resourceId = getArguments().getInt(RID);
-			Logger.debug("Create SimpleFragment RID=" + resourceId + " CASE ID=" + getArguments().getString(CASE_ID));
+			String name = getArguments().getString(CASE_ID);
+			Logger.check(name != null, "Parameter error!");
+			Logger.debug("Create SimpleFragment RID=" + resourceId + " CASE ID=" + name);
 			return ViewHolder.create(container.getContext(), resourceId).getView();
 		}
 		@Override
@@ -95,9 +107,9 @@ public abstract class FragmentHolder implements IComponentHolder{
 			public Fragment getFragment() {
 				if (fragment == null){
 					Bundle args = new Bundle();
-					args.putInt(SimpleFragment.RID, resourceId);
-					args.putString(SimpleFragment.CASE_ID, kase.getFullName());
-					fragment = new SimpleFragment();
+					args.putInt(SimpleCaseFragment.RID, resourceId);
+					args.putString(SimpleCaseFragment.CASE_ID, kase.getFullName());
+					fragment = new SimpleCaseFragment();
 					fragment.setArguments(args);
 				}
 				return fragment;

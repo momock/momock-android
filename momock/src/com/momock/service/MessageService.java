@@ -68,6 +68,7 @@ public class MessageService implements IMessageService{
 	}
 	@Override
 	public void send(final Object sender, final Message msg) {
+		Logger.debug("Sending message " + msg.getTopic());
 		Runnable task = new Runnable(){
 
 			@Override
@@ -76,6 +77,7 @@ public class MessageService implements IMessageService{
 				if (hs == null){
 					Logger.warn("There are no handlers defined for message '" + msg.getTopic() + "'");
 				} else {
+					Logger.debug("Processing message " + msg.getTopic());
 					for(IMessageHandler handler : hs){
 						handler.process(sender, msg);
 						if (msg.isConsumed()) break;

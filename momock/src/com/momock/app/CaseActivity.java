@@ -57,6 +57,7 @@ public abstract class CaseActivity extends FragmentActivity {
 	protected void onStart() {
 		log("onStart");
 		super.onStart();
+		App.get().setCurrentActivity(this);
 		App.get().setActiveCase(getCase());
 	}
 

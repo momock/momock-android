@@ -33,6 +33,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 public class GmailClient extends javax.mail.Authenticator {
+	private int retry = 3;
 	private String username;
 	private String password;
 
@@ -168,6 +169,14 @@ public class GmailClient extends javax.mail.Authenticator {
 
 	public void setSubject(String subject) {
 		this.subject = subject;
+	}
+
+	public int getRetry() {
+		return retry;
+	}
+
+	public void setRetry(int retry) {
+		this.retry = retry;
 	}
 
 }
