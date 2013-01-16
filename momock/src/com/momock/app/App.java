@@ -32,6 +32,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
+import android.net.ConnectivityManager;
 import android.view.LayoutInflater;
 
 import com.momock.binder.ViewBinder;
@@ -129,6 +130,12 @@ public abstract class App extends android.app.Application implements
 			@Override
 			public Resources get() {
 				return getResources();
+			}			
+		});
+		injector.addProvider(ConnectivityManager.class, new Provider<ConnectivityManager>(){
+			@Override
+			public ConnectivityManager get() {
+				return (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			}			
 		});
 		super.onCreate();
@@ -438,7 +445,7 @@ public abstract class App extends android.app.Application implements
 	}
 	@Override
 	public void onCreateEnvironment() {
-		Logger.debug("onCreateEnvironment");
+		Logger.debug("onCreateEnvironment (v " + getVersion() + ")");
 		if (environmentCreated) return;
 		environmentCreated = true;
 		onPreCreateEnvironment();
