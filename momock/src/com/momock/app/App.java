@@ -355,7 +355,10 @@ public abstract class App extends android.app.Application implements
 	}
 	
 	protected void createServices(){
-		if (servicesCreated) return;
+		if (servicesCreated){
+			Logger.warn("createServices should not be called twice for the same session.");
+			return;
+		} 
 		servicesCreated = true;
 		destroyServices(); // try to stop the services previously keep running
 		onPreCreateServices();
