@@ -38,6 +38,7 @@ public abstract class CaseActivity extends FragmentActivity {
 		if (kase == null) {
 			kase = (ICase<FragmentActivity>)App.get().findChildCase(getCaseName());
 		}
+		Logger.check(kase != null, getCaseName() + " has not been created!");
 		return kase;
 	}
 
@@ -132,6 +133,9 @@ public abstract class CaseActivity extends FragmentActivity {
 
 	@Override
 	public Object getSystemService(String name) {
+		if (getCase() == null){
+			super.getSystemService(name);
+		}
 		Object service = super.getSystemService(name);
 		if (service instanceof LayoutInflater){
 			ILayoutInflaterService layoutInflaterService = getCase().getService(ILayoutInflaterService.class);
@@ -143,6 +147,9 @@ public abstract class CaseActivity extends FragmentActivity {
 	
 	@Override
 	public LayoutInflater getLayoutInflater() {
+		if (getCase() == null){
+			return super.getLayoutInflater();
+		}
 		ILayoutInflaterService layoutInflaterService = getCase().getService(ILayoutInflaterService.class);
 		return layoutInflaterService.getLayoutInflater(this);
 	}

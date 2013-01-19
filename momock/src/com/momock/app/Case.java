@@ -28,9 +28,7 @@ import com.momock.util.Logger;
 
 public abstract class Case<A> implements ICase<A> {
 	String name;
-	public Case(){
-		name = getClass().getName();
-	}
+	
 	public Case(String name)
 	{
 		this.name = name;

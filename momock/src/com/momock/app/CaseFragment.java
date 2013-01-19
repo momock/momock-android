@@ -43,6 +43,7 @@ public class CaseFragment extends Fragment{
 			String name = getCaseName();			
 			kase = name == null ? null : (ICase<Fragment>)getApplication().getCase(name);
 		}
+		Logger.check(kase != null, getCaseName() + " has not been created!");
 		return kase;
 	}
 
