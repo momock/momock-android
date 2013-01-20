@@ -186,7 +186,7 @@ public class ViewPagerBinder extends ContainerBinder<ViewPager>{
 				
 			});
 			if (round)
-				view.setCurrentItem(Math.max(1000, dataSource.getItemCount() * 1000), false);
+				view.setCurrentItem(Math.max(100, dataSource.getItemCount() * 100), false);
 		}
 	}
 

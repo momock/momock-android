@@ -27,6 +27,7 @@ import javax.inject.Provider;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -136,6 +137,12 @@ public abstract class App extends android.app.Application implements
 			@Override
 			public ConnectivityManager get() {
 				return (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			}			
+		});
+		injector.addProvider(NotificationManager.class, new Provider<NotificationManager>(){
+			@Override
+			public NotificationManager get() {
+				return (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 			}			
 		});
 		super.onCreate();

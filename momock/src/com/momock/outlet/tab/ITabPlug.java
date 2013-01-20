@@ -28,6 +28,4 @@ public interface ITabPlug extends IPlug {
 	ImageHolder getIcon();
 	IComponentHolder getContent();
 	
-	void onOpen();
-	void onClose();
 }

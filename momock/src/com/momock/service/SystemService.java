@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.telephony.TelephonyManager;
 
@@ -30,6 +31,9 @@ import com.momock.util.Logger;
 public class SystemService implements ISystemService {
 	@Inject 
 	IApplication app;
+
+	@Inject
+	ConnectivityManager connectivityManager = null;
 	
 	@Override
 	public void openUrl(String url) {
@@ -90,6 +94,13 @@ public class SystemService implements ISystemService {
 	public String getMcc() {
 		if (imsi == null) return null;
 		return imsi.substring(0, 3);
+	}
+
+	@Override
+	public boolean isNetworkAvailable() {
+		if (connectivityManager == null) return true;
+		return connectivityManager.getActiveNetworkInfo() != null && 
+				connectivityManager.getActiveNetworkInfo().isConnectedOrConnecting();
 	}
 
 }

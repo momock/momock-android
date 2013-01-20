@@ -33,7 +33,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 
-import android.net.ConnectivityManager;
 import android.net.http.AndroidHttpClient;
 
 import com.momock.data.IDataMap;
@@ -47,8 +46,6 @@ public class HttpService implements IHttpService {
 	String userAgent;
 
 	AndroidHttpClient httpClient = null;
-	@Inject
-	ConnectivityManager connectivityManager = null;
 	
 	@Inject
 	IUITaskService uiTaskService;
@@ -181,11 +178,4 @@ public class HttpService implements IHttpService {
 	public boolean canStop() {
 		return true;
 	}
-	@Override
-	public boolean isNetworkAvailable() {
-		if (connectivityManager == null) return true;
-		return connectivityManager.getActiveNetworkInfo() != null && 
-				connectivityManager.getActiveNetworkInfo().isConnectedOrConnecting();
-	}
-
 }

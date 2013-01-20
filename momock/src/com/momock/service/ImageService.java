@@ -115,6 +115,7 @@ public class ImageService implements IImageService {
 	protected Bitmap load(final String fullUri) {
 		final int expectedWidth;
 		final int expectedHeight;
+		if (fullUri == null) return null;
 		String uri = fullUri;
 		int pos = fullUri.lastIndexOf('#');
 		if (pos > 0) {
@@ -202,6 +203,7 @@ public class ImageService implements IImageService {
 
 	@Override
 	public String getFullUri(String uri, int width, int height) {
+		if (uri == null) return null;
 		return width > 0 && height > 0 ? uri + "#" + width + "x" + height : uri;
 	}
 

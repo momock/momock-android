@@ -51,18 +51,6 @@ public abstract class TabPlug extends Plug implements ITabPlug {
 			}
 
 			@Override
-			public void onOpen() {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onClose() {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
 			public IComponentHolder getContent() {
 				return content;
 			}
@@ -82,18 +70,6 @@ public abstract class TabPlug extends Plug implements ITabPlug {
 			@Override
 			public ImageHolder getIcon() {
 				return icon;
-			}
-
-			@Override
-			public void onOpen() {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onClose() {
-				// TODO Auto-generated method stub
-				
 			}
 
 			@Override

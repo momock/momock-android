@@ -24,4 +24,5 @@ public interface ISystemService extends IService{
 	String getMcc();
 	void openUrl(String url);
 	void install(File file);
+	boolean isNetworkAvailable();
 }
