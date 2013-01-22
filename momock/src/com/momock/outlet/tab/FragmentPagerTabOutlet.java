@@ -16,7 +16,6 @@
 package com.momock.outlet.tab;
 
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
@@ -61,9 +60,7 @@ public class FragmentPagerTabOutlet extends Outlet implements ITabOutlet{
 
 			@Override
 			public boolean isViewFromObject(View view, Object object) {
-				if (!((FragmentHolder) object).isCreated())
-					return false;
-				return ((FragmentHolder) object).getFragment().getView() == view;
+				return true;
 			}
 
 			@Override
@@ -77,29 +74,13 @@ public class FragmentPagerTabOutlet extends Outlet implements ITabOutlet{
 						FragmentHolder fh = (FragmentHolder) object;
 						Logger.debug("setPrimaryItem (" + position + ")"
 								+ (fh != primary));
-						if (fh != primary) {
-
-							FragmentManager fm = target.getFragmentManager();
+						FragmentManager fm = target.getFragmentManager();
+						if (fm != null && fh != primary) {
 							FragmentTransaction ft = fm.beginTransaction();
-
-							if (primary != null) {
-								ft.detach(primary.getFragment());
-							} else {
-								Fragment f = target.getFragmentManager()
-										.findFragmentById(
-												target.getTabContentId());
-								if (f != null)
-									ft.detach(f);
-							}
-
-							if (!fh.isCreated())
-								ft.add(target.getTabContentId(),
-										fh.getFragment());
-							else
-								ft.attach(fh.getFragment());
-							primary = fh;
-
+							ft.replace(target.getTabContentId(), fh.getFragment());
 							ft.commit();
+							fm.executePendingTransactions();
+							primary = fh;
 						}
 					}
 				});

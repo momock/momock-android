@@ -18,13 +18,13 @@ package com.momock.app;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Debug;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.momock.util.Logger;
+import com.momock.util.MemoryHelper;
 import com.momock.util.ViewHelper;
 
 public class CaseFragment extends Fragment{
@@ -65,14 +65,14 @@ public class CaseFragment extends Fragment{
 	}
 	@Override
 	public void onDestroyView() {
-		int usedMemBegin = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
+		int usedMemBegin = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		super.onDestroyView();
 		if (getCase() != null)
 			getCase().detach();
 		ViewHelper.clean(contentFrame);
 		contentFrame = null;
 		System.gc();
-		int usedMemEnd = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
+		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onDestroyView : " + usedMemBegin + "K -> " + usedMemEnd + "K");
 	}
 
@@ -117,21 +117,21 @@ public class CaseFragment extends Fragment{
 
 	@Override
 	public void onResume() {
-		int usedMemBegin = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
+		int usedMemBegin = (int)(MemoryHelper.getAvailableMemory() / 1024);
 	    System.gc();
 		super.onResume();
 		getCase().onShow();
-		int usedMemEnd = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
+		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onResume : " + usedMemBegin + "K -> " + usedMemEnd + "K");
 	}
 
 	@Override
 	public void onPause() {
-		int usedMemBegin = (int)(Debug.getNativeHeapAllocatedSize() / 1024);		
+		int usedMemBegin = (int)(MemoryHelper.getAvailableMemory() / 1024);		
 		super.onPause();
 		getCase().onHide();
 	    System.gc();
-		int usedMemEnd = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
+		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onPause : " + usedMemBegin + "K -> " + usedMemEnd + "K");
 	}
 

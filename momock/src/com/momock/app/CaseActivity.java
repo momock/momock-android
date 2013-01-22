@@ -16,7 +16,6 @@
 package com.momock.app;
 
 import android.os.Bundle;
-import android.os.Debug;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
@@ -24,6 +23,7 @@ import android.view.ViewGroup;
 
 import com.momock.service.ILayoutInflaterService;
 import com.momock.util.Logger;
+import com.momock.util.MemoryHelper;
 import com.momock.util.ViewHelper;
 
 public abstract class CaseActivity extends FragmentActivity {
@@ -70,14 +70,14 @@ public abstract class CaseActivity extends FragmentActivity {
 
 	@Override
 	protected void onDestroy() {
-		int usedMemBegin = (int)(Debug.getNativeHeapAllocatedSize() / 1024);		
+		int usedMemBegin = (int)(MemoryHelper.getAvailableMemory() / 1024);		
 		super.onDestroy();
 		getCase().detach();
 		App.get().onDestroyActivity();
 		ViewGroup contentFrame = (ViewGroup) findViewById(android.R.id.content);
 		ViewHelper.clean(contentFrame);
 		System.gc();
-		int usedMemEnd = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
+		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onDestroy : " + usedMemBegin + "K -> " + usedMemEnd + "K");
 	}
 
@@ -89,21 +89,21 @@ public abstract class CaseActivity extends FragmentActivity {
 
 	@Override
 	protected void onPause() {
-		int usedMemBegin = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
+		int usedMemBegin = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		super.onPause();
 		getCase().onHide();
 	    System.gc();
-		int usedMemEnd = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
+		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onPause : " + usedMemBegin + "K -> " + usedMemEnd + "K");
 	}
 
 	@Override
 	protected void onResume() {
-		int usedMemBegin = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
+		int usedMemBegin = (int)(MemoryHelper.getAvailableMemory() / 1024);
 	    System.gc();
 		super.onResume();
 		getCase().onShow();
-		int usedMemEnd = (int)(Debug.getNativeHeapAllocatedSize() / 1024);
+		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onResume : " + usedMemBegin + "K -> " + usedMemEnd + "K");
 	}
 

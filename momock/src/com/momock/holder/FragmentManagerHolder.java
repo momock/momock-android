@@ -45,7 +45,10 @@ public abstract class FragmentManagerHolder{
 
 			@Override
 			public FragmentManager getFragmentManager() {
-				return fragment.getFragmentManager();
+				FragmentManager fm = fragment.getFragmentManager();
+				if (fm == null && fragment.getActivity() != null)
+					fm = fragment.getActivity().getSupportFragmentManager();
+				return fm;
 			}
 	
 		};
@@ -57,11 +60,20 @@ public abstract class FragmentManagerHolder{
 
 			@Override
 			public FragmentManager getFragmentManager() {
-				if (kase.getAttachedObject() instanceof FragmentActivity)
-					return ((FragmentActivity)kase.getAttachedObject()).getSupportFragmentManager();
-				else if (kase.getAttachedObject() instanceof Fragment)
-					return ((Fragment)kase.getAttachedObject()).getFragmentManager();
-				return null;
+				FragmentManager fm = null;
+				ICase<?> current = kase;
+				while(current != null && fm == null){
+					if (current.getAttachedObject() instanceof FragmentActivity)
+						fm = ((FragmentActivity)current.getAttachedObject()).getSupportFragmentManager();
+					else if (current.getAttachedObject() instanceof Fragment){
+						Fragment fragment = (Fragment)current.getAttachedObject();
+						fm = fragment.getFragmentManager();
+						if (fm == null && fragment.getActivity() != null)
+							fm = fragment.getActivity().getSupportFragmentManager();
+					}
+					current = current.getParent();
+				}
+				return fm;
 			}
 	
 		};

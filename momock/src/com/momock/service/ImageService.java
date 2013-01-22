@@ -59,7 +59,13 @@ public class ImageService implements IImageService {
 		this.cacheService = cacheService;
 	}
 	public Bitmap getBitmap(String fullUri){
-		return bitmapCache.get(fullUri);
+		Bitmap bmp = bitmapCache.get(fullUri);
+		if (bmp != null && bmp.isRecycled()){
+			Logger.warn("Recycled Image : " + fullUri);
+			bitmapCache.remove(fullUri);
+			bmp = null;
+		}
+		return bmp;
 	}
 	@Override
 	public void addImageEventHandler(String fullUri,

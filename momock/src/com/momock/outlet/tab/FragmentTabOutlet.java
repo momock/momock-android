@@ -15,10 +15,7 @@
  ******************************************************************************/
 package com.momock.outlet.tab;
 
-import java.lang.ref.WeakReference;
-
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
@@ -33,7 +30,6 @@ import com.momock.outlet.Outlet;
 import com.momock.util.Logger;
 
 public class FragmentTabOutlet extends Outlet implements ITabOutlet {
-	WeakReference<Fragment> refLastFragment = null;	
 	FragmentTabHolder target;
 	public void attach(FragmentTabHolder tabHolder) {
 		Logger.check(tabHolder != null, "Parameter tabHolder cannot be null!");
@@ -53,26 +49,16 @@ public class FragmentTabOutlet extends Outlet implements ITabOutlet {
 						int id = target.getTabContentId();
 						ITabPlug plug = (ITabPlug)plugs.getItem(index);
 						setActivePlug(plug);
-						FragmentManager fm = target.getFragmentManager();
-						FragmentTransaction ft = fm.beginTransaction();
-						Fragment lastFragment = refLastFragment == null || refLastFragment.get() == null ? null : refLastFragment.get();
-						if (lastFragment != null && lastFragment.getFragmentManager() == fm) {
-							ft.detach(lastFragment);
-						}
 
-						if (plug.getContent() instanceof FragmentHolder)
+						FragmentManager fm = target.getFragmentManager();
+						if (fm != null && plug.getContent() instanceof FragmentHolder)
 						{
+							FragmentTransaction ft = fm.beginTransaction();
 							FragmentHolder fh = (FragmentHolder)plug.getContent();
-							if (!fh.isCreated())
-								ft.add(id, fh.getFragment());
-							else 
-								ft.attach(fh.getFragment());	
-							refLastFragment = new WeakReference<Fragment>(fh.getFragment());
-						} else {
-							refLastFragment = null;
+							ft.replace(id, fh.getFragment());
+							ft.commit();
+							fm.executePendingTransactions();
 						}
-						ft.commit();
-						fm.executePendingTransactions();
 					}
 					
 				});

@@ -19,10 +19,10 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.momock.util.Logger;
-
 import android.graphics.Bitmap;
-import android.os.Debug;
+
+import com.momock.util.Logger;
+import com.momock.util.MemoryHelper;
 
 public class BitmapCache<K> implements ICache<K, Bitmap> {
 	static class LinkedHashMapCache<K> extends LinkedHashMap<K, Bitmap> {
@@ -58,7 +58,7 @@ public class BitmapCache<K> implements ICache<K, Bitmap> {
 	    protected boolean removeEldestEntry(java.util.Map.Entry<K, Bitmap> eldest) {
 	    	if (removeEldest) {
 	    		Logger.debug("Removing " + eldest.getKey() + " from cache!");
-	    		eldest.getValue().recycle();
+	    		//eldest.getValue().recycle();
 	    	}
 	        return removeEldest;
 	    }
@@ -77,10 +77,16 @@ public class BitmapCache<K> implements ICache<K, Bitmap> {
 	    }
 
 	    private void trim() {
-	    	Logger.debug("Current bitmap cache size : " + (sizeOf(values()) / 1024) + "K / " + (Debug.getNativeHeapAllocatedSize() / 1024) + "K");
-	        while (sizeOf(values()) > maxBytes) {
-	            trimEldest();
-	        }
+	    	if (sizeOf(values()) > maxBytes){
+		    	long originalSize = (sizeOf(values()) / 1024);
+		    	long originalMem = MemoryHelper.getAvailableMemory() / 1024;
+		        while (sizeOf(values()) > maxBytes / 2) {
+		            trimEldest();
+		        }
+		        System.gc();
+		    	Logger.debug("Current bitmap cache size : " + originalSize + "K => " + (sizeOf(values()) / 1024) + "K");
+		    	Logger.debug("Current memory size : " + originalMem + "K => " + (MemoryHelper.getAvailableMemory() / 1024) + "K");
+	    	}
 	    }
 
 	    private NullPointerException nullKeyException() {

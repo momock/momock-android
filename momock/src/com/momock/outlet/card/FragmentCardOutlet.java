@@ -15,10 +15,7 @@
  ******************************************************************************/
 package com.momock.outlet.card;
 
-import java.lang.ref.WeakReference;
-
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
@@ -29,7 +26,6 @@ import com.momock.outlet.IPlug;
 import com.momock.outlet.Outlet;
 
 public class FragmentCardOutlet extends Outlet implements ICardOutlet{	
-	WeakReference<Fragment> refLastFragment = null;
 	FragmentManagerHolder fmh;
 	int containerId;
 	public FragmentCardOutlet(int containerId){
@@ -43,32 +39,22 @@ public class FragmentCardOutlet extends Outlet implements ICardOutlet{
 	@Override
 	public void setActivePlug(final IPlug plug) {
 		activePlug = plug;
-		if (fmh != null && plug != null)
+		if (fmh != null && fmh.getFragmentManager() != null && plug != null)
 		{
 			new Handler().post(new Runnable(){
 
 				@Override
 				public void run() {
-					FragmentManager fm = fmh.getFragmentManager();
-					FragmentTransaction ft = fm.beginTransaction();
-					Fragment lastFragment = refLastFragment == null || refLastFragment.get() == null ? null : refLastFragment.get();
-					if (lastFragment != null) {
-						ft.detach(lastFragment);
-					}
 					IComponentHolder ch = ((ICardPlug)plug).getComponent();
 					if (plug != null && ch instanceof FragmentHolder)
 					{
+						FragmentManager fm = fmh.getFragmentManager();
+						FragmentTransaction ft = fm.beginTransaction();
 						FragmentHolder fh = (FragmentHolder)ch;
-						if (!fh.isCreated())
-							ft.add(containerId, fh.getFragment());
-						else 
-							ft.attach(fh.getFragment());	
-						refLastFragment = new WeakReference<Fragment>(fh.getFragment());
-					} else {
-						refLastFragment = null;
-					}
-					ft.commit();
-					fm.executePendingTransactions();
+						ft.replace(containerId, fh.getFragment());
+						ft.commit();
+						fm.executePendingTransactions();
+					} 
 				}
 				
 			});

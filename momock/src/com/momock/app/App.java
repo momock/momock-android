@@ -120,6 +120,7 @@ public abstract class App extends android.app.Application implements
 	public void onCreate() {
 		LogConfig config = new LogConfig();
 		config.level = Logger.LEVEL_DEBUG;
+		config.enabled = true;
 		config.name = getClass().getName();
 		config.maxFiles = 5;
 		onCreateLog(config);
@@ -354,13 +355,21 @@ public abstract class App extends android.app.Application implements
 		
 	}
 	protected void onPostCreateServices() {
-		TextHelper.initialize(getResources());
-		TextHolder.initialize(getResources());
-		ImageHolder.initialize(getResources(), getService(IImageService.class));
-		ViewHolder.initialize(getService(ILayoutInflaterService.class));
-		ViewBinder.initialize(getService(IImageService.class));
 	}
-	
+	protected void onStaticCreate(){
+		TextHelper.onStaticCreate(this);
+		TextHolder.onStaticCreate(this);
+		ImageHolder.onStaticCreate(this);
+		ViewHolder.onStaticCreate(this);
+		ViewBinder.onStaticCreate(this);
+	}
+	protected void onStaticDestroy(){
+		TextHelper.onStaticDestroy(this);
+		TextHolder.onStaticDestroy(this);
+		ImageHolder.onStaticDestroy(this);
+		ViewHolder.onStaticDestroy(this);
+		ViewBinder.onStaticDestroy(this);
+	}
 	protected void createServices(){
 		if (servicesCreated){
 			Logger.warn("createServices should not be called twice for the same session.");
@@ -460,6 +469,7 @@ public abstract class App extends android.app.Application implements
 		environmentCreated = true;
 		onPreCreateEnvironment();
 		createServices();
+		onStaticCreate();
 		onAddCases();
 		onPostCreateEnvironment();
 	}
@@ -475,6 +485,7 @@ public abstract class App extends android.app.Application implements
 		plugs.clear();
 		ds = null;
 		destroyServices();
+		onStaticDestroy();
 	}
 
 	@Override
@@ -532,5 +543,10 @@ public abstract class App extends android.app.Application implements
 	@Override
 	public void inject(Object obj){
 		injector.inject(obj);
+	}
+
+	@Override
+	public <T> T getObjectToInject(Class<T> klass) {
+		return injector.getObject(klass);
 	}
 }

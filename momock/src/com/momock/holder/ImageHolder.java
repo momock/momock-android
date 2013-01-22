@@ -16,13 +16,12 @@
 package com.momock.holder;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 
-import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 
+import com.momock.app.IApplication;
 import com.momock.event.Event;
 import com.momock.event.EventArgs;
 import com.momock.event.IEvent;
@@ -36,11 +35,11 @@ public abstract class ImageHolder implements IHolder{
 	static Resources theResources = null;
 	static IImageService theImageService = null;
 	
-	@SuppressLint("UseSparseArrays")
-	static HashMap<Integer, WeakReference<BitmapDrawable>> bitmapDrawableCache = new HashMap<Integer, WeakReference<BitmapDrawable>>();
-	public static void initialize(Resources resources, IImageService imageService){
-		theResources = resources;
-		theImageService = imageService;
+	public static void onStaticCreate(IApplication app){
+		theResources = app.getObjectToInject(Resources.class);
+		theImageService = app.getObjectToInject(IImageService.class);
+	}
+	public static void onStaticDestroy(IApplication app){
 	}
 	public ImageHolder(){
 		onCreate();
@@ -73,16 +72,9 @@ public abstract class ImageHolder implements IHolder{
 			
 			@Override
 			public BitmapDrawable getAsDrawable() {
-				Logger.check(theResources != null, "The Resources must not be null!");
-				if (bitmapDrawableCache.containsKey(id)){
-					WeakReference<BitmapDrawable> ref = bitmapDrawableCache.get(id);
-					if (ref.get() != null) 
-						return ref.get();
-				}
+				Logger.check(theResources != null, "The Resources must not be null!");				
 				try{
 					BitmapDrawable bd = (BitmapDrawable)theResources.getDrawable(id);
-					WeakReference<BitmapDrawable> ref = new WeakReference<BitmapDrawable>(bd);
-					bitmapDrawableCache.put(id, ref);
 					return bd;
 				} catch (OutOfMemoryError e){
 					Logger.error(e);

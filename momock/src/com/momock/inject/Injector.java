@@ -28,7 +28,19 @@ public class Injector {
 	public Injector() {
 		addProvider(Injector.class, this);
 	}
-
+	public <T> T getObject(Class<T> klass){
+		Provider<T> provider = getProvider(klass);
+		return provider == null ? null : provider.get();
+	}
+	@SuppressWarnings("unchecked")
+	public <T> Provider<T> getProvider(Class<T> klass){
+		try{
+			return (Provider<T>)providers.get(klass);
+		}catch(Exception e){
+			Logger.error(e);
+			return null;
+		}
+	}
 	public void addProvider(Class<?> klass, Provider<?> provider) {
 		providers.put(klass, provider);
 	}

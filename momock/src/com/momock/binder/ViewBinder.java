@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.momock.app.IApplication;
 import com.momock.data.IDataMap;
 import com.momock.holder.ImageHolder;
 import com.momock.service.IImageService;
@@ -35,10 +36,12 @@ public class ViewBinder {
 	public static interface Setter {
 		boolean onSet(View view, String viewProp, Object obj, String key, Object val, View parent, IContainerBinder container);
 	}
-
 	static IImageService theImageService = null;
-	public static void initialize(IImageService imageService){
-		theImageService = imageService;
+	public static void onStaticCreate(IApplication app){
+		theImageService = app.getObjectToInject(IImageService.class);
+	}
+	public static void onStaticDestroy(IApplication app){
+		
 	}
 	
 	static List<Setter> globalSetters = new ArrayList<Setter>();

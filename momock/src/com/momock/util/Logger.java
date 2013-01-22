@@ -41,7 +41,8 @@ import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 
 public class Logger {
-
+	public static final int LEVEL_ALL = 0;
+	
 	public static final int LEVEL_DEBUG = 3;
 
 	public static final int LEVEL_INFO = 4;
@@ -49,6 +50,8 @@ public class Logger {
 	public static final int LEVEL_WARN = 5;
 
 	public static final int LEVEL_ERROR = 6;
+	
+	public static final int LEVEL_NONE = 7;
 
 	static PrintStream logStream = null;
 	static String logFileName = "log.txt";
@@ -80,7 +83,7 @@ public class Logger {
 	}
 	public static void open(Context context, final String logName, int maxLogFiles, int level) {
 		if (!enabled) return;
-		logFileName = logName + "[" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "].log";
+		logFileName = logName + "[" + new SimpleDateFormat("yyyyMMddHHmmss", Locale.US).format(new Date()) + "].log";
 		if (logStream == null) {
 			logStream = System.out;		
 			File logDir = null;

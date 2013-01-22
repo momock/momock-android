@@ -26,7 +26,6 @@ import com.momock.app.ICase;
 import com.momock.util.Logger;
 
 public abstract class FragmentHolder implements IComponentHolder{
-	public abstract boolean isCreated();
 	public abstract Fragment getFragment();
 	public static class SimpleFragment extends Fragment{
 		public static final String RID = "RID";
@@ -60,64 +59,44 @@ public abstract class FragmentHolder implements IComponentHolder{
 	public static <T extends Fragment> FragmentHolder create(final Class<T> fc, final ICase<Fragment> kase)
 	{
 		return new FragmentHolder(){
-			Fragment fragment = null;
 			@Override
 			public Fragment getFragment() {
-				if (fragment == null){
-					try {
-						Logger.debug("Creating fragment " + fc.getName());
-						fragment = fc.newInstance();
-						((CaseFragment)fragment).setCase(kase);
-					} catch (Exception e) {
-						Logger.error(e);
-					}
+				try {
+					Logger.debug("Creating fragment " + fc.getName());
+					CaseFragment fragment = (CaseFragment)fc.newInstance();
+					fragment.setCase(kase);
+					return fragment;
+				} catch (Exception e) {
+					Logger.error(e);
+					return null;
 				}
-				return fragment;
-			}
-			@Override
-			public boolean isCreated() {
-				return fragment != null;
-			}			
+			}	
 		};
 	}
 	public static FragmentHolder create(final int resourceId){
 		return new FragmentHolder(){
-			Fragment fragment = null;
 			@Override
 			public Fragment getFragment() {
-				if (fragment == null){
-					Bundle args = new Bundle();
-					args.putInt(SimpleFragment.RID, resourceId);
-					fragment = new SimpleFragment();
-					fragment.setArguments(args);
-				}
+				Bundle args = new Bundle();
+				args.putInt(SimpleFragment.RID, resourceId);
+				Fragment fragment = new SimpleFragment();
+				fragment.setArguments(args);
 				return fragment;
-			}		
-			@Override
-			public boolean isCreated() {
-				return fragment != null;
-			}				
+			}			
 		};
 	}
 
 	public static FragmentHolder create(final int resourceId, final ICase<Fragment> kase){
 		return new FragmentHolder(){
-			Fragment fragment = null;
 			@Override
 			public Fragment getFragment() {
-				if (fragment == null){
-					Bundle args = new Bundle();
-					args.putInt(SimpleCaseFragment.RID, resourceId);
-					args.putString(SimpleCaseFragment.CASE_ID, kase.getFullName());
-					fragment = new SimpleCaseFragment();
-					fragment.setArguments(args);
-				}
+				Bundle args = new Bundle();
+				args.putInt(SimpleCaseFragment.RID, resourceId);
+				args.putString(SimpleCaseFragment.CASE_ID, kase.getFullName());
+				Fragment fragment = new SimpleCaseFragment();
+				fragment.setArguments(args);
 				return fragment;
-			}		
-			@Override
-			public boolean isCreated() {
-				return fragment != null;
-			}				
+			}			
 		};
 	}
 }

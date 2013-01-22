@@ -24,14 +24,19 @@ import java.io.InputStreamReader;
 
 import android.content.res.Resources;
 
+import com.momock.app.IApplication;
+
 public class TextHelper {
 	public static final String PREFIX_FILE = "file://";
 	public static final String PREFIX_RES = "res://";
 	public static final String PREFIX_ASSETS = "assets://";
-
+	
 	static Resources theResources = null;
-	public static void initialize(Resources resources){
-		theResources = resources;
+	public static void onStaticCreate(IApplication app){
+		theResources = app.getObjectToInject(Resources.class);
+	}
+	public static void onStaticDestroy(IApplication app){
+		
 	}
 	
 	public static String read(InputStream is) {

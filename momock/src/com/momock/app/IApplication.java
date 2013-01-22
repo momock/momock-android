@@ -28,6 +28,7 @@ public interface IApplication {
 		public String name;
 		public int level;
 		public int maxFiles;
+		public boolean enabled;
 	};
 	
 	ICase<?> getActiveCase();
@@ -73,6 +74,8 @@ public interface IApplication {
 	String getVersion();	
 	
 	void inject(Object obj);
+	
+	<T> T getObjectToInject(Class<T> klass);
 	
 	void onCreateLog(LogConfig config);
 	

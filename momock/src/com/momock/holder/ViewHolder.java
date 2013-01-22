@@ -24,14 +24,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.momock.app.IApplication;
 import com.momock.app.ICase;
 import com.momock.service.ILayoutInflaterService;
 import com.momock.util.Logger;
 
 public abstract class ViewHolder implements IComponentHolder{
 	static ILayoutInflaterService theLayoutInflaterService = null;
-	public static void initialize(ILayoutInflaterService layoutInflaterService){
-		theLayoutInflaterService = layoutInflaterService;
+	public static void onStaticCreate(IApplication app){
+		theLayoutInflaterService = app.getObjectToInject(ILayoutInflaterService.class);
+	}
+	public static void onStaticDestroy(IApplication app){
+		
 	}
 	public static interface OnViewCreatedHandler
 	{

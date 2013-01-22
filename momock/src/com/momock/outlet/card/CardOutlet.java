@@ -31,8 +31,7 @@ public class CardOutlet extends Outlet implements ICardOutlet{
 	@Override
 	public void onActivate(IPlug p) {
 		ICardPlug plug = (ICardPlug)p;
-		Logger.check(refContainer != null && refContainer.get() != null, "The CardOutlet has not been attached!");
-		if (plug.getComponent() != null){
+		if (refContainer != null && refContainer.get() != null && plug.getComponent() != null){
 			FrameLayout container = refContainer.get();
 			for(int i = 0; i < container.getChildCount(); i++){
 				container.getChildAt(i).setVisibility(View.GONE);
@@ -42,8 +41,6 @@ public class CardOutlet extends Outlet implements ICardOutlet{
 				container.addView(cv);
 			cv.bringToFront();
 			cv.setVisibility(View.VISIBLE);
-		} else {
-			Logger.debug("The active plug in CardOutlet has not been attached!");
 		}
 	}
 
