@@ -18,6 +18,8 @@ package com.momock.app;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.os.Bundle;
+
 import com.momock.data.IDataSet;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
@@ -273,5 +275,13 @@ public abstract class Case<A> implements ICase<A> {
 	@Override
 	public boolean isAttached() {
 		return getAttachedObject() != null;
+	}
+	@Override
+	public void onSaveState(Bundle state) {
+		
+	}
+	@Override
+	public void onRestoreState(Bundle state) {
+		
 	}
 }

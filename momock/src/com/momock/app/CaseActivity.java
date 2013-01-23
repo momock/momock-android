@@ -92,7 +92,6 @@ public abstract class CaseActivity extends FragmentActivity {
 		int usedMemBegin = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		super.onPause();
 		getCase().onHide();
-	    System.gc();
 		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onPause : " + usedMemBegin + "K -> " + usedMemEnd + "K");
 	}
@@ -110,6 +109,7 @@ public abstract class CaseActivity extends FragmentActivity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		log("onSaveInstanceState");
+		getCase().onSaveState(outState);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -122,6 +122,7 @@ public abstract class CaseActivity extends FragmentActivity {
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		log("onRestoreInstanceState");
+		getCase().onRestoreState(savedInstanceState);
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 

@@ -17,11 +17,29 @@ package com.momock.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class FileHelper {
+	public static void writeTextFile(File file, String text) throws IOException{
+		writeTextFile(file, text, null);
+	}
+	public static void writeTextFile(File file, String text, String encoding) throws IOException{
+		if (file.exists()) file.delete();
+		if (text == null) return;
+		try {
+			FileOutputStream fos = new FileOutputStream(file);
+			fos.write(text.getBytes(encoding == null ? "UTF-8" : encoding));
+			fos.close();
+		} catch (FileNotFoundException e) {
+			Logger.error(e);
+		}
+	}
+	public static String readTextFile(File source) throws IOException{
+		return readTextFile(source, null);
+	}
 	public static String readTextFile(File source, String encoding) throws IOException{
 		StringBuilder sb = new StringBuilder();
 		FileInputStream fis = new FileInputStream(source);

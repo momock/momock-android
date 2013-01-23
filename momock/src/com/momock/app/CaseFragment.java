@@ -130,7 +130,6 @@ public class CaseFragment extends Fragment{
 		int usedMemBegin = (int)(MemoryHelper.getAvailableMemory() / 1024);		
 		super.onPause();
 		getCase().onHide();
-	    System.gc();
 		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onPause : " + usedMemBegin + "K -> " + usedMemEnd + "K");
 	}
@@ -158,5 +157,11 @@ public class CaseFragment extends Fragment{
 	public void onDetach() {
 		log("onDetach");
 		super.onDetach();
+	}
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		log("onSaveInstanceState");
+		getCase().onSaveState(outState);
+		super.onSaveInstanceState(outState);
 	}
 }

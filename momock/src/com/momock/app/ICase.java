@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.momock.app;
 
+import android.os.Bundle;
+
 import com.momock.data.IDataSet;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
@@ -85,4 +87,7 @@ public interface ICase<A> {
 	
 	boolean onBack();
 	
+	void onSaveState(Bundle state);
+	
+	void onRestoreState(Bundle state);
 }
