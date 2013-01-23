@@ -25,4 +25,7 @@ public interface ISystemService extends IService{
 	void openUrl(String url);
 	void install(File file);
 	boolean isNetworkAvailable();
+	void exit();
+	void killProcess(String packageName);
+	boolean isProcessRunning(String packageName);
 }

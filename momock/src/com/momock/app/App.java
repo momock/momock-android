@@ -27,6 +27,7 @@ import javax.inject.Provider;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -59,6 +60,7 @@ import com.momock.service.LayoutInflaterService;
 import com.momock.service.MessageService;
 import com.momock.service.UITaskService;
 import com.momock.util.Logger;
+import com.momock.util.MemoryHelper;
 import com.momock.util.TextHelper;
 
 public abstract class App extends android.app.Application implements
@@ -146,6 +148,13 @@ public abstract class App extends android.app.Application implements
 				return (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 			}			
 		});
+		injector.addProvider(ActivityManager.class, new Provider<ActivityManager>(){
+			@Override
+			public ActivityManager get() {
+				return (ActivityManager)getSystemService(ACTIVITY_SERVICE);
+			}			
+		});
+		
 		super.onCreate();
 	}
 
@@ -548,5 +557,11 @@ public abstract class App extends android.app.Application implements
 	@Override
 	public <T> T getObjectToInject(Class<T> klass) {
 		return injector.getObject(klass);
+	}
+	@Override
+	public void checkMemory(){
+		if (MemoryHelper.getAvailableMemory() < 2 * 1024 * 1024){
+			onLowMemory();
+		}
 	}
 }

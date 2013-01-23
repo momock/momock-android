@@ -24,6 +24,7 @@ import com.momock.holder.FragmentManagerHolder;
 import com.momock.holder.IComponentHolder;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.Outlet;
+import com.momock.util.Logger;
 
 public class FragmentCardOutlet extends Outlet implements ICardOutlet{	
 	FragmentManagerHolder fmh;
@@ -48,12 +49,16 @@ public class FragmentCardOutlet extends Outlet implements ICardOutlet{
 					IComponentHolder ch = ((ICardPlug)plug).getComponent();
 					if (plug != null && ch instanceof FragmentHolder)
 					{
-						FragmentManager fm = fmh.getFragmentManager();
-						FragmentTransaction ft = fm.beginTransaction();
-						FragmentHolder fh = (FragmentHolder)ch;
-						ft.replace(containerId, fh.getFragment());
-						ft.commit();
-						fm.executePendingTransactions();
+						try{
+							FragmentManager fm = fmh.getFragmentManager();
+							FragmentTransaction ft = fm.beginTransaction();
+							FragmentHolder fh = (FragmentHolder)ch;
+							ft.replace(containerId, fh.getFragment());
+							ft.commit();
+							fm.executePendingTransactions();
+						}catch(Exception e){
+							Logger.error(e);
+						}
 					} 
 				}
 				

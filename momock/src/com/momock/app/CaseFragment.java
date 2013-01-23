@@ -74,6 +74,7 @@ public class CaseFragment extends Fragment{
 		System.gc();
 		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onDestroyView : " + usedMemBegin + "K -> " + usedMemEnd + "K");
+		App.get().checkMemory();
 	}
 
 	@Override
@@ -123,6 +124,7 @@ public class CaseFragment extends Fragment{
 		getCase().onShow();
 		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onResume : " + usedMemBegin + "K -> " + usedMemEnd + "K");
+		App.get().checkMemory();
 	}
 
 	@Override
@@ -132,6 +134,7 @@ public class CaseFragment extends Fragment{
 		getCase().onHide();
 		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onPause : " + usedMemBegin + "K -> " + usedMemEnd + "K");
+		App.get().checkMemory();
 	}
 
 	@Override

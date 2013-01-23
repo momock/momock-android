@@ -79,12 +79,14 @@ public abstract class CaseActivity extends FragmentActivity {
 		System.gc();
 		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onDestroy : " + usedMemBegin + "K -> " + usedMemEnd + "K");
+		App.get().checkMemory();
 	}
 
 	@Override
 	public void onLowMemory() {
 		log("onLowMemory");
 		super.onLowMemory();
+		App.get().onLowMemory();
 	}
 
 	@Override
@@ -94,6 +96,7 @@ public abstract class CaseActivity extends FragmentActivity {
 		getCase().onHide();
 		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onPause : " + usedMemBegin + "K -> " + usedMemEnd + "K");
+		App.get().checkMemory();
 	}
 
 	@Override
@@ -104,6 +107,7 @@ public abstract class CaseActivity extends FragmentActivity {
 		getCase().onShow();
 		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onResume : " + usedMemBegin + "K -> " + usedMemEnd + "K");
+		App.get().checkMemory();
 	}
 
 	@Override

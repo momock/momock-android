@@ -84,4 +84,6 @@ public interface IApplication {
 	Activity getCurrentActivity();
 	
 	void setCurrentActivity(Activity activity);
+	
+	void checkMemory();
 }

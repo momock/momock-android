@@ -16,9 +16,11 @@
 package com.momock.service;
 
 import java.io.File;
+import java.util.List;
 
 import javax.inject.Inject;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -34,7 +36,9 @@ public class SystemService implements ISystemService {
 
 	@Inject
 	ConnectivityManager connectivityManager = null;
-	
+
+	@Inject 
+	ActivityManager activityManager;
 	@Override
 	public void openUrl(String url) {
 
@@ -102,5 +106,25 @@ public class SystemService implements ISystemService {
 		return connectivityManager.getActiveNetworkInfo() != null && 
 				connectivityManager.getActiveNetworkInfo().isConnectedOrConnecting();
 	}
-
+	@Override
+	public void exit(){
+		android.os.Process.killProcess(android.os.Process.myPid());
+		//System.exit(0);
+	}
+	@Override
+	public void killProcess(String packageName) {
+		activityManager.killBackgroundProcesses(packageName);
+	}
+	@Override
+	public boolean isProcessRunning(String packageName){
+		if (packageName == null) return false;
+		List<ActivityManager.RunningAppProcessInfo> list = activityManager.getRunningAppProcesses();
+		if (list != null) {
+			for (int i = 0; i < list.size(); ++i) {
+				if (packageName.equals(list.get(i).processName)) 
+					return true;
+			}
+		}
+		return false;
+	}
 }

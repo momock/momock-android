@@ -53,11 +53,15 @@ public class FragmentTabOutlet extends Outlet implements ITabOutlet {
 						FragmentManager fm = target.getFragmentManager();
 						if (fm != null && plug.getContent() instanceof FragmentHolder)
 						{
-							FragmentTransaction ft = fm.beginTransaction();
-							FragmentHolder fh = (FragmentHolder)plug.getContent();
-							ft.replace(id, fh.getFragment());
-							ft.commit();
-							fm.executePendingTransactions();
+							try{
+								FragmentTransaction ft = fm.beginTransaction();
+								FragmentHolder fh = (FragmentHolder)plug.getContent();
+								ft.replace(id, fh.getFragment());
+								ft.commit();
+								fm.executePendingTransactions();
+							}catch(Exception e){
+								Logger.error(e);
+							}
 						}
 					}
 					

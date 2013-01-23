@@ -121,11 +121,15 @@ public abstract class DialogHolder implements IHolder {
 	protected abstract DialogFragment getDialogFragment();
 
 	public void show() {
-		DialogFragment df = getDialogFragment();
-		FragmentManager fm = getFragmentManager();
-		Logger.check(df != null && fm != null, "Fails to open dialog!");
-		refDialog = new WeakReference<DialogFragment>(df);
-		df.show(fm, "");
+		try{
+			DialogFragment df = getDialogFragment();
+			FragmentManager fm = getFragmentManager();
+			Logger.check(df != null && fm != null, "Fails to open dialog!");
+			refDialog = new WeakReference<DialogFragment>(df);
+			df.show(fm, "");
+		}catch(Exception e){
+			Logger.error(e);
+		}
 	}
 
 	public void close() {
