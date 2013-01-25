@@ -42,7 +42,7 @@ public class ErrorReportService implements IErrorReportService, IEventHandler<Lo
 
 	@Override
 	public boolean canStop() {
-		return false;
+		return true;
 	}
 
 	@Override

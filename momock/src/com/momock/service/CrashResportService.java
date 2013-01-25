@@ -59,7 +59,7 @@ public class CrashResportService implements ICrashReportService {
 	}
 	@Override
 	public boolean canStop() {
-		return false;
+		return true;
 	}
 
 }

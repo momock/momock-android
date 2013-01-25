@@ -74,7 +74,6 @@ public class CaseFragment extends Fragment{
 		System.gc();
 		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onDestroyView : " + usedMemBegin + "K -> " + usedMemEnd + "K");
-		App.get().checkMemory();
 	}
 
 	@Override
@@ -134,36 +133,40 @@ public class CaseFragment extends Fragment{
 		getCase().onHide();
 		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onPause : " + usedMemBegin + "K -> " + usedMemEnd + "K");
-		App.get().checkMemory();
 	}
 
 	@Override
 	public void onStop() {
-		log("onStop");
+		int usedMem = (int)(MemoryHelper.getAvailableMemory() / 1024);		
+		log("onStop : " + usedMem + "K");
 		super.onStop();
 	}
 
 	@Override
 	public void onLowMemory() {
-		log("onLowMemory");
+		int usedMem = (int)(MemoryHelper.getAvailableMemory() / 1024);		
+		log("onLowMemory : " + usedMem + "K");
 		super.onLowMemory();
 	}
 
 
 	@Override
 	public void onDestroy() {
-		log("onDestroy");
+		int usedMem = (int)(MemoryHelper.getAvailableMemory() / 1024);		
+		log("onDestroy : " + usedMem + "K");
 		super.onDestroy();
 	}
 
 	@Override
 	public void onDetach() {
-		log("onDetach");
+		int usedMem = (int)(MemoryHelper.getAvailableMemory() / 1024);	
+		log("onDetach : " + usedMem + "K");
 		super.onDetach();
 	}
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		log("onSaveInstanceState");
+		int usedMem = (int)(MemoryHelper.getAvailableMemory() / 1024);	
+		log("onSaveInstanceState : " + usedMem + "K");
 		getCase().onSaveState(outState);
 		super.onSaveInstanceState(outState);
 	}

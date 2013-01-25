@@ -15,44 +15,42 @@
  ******************************************************************************/
 package com.momock.holder;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.AlertDialog;
-import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 
-import com.momock.app.IApplication;
-import com.momock.app.ICase;
+import com.momock.app.App;
 import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.util.Logger;
 
-public abstract class DialogHolder implements IHolder {
-	public static class SimpleDialogFragment extends DialogFragment{
-		public static final String INDEX = "INDEX";		
-		public SimpleDialogFragment(){
-			
-		}
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			int index = getArguments().getInt(INDEX);
-			Logger.check(index >= 0 && index < dialogData.size(), "Parameter error !");
-			DialogData dd = dialogData.get(index);
-			ImageHolder icon = dd.icon;
-			IHolder title = dd.title;
-			IHolder message = dd.message;
-			TextHolder okButton = dd.okButton;
-			final IEventHandler<EventArgs> okHandler = dd.okHandler;
-			TextHolder cancelButton = dd.cancelButton;
-			final IEventHandler<EventArgs> cancelHandler = dd.cancelHandler;
-			
-			AlertDialog.Builder builder = new AlertDialog.Builder(
-					getActivity());
+public class DialogHolder implements IHolder {
+	protected ImageHolder icon;
+	protected IHolder title;
+	protected IHolder message;
+	protected TextHolder okButton;
+	protected IEventHandler<EventArgs> okHandler;
+	protected TextHolder cancelButton;
+	protected IEventHandler<EventArgs> cancelHandler;
+	protected DialogHolder(ImageHolder icon, IHolder title,
+			IHolder message, TextHolder okButton,
+			IEventHandler<EventArgs> okHandler,
+			TextHolder cancelButton,
+			IEventHandler<EventArgs> cancelHandler){
+		this.icon = icon;
+		this.title = title;
+		this.message = message;
+		this.okButton = okButton;
+		this.okHandler = okHandler;
+		this.cancelButton = cancelButton;
+		this.cancelHandler = cancelHandler;
+	}
+	public void show(){
+		show(App.get().getCurrentActivity());
+	}
+	public void show(Context context) {
+		try{			
+			AlertDialog.Builder builder = new AlertDialog.Builder(context);
 			if (icon != null){
 				builder.setIcon(icon.getAsDrawable());
 			}
@@ -63,8 +61,10 @@ public abstract class DialogHolder implements IHolder {
 				if (message instanceof TextHolder)
 					builder.setMessage(((TextHolder) message)
 							.getText());
-				else
+				else{
+					((ViewHolder)message).reset();
 					builder.setView(((ViewHolder)message).getView());
+				}
 			}
 			if (title != null) {
 				Logger.check(title instanceof TextHolder
@@ -72,8 +72,10 @@ public abstract class DialogHolder implements IHolder {
 						"title must be either a TextHolder or a ResourceHolder");
 				if (title instanceof TextHolder)
 					builder.setTitle(((TextHolder) title).getText());
-				else
+				else{
+					((ViewHolder)title).reset();
 					builder.setCustomTitle(((ViewHolder)title).getView());
+				}
 			}
 			if (okButton != null) {
 				DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
@@ -81,6 +83,7 @@ public abstract class DialogHolder implements IHolder {
 							int id) {
 						if (okHandler != null)
 							okHandler.process(this, null);
+						dialog.dismiss();
 					}
 				};
 				builder.setPositiveButton(okButton.getText(), listener);						
@@ -91,105 +94,34 @@ public abstract class DialogHolder implements IHolder {
 							int id) {
 						if (cancelHandler != null)
 							cancelHandler.process(this, null);
+						dialog.dismiss();
 					}
 				};
 				builder.setNegativeButton(cancelButton.getText(), listener);
 			}
-			return builder.create();
-		}
-	}
-	static class DialogData{
-		public ImageHolder icon;
-		public IHolder title;
-		public IHolder message;
-		public TextHolder okButton;
-		public IEventHandler<EventArgs> okHandler;
-		public TextHolder cancelButton;
-		public IEventHandler<EventArgs> cancelHandler;
-	}
-	static List<DialogData> dialogData = new ArrayList<DialogData>();
-	public static void onStaticCreate(IApplication app){
-		
-	}
-	public static void onStaticDestroy(IApplication app){
-		dialogData.clear();
-	}
-	WeakReference<DialogFragment> refDialog = null;
-
-	protected abstract FragmentManager getFragmentManager();
-
-	protected abstract DialogFragment getDialogFragment();
-
-	public void show() {
-		try{
-			DialogFragment df = getDialogFragment();
-			FragmentManager fm = getFragmentManager();
-			Logger.check(df != null && fm != null, "Fails to open dialog!");
-			refDialog = new WeakReference<DialogFragment>(df);
-			df.show(fm, "");
+			builder.create().show();
 		}catch(Exception e){
 			Logger.error(e);
 		}
 	}
 
-	public void close() {
-		if (refDialog != null && refDialog.get() != null) {
-			refDialog.get().dismiss();
-		}
+	public static DialogHolder create(IHolder title,
+			IHolder message, TextHolder okButton,
+			IEventHandler<EventArgs> okHandler) {
+		return create(title, message, okButton, okHandler, null, null);
 	}
-
-	public static DialogHolder create(final ICase<?> kase, final IHolder title,
-			final IHolder message, final TextHolder okButton,
-			final IEventHandler<EventArgs> okHandler) {
-		return create(kase, null, title, message, okButton, okHandler, null, null);
-	}
-	public static DialogHolder create(final ICase<?> kase, final IHolder title,
-			final IHolder message, final TextHolder okButton,
-			final IEventHandler<EventArgs> okHandler,
-			final TextHolder cancelButton,
-			final IEventHandler<EventArgs> cancelHandler) {
-		return create(kase, null, title, message, okButton, okHandler, cancelButton, cancelHandler);
-	}
-	public static DialogHolder create(final ICase<?> kase, final ImageHolder icon, final IHolder title,
-			final IHolder message, final TextHolder okButton,
-			final IEventHandler<EventArgs> okHandler,
-			final TextHolder cancelButton,
-			final IEventHandler<EventArgs> cancelHandler) {
-		return create(FragmentManagerHolder.get(kase), icon, title, message, okButton, okHandler, cancelButton, cancelHandler);
-	}
-	public static DialogHolder create(final FragmentManagerHolder fmh,
-			ImageHolder icon, IHolder title,
+	public static DialogHolder create(IHolder title,
 			IHolder message, TextHolder okButton,
 			IEventHandler<EventArgs> okHandler,
 			TextHolder cancelButton,
 			IEventHandler<EventArgs> cancelHandler) {
-		final int index = dialogData.size();
-		Logger.debug("DialogHolder #" + index);
-		DialogData dd = new DialogData();
-		dd.icon = icon;
-		dd.title = title;
-		dd.message = message;
-		dd.okButton = okButton;
-		dd.okHandler = okHandler;
-		dd.cancelButton = cancelButton;
-		dd.cancelHandler = cancelHandler;
-		dialogData.add(dd);
-		
-		return new DialogHolder() {
-
-			@Override
-			public FragmentManager getFragmentManager() {
-				return fmh.getFragmentManager();
-			}
-
-			@Override
-			protected DialogFragment getDialogFragment() {
-				Bundle args = new Bundle();
-				args.putInt(SimpleDialogFragment.INDEX, index);
-				SimpleDialogFragment fragment = new SimpleDialogFragment();
-				fragment.setArguments(args);
-				return fragment;
-			}
-		};
+		return create(null, title, message, okButton, okHandler, cancelButton, cancelHandler);
+	}
+	public static DialogHolder create(ImageHolder icon, IHolder title,
+			IHolder message, TextHolder okButton,
+			IEventHandler<EventArgs> okHandler,
+			TextHolder cancelButton,
+			IEventHandler<EventArgs> cancelHandler) {		
+		return new DialogHolder(icon, title, message, okButton, okHandler, cancelButton, cancelHandler);
 	}
 }

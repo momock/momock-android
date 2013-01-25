@@ -75,6 +75,7 @@ public class SystemService implements ISystemService {
 	@Override
 	public void install(File file) {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
 		app.getCurrentContext().startActivity(intent);
 	}
@@ -108,8 +109,8 @@ public class SystemService implements ISystemService {
 	}
 	@Override
 	public void exit(){
-		android.os.Process.killProcess(android.os.Process.myPid());
-		//System.exit(0);
+		//android.os.Process.killProcess(android.os.Process.myPid());
+		System.exit(0);
 	}
 	@Override
 	public void killProcess(String packageName) {

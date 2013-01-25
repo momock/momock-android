@@ -17,7 +17,6 @@ package com.momock.service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -81,8 +80,6 @@ public class LayoutInflaterService implements ILayoutInflaterService {
 		}
 	}
 
-	Map<Context, LayoutInflater> cachedLayoutInflater = new WeakHashMap<Context, LayoutInflater>();
-
 	Map<String, String> shortNames = new HashMap<String, String>();
 
 	@Override
@@ -94,11 +91,8 @@ public class LayoutInflaterService implements ILayoutInflaterService {
 
 	@Override
 	public LayoutInflater getLayoutInflater(Context context) {
-		if (cachedLayoutInflater.containsKey(context))
-			return cachedLayoutInflater.get(context);
 		LayoutInflater layoutInflater = new CustomLayoutInflater(
 				LayoutInflater.from(context), context);
-		cachedLayoutInflater.put(context, layoutInflater);
 		return layoutInflater;
 	}
 
@@ -121,7 +115,6 @@ public class LayoutInflaterService implements ILayoutInflaterService {
 
 	@Override
 	public void stop() {
-		cachedLayoutInflater.clear();
 		shortNames.clear();
 	}
 

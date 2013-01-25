@@ -162,6 +162,8 @@ public class HttpSession{
 			long downloadedLength = fileData.length();
 			long contentLength = -1;
 			DataInputStream din;
+			if (fileInfo.length() == 0)
+				return new DownloadInfo(0, 0);
 			try {
 				din = new DataInputStream(new FileInputStream(
 						fileInfo));
@@ -195,7 +197,7 @@ public class HttpSession{
 
 	void readHeaders() {
 		try {
-			if (!fileInfo.exists())
+			if (!fileInfo.exists() || fileInfo.length() == 0)
 				return;
 			DataInputStream din = new DataInputStream(new FileInputStream(
 					fileInfo));
@@ -381,7 +383,16 @@ public class HttpSession{
 				downloadedLength = fileData.length();
 				readHeaders();
 				resetFromHeaders();
-			}	
+			} else {
+				try {
+					if (fileData.exists()) fileData.delete();
+					fileData.createNewFile();
+					if (fileInfo.exists()) fileInfo.delete();
+					fileInfo.createNewFile();
+				} catch (IOException e) {
+					Logger.error(e);
+				}
+			}
 			request.setHeader("Accept-Encoding", "gzip");	
 		} 
 		Logger.debug("Request headers of " + url + " : ");
