@@ -40,6 +40,7 @@ import android.view.LayoutInflater;
 import com.momock.binder.ViewBinder;
 import com.momock.data.DataSet;
 import com.momock.data.IDataSet;
+import com.momock.data.Settings;
 import com.momock.holder.ImageHolder;
 import com.momock.holder.TextHolder;
 import com.momock.holder.ViewHolder;
@@ -130,6 +131,12 @@ public abstract class App extends android.app.Application implements
 		app = this;
 		injector.addProvider(IApplication.class, this);
 		injector.addProvider(Context.class, this);
+		injector.addProvider(Settings.class, new Provider<Settings>(){
+			@Override
+			public Settings get() {
+				return getSettings();
+			}			
+		});
 		injector.addProvider(Resources.class, new Provider<Resources>(){
 			@Override
 			public Resources get() {
@@ -563,5 +570,14 @@ public abstract class App extends android.app.Application implements
 		if (MemoryHelper.getAvailableMemory() < 2 * 1024 * 1024){
 			onLowMemory();
 		}
+	}
+
+	public static final String DEFAULT_SETTINGS = "default-settings";
+	Settings settings = null;
+	@Override
+	public Settings getSettings() {
+		if (settings == null)
+			settings = new Settings(this, DEFAULT_SETTINGS);
+		return settings;
 	}
 }

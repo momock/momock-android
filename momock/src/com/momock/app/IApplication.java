@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.momock.data.IDataSet;
+import com.momock.data.Settings;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.service.IService;
@@ -30,6 +31,8 @@ public interface IApplication {
 		public int maxFiles;
 		public boolean enabled;
 	};
+	
+	Settings getSettings();
 	
 	ICase<?> getActiveCase();
 
