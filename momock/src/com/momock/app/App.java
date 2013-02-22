@@ -127,7 +127,10 @@ public abstract class App extends android.app.Application implements
 		config.name = getClass().getName();
 		config.maxFiles = 5;
 		onCreateLog(config);
-		Logger.open(this, config.name, config.maxFiles, config.level);
+		if (config.enabled)
+			Logger.open(this, config.name, config.maxFiles, config.level);
+		else
+			Logger.setEnabled(false);
 		app = this;
 		injector.addProvider(IApplication.class, this);
 		injector.addProvider(Context.class, this);

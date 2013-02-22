@@ -37,6 +37,7 @@ public class MessageService implements IMessageService{
 	@Override
 	public void addHandler(String topic, IMessageHandler handler) {
 		Logger.check(topic != null, "Parameter topic cannot be null!");
+		Logger.debug("addHandler " + topic + " : " + handler);
 		List<IMessageHandler> hs;
 		if (allHandlers.containsKey(topic))
 			hs = allHandlers.get(topic);
@@ -50,6 +51,7 @@ public class MessageService implements IMessageService{
 	@Override
 	public void removeHandler(String topic, IMessageHandler handler) {
 		Logger.check(topic != null, "Parameter topic cannot be null!");
+		Logger.debug("removeHandler " + topic + " : " + handler);
 		List<IMessageHandler> hs;
 		if (allHandlers.containsKey(topic)) {
 			hs = allHandlers.get(topic);
@@ -73,12 +75,13 @@ public class MessageService implements IMessageService{
 
 			@Override
 			public void run() {
-				List<IMessageHandler> hs = allHandlers.get(msg.getTopic());
+				List<IMessageHandler> hs = allHandlers.get(msg.getTopic());				
 				if (hs == null){
 					Logger.warn("There are no handlers defined for message '" + msg.getTopic() + "'");
 				} else {
-					Logger.debug("Processing message " + msg.getTopic());
-					for(IMessageHandler handler : hs){
+					ArrayList<IMessageHandler> handlers = new ArrayList<IMessageHandler>(hs);
+					Logger.debug("Processing message " + msg.getTopic() + " with " + handlers.size() + " handlers.");
+					for(IMessageHandler handler : handlers){
 						handler.process(sender, msg);
 						if (msg.isConsumed()) break;
 					}

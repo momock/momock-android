@@ -54,6 +54,7 @@ public class Logger {
 	public static final int LEVEL_NONE = 7;
 
 	static PrintStream logStream = null;
+	static String logName = "app";
 	static String logFileName = "log.txt";
 	static int logLevel = LEVEL_DEBUG;
 	static boolean enabled = true;
@@ -81,8 +82,9 @@ public class Logger {
 	static File getExternalCacheDir(final Context context) {
 		return context.getExternalCacheDir();
 	}
-	public static void open(Context context, final String logName, int maxLogFiles, int level) {
+	public static void open(Context context, final String name, int maxLogFiles, int level) {
 		if (!enabled) return;
+		logName = name;
 		logFileName = logName + "[" + new SimpleDateFormat("yyyyMMddHHmmss", Locale.US).format(new Date()) + "].log";
 		if (logStream == null) {
 			logStream = System.out;		
@@ -170,44 +172,44 @@ public class Logger {
 		return trace.getFileName() + "(" + trace.getLineNumber() + ")";
 	}
 	public static void debug(String msg) {
-		if (!enabled && logLevel > LEVEL_DEBUG) return;
+		if (!enabled || logLevel > LEVEL_DEBUG) return;
 		if (msg == null) msg = "";
 		Throwable t = new Throwable(); 
 		StackTraceElement trace = t.getStackTrace()[1];
-		android.util.Log.d(getSourceInfo(trace), msg);
+		android.util.Log.d(logName, msg + " @ " + getSourceInfo(trace) );
 		checkLogFile();
 		logStream.println(getLog("DEBUG", msg));
 		logStream.flush();
 	}
 	
 	public static void info(String msg) {
-		if (!enabled && logLevel > LEVEL_INFO) return;
+		if (!enabled || logLevel > LEVEL_INFO) return;
 		if (msg == null) msg = "";
 		Throwable t = new Throwable(); 
 		StackTraceElement trace = t.getStackTrace()[1];
-		android.util.Log.i(getSourceInfo(trace), msg);
+		android.util.Log.i(logName, msg + " @ " + getSourceInfo(trace) );
 		checkLogFile();
 		logStream.println(getLog("INFO", msg));
 		logStream.flush();
 	}
 
 	public static void warn(String msg) {
-		if (!enabled && logLevel > LEVEL_WARN) return;
+		if (!enabled || logLevel > LEVEL_WARN) return;
 		if (msg == null) msg = "";
 		Throwable t = new Throwable(); 
 		StackTraceElement trace = t.getStackTrace()[1];
-		android.util.Log.w(getSourceInfo(trace), msg);
+		android.util.Log.w(logName, msg + " @ " + getSourceInfo(trace) );
 		checkLogFile();
 		logStream.println(getLog("WARN", msg));
 		logStream.flush();
 	}
 
 	public static void error(String msg) {
-		if (!enabled && logLevel > LEVEL_ERROR) return;
+		if (!enabled || logLevel > LEVEL_ERROR) return;
 		if (msg == null) msg = "";
 		Throwable t = new Throwable(); 
 		StackTraceElement trace = t.getStackTrace()[1];
-		android.util.Log.e(getSourceInfo(trace), msg);
+		android.util.Log.e(logName, msg + " @ " + getSourceInfo(trace) );
 		checkLogFile();
 		logStream.println(getLog("ERROR", msg));
 		logStream.flush();
@@ -220,11 +222,11 @@ public class Logger {
 		return new String(baos.toByteArray());
 	}
 	public static void error(Throwable e) {
-		if (!enabled && logLevel > LEVEL_ERROR) return;
+		if (!enabled || logLevel > LEVEL_ERROR) return;
 		String msg = e.getMessage() + " : " + getStackTrace(e);
 		Throwable t = new Throwable(); 
 		StackTraceElement trace = t.getStackTrace()[1];
-		android.util.Log.e(getSourceInfo(trace), msg);
+		android.util.Log.e(logName, msg + " @ " + getSourceInfo(trace) );
 		checkLogFile();
 		logStream.println(getLog("ERROR", msg));
 		logStream.flush();
@@ -232,11 +234,11 @@ public class Logger {
 	}
 	public static void check(boolean condition, String msg){
 		if (!condition)	{
-			if (!enabled && logLevel > LEVEL_ERROR) return;
+			if (!enabled || logLevel > LEVEL_ERROR) return;
 			if (msg == null) msg = "";
 			Throwable t = new Throwable(); 
 			StackTraceElement trace = t.getStackTrace()[1];
-			android.util.Log.e(getSourceInfo(trace), msg);
+			android.util.Log.e(logName, msg + " @ " + getSourceInfo(trace) );
 			checkLogFile();
 			logStream.println(getLog("ASSERT", msg));
 			logStream.flush();

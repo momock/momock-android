@@ -40,6 +40,7 @@ public class MenuActionOutlet extends Outlet implements IActionOutlet{
 	public void attach(Menu menu)
 	{
 		IDataList<IPlug> plugs = getPlugs();
+		menu.clear();
 		for(int i = 0; i < plugs.getItemCount(); i++)
 		{
 			final IActionPlug plug = (IActionPlug)plugs.getItem(i);
