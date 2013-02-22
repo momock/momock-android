@@ -21,6 +21,9 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import android.annotation.TargetApi;
+import android.os.Build;
+
 import com.momock.util.Logger;
 
 public class AsyncTaskService implements IAsyncTaskService {
@@ -44,10 +47,15 @@ public class AsyncTaskService implements IAsyncTaskService {
 		return null;
 	}
 
+	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
+	void config(){
+		executor.allowCoreThreadTimeOut(true);
+	}
 	@Override
 	public void start() {
 		executor = new ThreadPoolExecutor(10, 100, 30, TimeUnit.SECONDS, worksQueue, executionHandler);
-		executor.allowCoreThreadTimeOut(true);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
+			config();
 	}
 
 	@Override
