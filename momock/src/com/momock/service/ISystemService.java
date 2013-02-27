@@ -22,6 +22,7 @@ public interface ISystemService extends IService{
 	String getImsi();
 	String getImei();
 	String getMcc();
+	String getMnc();
 	void openUrl(String url);
 	void install(File file);
 	boolean isNetworkAvailable();

@@ -35,6 +35,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
+import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 
 import com.momock.binder.ViewBinder;
@@ -156,6 +157,13 @@ public abstract class App extends android.app.Application implements
 			@Override
 			public NotificationManager get() {
 				return (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+			}			
+		});
+
+		injector.addProvider(TelephonyManager.class, new Provider<TelephonyManager>(){
+			@Override
+			public TelephonyManager get() {
+				return (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 			}			
 		});
 		injector.addProvider(ActivityManager.class, new Provider<ActivityManager>(){

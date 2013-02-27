@@ -21,7 +21,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -31,14 +30,18 @@ import com.momock.app.IApplication;
 import com.momock.util.Logger;
 
 public class SystemService implements ISystemService {
-	@Inject 
+	@Inject
 	IApplication app;
+	
+	@Inject
+	TelephonyManager telephonyManager;
 
 	@Inject
 	ConnectivityManager connectivityManager = null;
 
-	@Inject 
+	@Inject
 	ActivityManager activityManager;
+
 	@Override
 	public void openUrl(String url) {
 
@@ -50,33 +53,42 @@ public class SystemService implements ISystemService {
 	public Class<?>[] getDependencyServices() {
 		return null;
 	}
+
 	String imsi = null;
 	String imei = null;
+	String mcc = null;
+	String mnc = null;
+
 	@Override
 	public void start() {
-		try{
-			TelephonyManager tm = (TelephonyManager) app.getCurrentContext().getSystemService(Context.TELEPHONY_SERVICE);
-			imsi = tm.getSubscriberId();
+		try {
+			imsi = telephonyManager.getSubscriberId();
 			if (imsi != null && imsi.length() == 16)
 				imsi = imsi.substring(1);
 			if (imsi != null && imsi.length() != 15)
 				imsi = null;
-			imei = tm.getDeviceId();
-		}catch(Exception e){
+			imei = telephonyManager.getDeviceId();
+
+			if ((telephonyManager.getNetworkOperator() != null)	&& (((telephonyManager.getNetworkOperator().length() == 5) || (telephonyManager.getNetworkOperator().length() == 6)))) {
+				mcc = telephonyManager.getNetworkOperator().substring(0, 3);
+				mnc = telephonyManager.getNetworkOperator().substring(3);
+			}
+		} catch (Exception e) {
 			Logger.error(e);
 		}
 	}
 
 	@Override
 	public void stop() {
-		
+
 	}
 
 	@Override
 	public void install(File file) {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+		intent.setDataAndType(Uri.fromFile(file),
+				"application/vnd.android.package-archive");
 		app.getCurrentContext().startActivity(intent);
 	}
 
@@ -97,32 +109,38 @@ public class SystemService implements ISystemService {
 
 	@Override
 	public String getMcc() {
-		if (imsi == null) return null;
-		return imsi.substring(0, 3);
+		return mcc;
+	}
+	@Override
+	public String getMnc() {
+		return mnc;
+	}
+	@Override
+	public boolean isNetworkAvailable() {
+		if (connectivityManager == null)
+			return true;
+		return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnectedOrConnecting();
 	}
 
 	@Override
-	public boolean isNetworkAvailable() {
-		if (connectivityManager == null) return true;
-		return connectivityManager.getActiveNetworkInfo() != null && 
-				connectivityManager.getActiveNetworkInfo().isConnectedOrConnecting();
-	}
-	@Override
-	public void exit(){
-		//android.os.Process.killProcess(android.os.Process.myPid());
+	public void exit() {
+		// android.os.Process.killProcess(android.os.Process.myPid());
 		System.exit(0);
 	}
+
 	@Override
 	public void killProcess(String packageName) {
 		activityManager.killBackgroundProcesses(packageName);
 	}
+
 	@Override
-	public boolean isProcessRunning(String packageName){
-		if (packageName == null) return false;
+	public boolean isProcessRunning(String packageName) {
+		if (packageName == null)
+			return false;
 		List<ActivityManager.RunningAppProcessInfo> list = activityManager.getRunningAppProcesses();
 		if (list != null) {
 			for (int i = 0; i < list.size(); ++i) {
-				if (packageName.equals(list.get(i).processName)) 
+				if (packageName.equals(list.get(i).processName))
 					return true;
 			}
 		}
