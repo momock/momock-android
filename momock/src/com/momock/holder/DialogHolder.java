@@ -32,11 +32,13 @@ public class DialogHolder implements IHolder {
 	protected IEventHandler<EventArgs> okHandler;
 	protected TextHolder cancelButton;
 	protected IEventHandler<EventArgs> cancelHandler;
+	protected boolean cancelable = true;
 	protected DialogHolder(ImageHolder icon, IHolder title,
 			IHolder message, TextHolder okButton,
 			IEventHandler<EventArgs> okHandler,
 			TextHolder cancelButton,
-			IEventHandler<EventArgs> cancelHandler){
+			IEventHandler<EventArgs> cancelHandler,
+			boolean cancelable){
 		this.icon = icon;
 		this.title = title;
 		this.message = message;
@@ -44,6 +46,7 @@ public class DialogHolder implements IHolder {
 		this.okHandler = okHandler;
 		this.cancelButton = cancelButton;
 		this.cancelHandler = cancelHandler;
+		this.cancelable = cancelable;
 	}
 	public void show(){
 		show(App.get().getCurrentActivity());
@@ -99,7 +102,7 @@ public class DialogHolder implements IHolder {
 				};
 				builder.setNegativeButton(cancelButton.getText(), listener);
 			}
-			builder.create().show();
+			builder.setCancelable(cancelable).create().show();
 		}catch(Exception e){
 			Logger.error(e);
 		}
@@ -122,6 +125,14 @@ public class DialogHolder implements IHolder {
 			IEventHandler<EventArgs> okHandler,
 			TextHolder cancelButton,
 			IEventHandler<EventArgs> cancelHandler) {		
-		return new DialogHolder(icon, title, message, okButton, okHandler, cancelButton, cancelHandler);
+		return create(icon, title, message, okButton, okHandler, cancelButton, cancelHandler, false);
+	}
+	public static DialogHolder create(ImageHolder icon, IHolder title,
+			IHolder message, TextHolder okButton,
+			IEventHandler<EventArgs> okHandler,
+			TextHolder cancelButton,
+			IEventHandler<EventArgs> cancelHandler,
+			boolean cancelable) {		
+		return new DialogHolder(icon, title, message, okButton, okHandler, cancelButton, cancelHandler, cancelable);
 	}
 }

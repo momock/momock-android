@@ -108,6 +108,11 @@ public abstract class CaseActivity extends FragmentActivity {
 		int usedMemEnd = (int)(MemoryHelper.getAvailableMemory() / 1024);
 		log("onResume : " + usedMemBegin + "K -> " + usedMemEnd + "K");
 		App.get().checkMemory();
+
+		if (App.get().isExiting()){
+			log("Finishing");
+			finish();
+		}
 	}
 
 	@Override

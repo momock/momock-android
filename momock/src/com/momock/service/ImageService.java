@@ -178,11 +178,10 @@ public class ImageService implements IImageService {
 												Logger.error("Fails to download image (" + args.getSession().getUrl() + ") : " + args.getSession().getError().getMessage());
 											}
 											if (args.getSession().isDownloaded()){
-												Logger.error("The content in image (" + args.getSession().getUrl() + ") : " + args.getSession().getResultAsString(null));
+												Logger.error("Fails to load downloaded image (" + args.getSession().getUrl() + ")");
 											}
 										} else {
-											ImageEventArgs iea = new ImageEventArgs(
-													fullUri, bitmap, args.getSession().getError());
+											ImageEventArgs iea = new ImageEventArgs(fullUri, bitmap, args.getSession().getError());
 											IEvent<ImageEventArgs> evt = allImageHandlers.get(fullUri);
 											evt.fireEvent(null, iea);
 										}

@@ -218,6 +218,7 @@ public abstract class App extends android.app.Application implements
 	}
 
 	// Implementation for IApplication interface
+	protected boolean forceExit = false;
 	protected ICase<?> activeCase = null;
 	protected int activeActivityCount = 0;
 	protected HashMap<String, ICase<?>> cases = new HashMap<String, ICase<?>>();
@@ -494,6 +495,7 @@ public abstract class App extends android.app.Application implements
 		Logger.debug("onCreateEnvironment (v " + getVersion() + ")");
 		if (environmentCreated) return;
 		environmentCreated = true;
+		forceExit = false;
 		onPreCreateEnvironment();
 		createServices();
 		onStaticCreate();
@@ -513,6 +515,10 @@ public abstract class App extends android.app.Application implements
 		ds = null;
 		destroyServices();
 		onStaticDestroy();
+		if (forceExit){
+			Logger.debug("Force Exit!");
+			System.exit(0);
+		}
 	}
 
 	@Override
@@ -590,5 +596,15 @@ public abstract class App extends android.app.Application implements
 		if (settings == null)
 			settings = new Settings(this, DEFAULT_SETTINGS);
 		return settings;
+	}
+	@Override
+	public void exit(){
+		forceExit = true;
+		if (getCurrentActivity() != null)
+			getCurrentActivity().finish();
+	}
+	@Override
+	public boolean isExiting(){
+		return forceExit;
 	}
 }

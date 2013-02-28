@@ -19,12 +19,11 @@ import android.os.Debug;
 
 public class MemoryHelper {
 
-	public static long getAvailableMemory() {
+	public static long getAvailableMemory() {					
 		long heapSize = Runtime.getRuntime().totalMemory();
 		long heapRemaining = Runtime.getRuntime().freeMemory();
 		long nativeUsage = Debug.getNativeHeapAllocatedSize();
-		long memoryAvailable = Runtime.getRuntime().maxMemory()
-				- (heapSize - heapRemaining) - nativeUsage;
-		return memoryAvailable;
+		long memoryAvailable = Runtime.getRuntime().maxMemory()	- (heapSize - heapRemaining) - nativeUsage;
+		return memoryAvailable > 0 ? memoryAvailable : 0;
 	}
 }

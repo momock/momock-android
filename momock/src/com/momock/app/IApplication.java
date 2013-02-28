@@ -89,4 +89,8 @@ public interface IApplication {
 	void setCurrentActivity(Activity activity);
 	
 	void checkMemory();
+	
+	void exit();
+	
+	boolean isExiting();
 }

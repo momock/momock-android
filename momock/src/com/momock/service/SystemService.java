@@ -123,12 +123,6 @@ public class SystemService implements ISystemService {
 	}
 
 	@Override
-	public void exit() {
-		// android.os.Process.killProcess(android.os.Process.myPid());
-		System.exit(0);
-	}
-
-	@Override
 	public void killProcess(String packageName) {
 		activityManager.killBackgroundProcesses(packageName);
 	}
