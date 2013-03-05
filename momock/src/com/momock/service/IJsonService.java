@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.momock.service;
 
+import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -51,15 +52,15 @@ public interface IJsonService extends IService{
 		}
 	}
 
-	void get(String url, IEventHandler<JsonEventArgs> handler);
+	void get(String url, Header[] headers, IEventHandler<JsonEventArgs> handler);
 
-	void post(String url, JSONObject json, IEventHandler<JsonEventArgs> handler);
+	void post(String url, JSONObject json, Header[] headers, IEventHandler<JsonEventArgs> handler);
 
-	void put(String url, JSONObject json, IEventHandler<JsonEventArgs> handler);
+	void put(String url, JSONObject json, Header[] headers, IEventHandler<JsonEventArgs> handler);
 
-	void post(String url, String json, IEventHandler<JsonEventArgs> handler);
+	void post(String url, String json, Header[] headers, IEventHandler<JsonEventArgs> handler);
 
-	void put(String url, String json, IEventHandler<JsonEventArgs> handler);
+	void put(String url, String json, Header[] headers, IEventHandler<JsonEventArgs> handler);
 
-	void delete(String url, IEventHandler<JsonEventArgs> handler);
+	void delete(String url, Header[] headers, IEventHandler<JsonEventArgs> handler);
 }

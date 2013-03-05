@@ -19,7 +19,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
-import com.momock.app.App;
 import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.util.Logger;
@@ -47,9 +46,6 @@ public class DialogHolder implements IHolder {
 		this.cancelButton = cancelButton;
 		this.cancelHandler = cancelHandler;
 		this.cancelable = cancelable;
-	}
-	public void show(){
-		show(App.get().getCurrentActivity());
 	}
 	public void show(Context context) {
 		try{			

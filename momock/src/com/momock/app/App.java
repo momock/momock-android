@@ -599,6 +599,7 @@ public abstract class App extends android.app.Application implements
 	}
 	@Override
 	public void exit(){
+		Logger.warn("Try to force exit!");
 		forceExit = true;
 		if (getCurrentActivity() != null)
 			getCurrentActivity().finish();

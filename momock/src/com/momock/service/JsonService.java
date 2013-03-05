@@ -41,9 +41,9 @@ public class JsonService implements IJsonService{
 		this.httpService = httpService;
 	}
 	@Override
-	public void get(String url, final IEventHandler<JsonEventArgs> handler) {
+	public void get(String url, Header[] headers, final IEventHandler<JsonEventArgs> handler) {
 		Logger.check(httpService != null, "The httpService must not be null!");
-		final HttpSession session = httpService.get(url);
+		final HttpSession session = httpService.get(url, headers, null);
 		session.getStateChangedEvent().addEventHandler(new IEventHandler<StateChangedEventArgs>(){
 
 			@Override
@@ -59,15 +59,16 @@ public class JsonService implements IJsonService{
 	}
 
 	@Override
-	public void post(String url, JSONObject json, final IEventHandler<JsonEventArgs> handler) {
-		post(url, json.toString(), handler);
+	public void post(String url, JSONObject json, Header[] headers, final IEventHandler<JsonEventArgs> handler) {
+		post(url, json.toString(), headers, handler);
 	}
 
 	@Override
-	public void post(String url, String json, final IEventHandler<JsonEventArgs> handler) { 
+	public void post(String url, String json, Header[] headers, final IEventHandler<JsonEventArgs> handler) { 
 		Logger.check(httpService != null, "The httpService must not be null!");
 		StringEntity entity = null;
-		Header[] headers = new Header[]{new BasicHeader(JSON_HEADER_KEY, JSON_HEADER_VAL)};
+		if (headers == null)
+			headers = new Header[]{new BasicHeader(JSON_HEADER_KEY, JSON_HEADER_VAL)};
 		try {
 			entity = new StringEntity(json, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
@@ -88,15 +89,16 @@ public class JsonService implements IJsonService{
 	}
 
 	@Override
-	public void put(String url, JSONObject json, final IEventHandler<JsonEventArgs> handler) {
-		put(url, json.toString(), handler);
+	public void put(String url, JSONObject json, Header[] headers, final IEventHandler<JsonEventArgs> handler) {
+		put(url, json.toString(), headers, handler);
 	}
 
 	@Override
-	public void put(String url, String json, final IEventHandler<JsonEventArgs> handler) {
+	public void put(String url, String json, Header[] headers, final IEventHandler<JsonEventArgs> handler) {
 		Logger.check(httpService != null, "The httpService must not be null!");
 		StringEntity entity = null;
-		Header[] headers = new Header[]{new BasicHeader(JSON_HEADER_KEY, JSON_HEADER_VAL)};
+		if (headers == null)
+			headers = new Header[]{new BasicHeader(JSON_HEADER_KEY, JSON_HEADER_VAL)};
 		try {
 			entity = new StringEntity(json, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
@@ -117,9 +119,9 @@ public class JsonService implements IJsonService{
 	}
 
 	@Override
-	public void delete(String url, final IEventHandler<JsonEventArgs> handler) {
+	public void delete(String url, Header[] headers, final IEventHandler<JsonEventArgs> handler) {
 		Logger.check(httpService != null, "The httpService must not be null!");
-		final HttpSession session = httpService.delete(url);
+		final HttpSession session = httpService.delete(url, headers, null);
 		session.getStateChangedEvent().addEventHandler(new IEventHandler<StateChangedEventArgs>(){
 
 			@Override
