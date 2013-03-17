@@ -25,18 +25,34 @@ import java.util.Set;
 
 import javax.inject.Provider;
 
+import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.DownloadManager;
 import android.app.NotificationManager;
+import android.app.SearchManager;
+import android.app.UiModeManager;
+import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
+import android.hardware.SensorManager;
+import android.location.LocationManager;
+import android.media.AudioManager;
 import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
+import android.os.PowerManager;
+import android.os.Vibrator;
+import android.os.storage.StorageManager;
+import android.service.wallpaper.WallpaperService;
 import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
+import android.view.WindowManager;
+import android.view.accessibility.AccessibilityManager;
 
 import com.momock.binder.ViewBinder;
 import com.momock.data.DataSet;
@@ -56,10 +72,12 @@ import com.momock.service.ICrashReportService;
 import com.momock.service.IImageService;
 import com.momock.service.ILayoutInflaterService;
 import com.momock.service.IMessageService;
+import com.momock.service.IRService;
 import com.momock.service.IService;
 import com.momock.service.IUITaskService;
 import com.momock.service.LayoutInflaterService;
 import com.momock.service.MessageService;
+import com.momock.service.RService;
 import com.momock.service.UITaskService;
 import com.momock.util.Logger;
 import com.momock.util.MemoryHelper;
@@ -141,36 +159,34 @@ public abstract class App extends android.app.Application implements
 				return getSettings();
 			}			
 		});
-		injector.addProvider(Resources.class, new Provider<Resources>(){
-			@Override
-			public Resources get() {
-				return getResources();
-			}			
-		});
-		injector.addProvider(ConnectivityManager.class, new Provider<ConnectivityManager>(){
-			@Override
-			public ConnectivityManager get() {
-				return (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-			}			
-		});
-		injector.addProvider(NotificationManager.class, new Provider<NotificationManager>(){
-			@Override
-			public NotificationManager get() {
-				return (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-			}			
-		});
+		injector.addProvider(Resources.class, getResources());
+		injector.addProvider(ConnectivityManager.class, getSystemService(CONNECTIVITY_SERVICE));
+		injector.addProvider(NotificationManager.class, getSystemService(NOTIFICATION_SERVICE));
+		injector.addProvider(TelephonyManager.class, getSystemService(TELEPHONY_SERVICE));
+		injector.addProvider(ActivityManager.class, getSystemService(ACTIVITY_SERVICE));
+		injector.addProvider(SensorManager.class, getSystemService(SENSOR_SERVICE));
+		injector.addProvider(AudioManager.class, getSystemService(AUDIO_SERVICE));
+		injector.addProvider(PowerManager.class, getSystemService(POWER_SERVICE));
+		injector.addProvider(WindowManager.class, getSystemService(WINDOW_SERVICE));		
+		injector.addProvider(StorageManager.class, getSystemService(STORAGE_SERVICE));
+		injector.addProvider(SearchManager.class, getSystemService(SEARCH_SERVICE));
+		injector.addProvider(UiModeManager.class, getSystemService(UI_MODE_SERVICE));
+		injector.addProvider(DownloadManager.class, getSystemService(DOWNLOAD_SERVICE));
+		injector.addProvider(AccessibilityManager.class, getSystemService(ACCESSIBILITY_SERVICE));
+		injector.addProvider(AccountManager.class, getSystemService(ACCOUNT_SERVICE));
+		injector.addProvider(Vibrator.class, getSystemService(VIBRATOR_SERVICE));
+		injector.addProvider(WallpaperService.class, getSystemService(WALLPAPER_SERVICE));
+		injector.addProvider(WifiManager.class, getSystemService(WIFI_SERVICE));
+		injector.addProvider(AlarmManager.class, getSystemService(ALARM_SERVICE));
+		injector.addProvider(DevicePolicyManager.class, getSystemService(DEVICE_POLICY_SERVICE));
+		injector.addProvider(LocationManager.class, getSystemService(LOCATION_SERVICE));
+		injector.addProvider(LayoutInflater.class, new Provider<LayoutInflater>(){
 
-		injector.addProvider(TelephonyManager.class, new Provider<TelephonyManager>(){
 			@Override
-			public TelephonyManager get() {
-				return (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-			}			
-		});
-		injector.addProvider(ActivityManager.class, new Provider<ActivityManager>(){
-			@Override
-			public ActivityManager get() {
-				return (ActivityManager)getSystemService(ACTIVITY_SERVICE);
-			}			
+			public LayoutInflater get() {
+				return (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+			}
+			
 		});
 		
 		super.onCreate();
@@ -216,7 +232,7 @@ public abstract class App extends android.app.Application implements
 	public void startActivity(Class<?> activityClass) {
 		getCurrentContext().startActivity(new Intent(getCurrentContext(), activityClass));
 	}
-
+	
 	// Implementation for IApplication interface
 	protected boolean forceExit = false;
 	protected ICase<?> activeCase = null;
@@ -412,6 +428,7 @@ public abstract class App extends android.app.Application implements
 		addService(IAsyncTaskService.class, new AsyncTaskService());
 		addService(IUITaskService.class, new UITaskService());
 		addService(IMessageService.class, new MessageService());
+		addService(IRService.class, new RService());
 		onRegisterShortNames();
 		
 		onAddServices();
