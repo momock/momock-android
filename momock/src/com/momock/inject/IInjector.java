@@ -18,6 +18,7 @@ package com.momock.inject;
 import javax.inject.Provider;
 
 public interface IInjector {
+	<T> T getObject(Class<T> klass);
 	void inject(Object obj);
 	void addProvider(Class<?> klass, final Object obj);
 	void addProvider(Class<?> klass, Provider<?> provider);

@@ -61,7 +61,8 @@ import com.momock.data.Settings;
 import com.momock.holder.ImageHolder;
 import com.momock.holder.TextHolder;
 import com.momock.holder.ViewHolder;
-import com.momock.inject.Injector;
+import com.momock.inject.IInjector;
+import com.momock.inject.InjectorWithResources;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
@@ -88,7 +89,12 @@ public abstract class App extends android.app.Application implements
 	
 	static App app = null;
 	
-	Injector injector = new Injector();
+	IInjector injector = onCreateInjector();
+
+	@Override
+	public IInjector onCreateInjector(){
+		return new InjectorWithResources();
+	}
 	Set<Class<?>> serviceCanNotStop = new HashSet<Class<?>>();
 	
 	public static App get() {

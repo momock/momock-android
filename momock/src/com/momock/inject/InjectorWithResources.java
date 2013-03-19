@@ -16,58 +16,49 @@
 package com.momock.inject;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 
+import javax.inject.Named;
 import javax.inject.Provider;
+
+import android.content.Context;
+import android.content.res.Resources;
 
 import com.momock.util.Logger;
 
-public class Injector implements IInjector{
-	HashMap<Class<?>, Provider<?>> providers = new HashMap<Class<?>, Provider<?>>();
-
-	public Injector() {
-		addProvider(Injector.class, this);
-	}
-	public <T> T getObject(Class<T> klass){
-		Provider<T> provider = getProvider(klass);
-		return provider == null ? null : provider.get();
-	}
-	@SuppressWarnings("unchecked")
-	public <T> Provider<T> getProvider(Class<T> klass){
-		try{
-			return (Provider<T>)providers.get(klass);
-		}catch(Exception e){
-			Logger.error(e);
-			return null;
-		}
-	}
-	public void addProvider(Class<?> klass, Provider<?> provider) {
-		providers.put(klass, provider);
-	}
-
-	public void addProvider(Class<?> klass, final Object obj) {
-		providers.put(klass, new Provider<Object>() {
-
-			@Override
-			public Object get() {
-				return obj;
-			}
-
-		});
-	}
-
-	public void removeProvider(Class<?> klass) {
-		providers.remove(klass);
-	}
-
-	public void removeAllProviders() {
-		providers.clear();
-	}
-
+public class InjectorWithResources extends Injector{
+	@Override
 	public void inject(Object obj) {
+		Resources resources = getObject(Resources.class);
+		Context context = getObject(Context.class);
 		for (Class<?> c = obj.getClass(); c != Object.class; c = c
 				.getSuperclass()) {
 			for (Field field : c.getDeclaredFields()) {
+				Named named = field.getAnnotation(javax.inject.Named.class);
+				if (named != null && field.getType() == int.class && resources != null && context != null){
+					String[] parts = named.value().trim().split("\\.");
+					String type = "id";
+					String name = null;
+					if (parts.length == 1){
+						name = parts[0];
+					} else if (parts.length == 2){
+						type = parts[0];
+						name = parts[1];
+					} else if (parts.length == 3){
+						type = parts[1];
+						name = parts[2];
+					} else{
+						Logger.error(named.value() + " is not a valid resource name!");
+						continue;
+					}						
+					int id = resources.getIdentifier(name, type, context.getPackageName());
+					field.setAccessible(true);
+					try {
+						field.set(obj, id);
+					} catch (Exception e) {
+						Logger.error(e);
+					}
+					continue;
+				}
 				if (field.getAnnotation(javax.inject.Inject.class) == null) {
 					continue;
 				}
