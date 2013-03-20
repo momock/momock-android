@@ -101,6 +101,14 @@ public abstract class CaseActivity extends FragmentActivity {
 
 	@Override
 	protected void onResume() {
+		if (App.get().getCurrentActivity() != this){
+			App.get().setCurrentActivity(this);
+			log("restore current activity");
+		}
+		if (!this.getCase().isActive()){
+			App.get().setActiveCase(getCase());
+			log("restore active case");
+		}
 		int usedMemBegin = (int)(MemoryHelper.getAvailableMemory() / 1024);
 	    System.gc();
 		super.onResume();
