@@ -72,13 +72,21 @@ public class FragmentPagerTabOutlet extends Outlet implements ITabOutlet{
 		    }
 
 			@Override
-			public void setPrimaryItem(ViewGroup container, int position, Object object) {
+			public void setPrimaryItem(ViewGroup container, int position, final Object object) {
 				super.setPrimaryItem(container, position, object);
-				if (object instanceof CaseFragment){
-					CaseFragment cf = (CaseFragment)object;
-					if (cf.getCase() != null && cf.getCase().getParent() != null)
-						cf.getCase().getParent().setActiveCase(cf.getCase());
-				}
+				new Handler().post(new Runnable(){
+
+					@Override
+					public void run() {
+						
+						if (object instanceof CaseFragment){
+							CaseFragment cf = (CaseFragment)object;
+							if (cf.getCase() != null && cf.getCase().getParent() != null)
+								cf.getCase().getParent().setActiveCase(cf.getCase());
+						}
+					}
+					
+				});			
 			}
 		});
 		tabHost.setup();
