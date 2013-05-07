@@ -25,6 +25,7 @@ import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TabWidget;
 
+import com.momock.app.CaseFragment;
 import com.momock.data.IDataList;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.FragmentTabHolder;
@@ -69,42 +70,18 @@ public class FragmentPagerTabOutlet extends Outlet implements ITabOutlet{
 		    		
 		    	});
 		    }
-		});
-		tabContent
-				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-					@Override
-					public void onPageSelected(int position) {
-						TabWidget widget = tabHost.getTabWidget();
-						int oldFocusability = widget
-								.getDescendantFocusability();
-						widget.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-						tabHost.setCurrentTab(position);
-						widget.setDescendantFocusability(oldFocusability);
-					}
-
-					@Override
-					public void onPageScrolled(int position,
-							float positionOffset, int positionOffsetPixels) {
-
-					}
-
-					@Override
-					public void onPageScrollStateChanged(int state) {
-
-					}
-				});
-		tabHost.setup();
-		tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
 
 			@Override
-			public void onTabChanged(String tabId) {
-				int index = tabHost.getCurrentTab();
-				ITabPlug plug = (ITabPlug)plugs.getItem(index);
-				setActivePlug(plug);
-				tabContent.setCurrentItem(index, true);
+			public void setPrimaryItem(ViewGroup container, int position, Object object) {
+				super.setPrimaryItem(container, position, object);
+				if (object instanceof CaseFragment){
+					CaseFragment cf = (CaseFragment)object;
+					if (cf.getCase() != null && cf.getCase().getParent() != null)
+						cf.getCase().getParent().setActiveCase(cf.getCase());
+				}
 			}
 		});
+		tabHost.setup();
 		for (int i = 0; i < plugs.getItemCount(); i++) {
 			final ITabPlug plug = (ITabPlug)plugs.getItem(i);
 			Logger.check(plug.getContent() instanceof FragmentHolder,
@@ -124,9 +101,43 @@ public class FragmentPagerTabOutlet extends Outlet implements ITabOutlet{
 
 			});
 			tabHost.addTab(spec);
-			if (getActivePlug() == plug)
+			if (getActivePlug() == plug){
 				tabHost.setCurrentTab(i);
+				tabContent.setCurrentItem(i, true);
+			}
 		}
+		tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+
+			@Override
+			public void onTabChanged(String tabId) {
+				int index = tabHost.getCurrentTab();
+				ITabPlug plug = (ITabPlug)plugs.getItem(index);
+				setActivePlug(plug);
+				tabContent.setCurrentItem(index, true);
+			}
+		});
+		tabContent.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				TabWidget widget = tabHost.getTabWidget();
+				int oldFocusability = widget
+						.getDescendantFocusability();
+				widget.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+				tabHost.setCurrentTab(position);
+				widget.setDescendantFocusability(oldFocusability);
+			}
+
+			@Override
+			public void onPageScrolled(int position,
+					float positionOffset, int positionOffsetPixels) {
+
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int state) {
+
+			}
+		});
 	}
 
 	@Override
