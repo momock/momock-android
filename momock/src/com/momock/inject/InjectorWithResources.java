@@ -51,6 +51,8 @@ public class InjectorWithResources extends Injector{
 						continue;
 					}						
 					int id = resources.getIdentifier(name, type, context.getPackageName());
+					if (id == 0)
+						Logger.warn(named.value() + " does not exist!");
 					field.setAccessible(true);
 					try {
 						field.set(obj, id);

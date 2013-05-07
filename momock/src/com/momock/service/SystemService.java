@@ -16,7 +16,10 @@
 package com.momock.service;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.RandomAccessFile;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -26,13 +29,15 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.telephony.TelephonyManager;
 
+import com.momock.app.App;
 import com.momock.app.IApplication;
+import com.momock.util.FileHelper;
 import com.momock.util.Logger;
 
 public class SystemService implements ISystemService {
 	@Inject
 	IApplication app;
-	
+
 	@Inject
 	TelephonyManager telephonyManager;
 
@@ -45,7 +50,8 @@ public class SystemService implements ISystemService {
 	@Override
 	public void openUrl(String url) {
 
-		app.getCurrentContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+		app.getCurrentContext().startActivity(
+				new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
 
 	}
 
@@ -69,7 +75,9 @@ public class SystemService implements ISystemService {
 				imsi = null;
 			imei = telephonyManager.getDeviceId();
 
-			if ((telephonyManager.getNetworkOperator() != null)	&& (((telephonyManager.getNetworkOperator().length() == 5) || (telephonyManager.getNetworkOperator().length() == 6)))) {
+			if ((telephonyManager.getNetworkOperator() != null)
+					&& (((telephonyManager.getNetworkOperator().length() == 5) || (telephonyManager
+							.getNetworkOperator().length() == 6)))) {
 				mcc = telephonyManager.getNetworkOperator().substring(0, 3);
 				mnc = telephonyManager.getNetworkOperator().substring(3);
 			}
@@ -111,15 +119,19 @@ public class SystemService implements ISystemService {
 	public String getMcc() {
 		return mcc;
 	}
+
 	@Override
 	public String getMnc() {
 		return mnc;
 	}
+
 	@Override
 	public boolean isNetworkAvailable() {
 		if (connectivityManager == null)
 			return true;
-		return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnectedOrConnecting();
+		return connectivityManager.getActiveNetworkInfo() != null
+				&& connectivityManager.getActiveNetworkInfo()
+						.isConnectedOrConnecting();
 	}
 
 	@Override
@@ -131,7 +143,8 @@ public class SystemService implements ISystemService {
 	public boolean isProcessRunning(String packageName) {
 		if (packageName == null)
 			return false;
-		List<ActivityManager.RunningAppProcessInfo> list = activityManager.getRunningAppProcesses();
+		List<ActivityManager.RunningAppProcessInfo> list = activityManager
+				.getRunningAppProcesses();
 		if (list != null) {
 			for (int i = 0; i < list.size(); ++i) {
 				if (packageName.equals(list.get(i).processName))
@@ -139,5 +152,26 @@ public class SystemService implements ISystemService {
 			}
 		}
 		return false;
+	}
+
+	String deviceId = null;
+	private static final String DEVICE_ID_FILE_NAME = "generated.device.id";
+
+	@Override
+	public String getDeviceId() {
+		if (deviceId != null)
+			return deviceId;
+		File idfile = new File(App.get().getFilesDir(), DEVICE_ID_FILE_NAME);
+		try {
+			if (!idfile.exists()) {
+				deviceId = UUID.randomUUID().toString();
+				FileHelper.writeTextFile(idfile, deviceId);
+			} else {
+				deviceId = FileHelper.readTextFile(idfile);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return deviceId;
 	}
 }

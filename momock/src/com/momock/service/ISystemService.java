@@ -28,4 +28,5 @@ public interface ISystemService extends IService{
 	boolean isNetworkAvailable();
 	void killProcess(String packageName);
 	boolean isProcessRunning(String packageName);
+	String getDeviceId();
 }
