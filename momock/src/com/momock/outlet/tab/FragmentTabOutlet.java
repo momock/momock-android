@@ -37,29 +37,6 @@ public class FragmentTabOutlet extends Outlet implements ITabOutlet {
 		TabHost tabHost = target.getTabHost();
 		final IDataList<IPlug> plugs = getPlugs();
 		tabHost.setup();
-		for(int i = 0; i < plugs.getItemCount(); i++)
-		{
-			final ITabPlug plug = (ITabPlug)plugs.getItem(i);
-			if (plug.getContent() instanceof FragmentHolder)
-			{
-		        TabHost.TabSpec spec = tabHost.newTabSpec("" + i);
-		        target.setTabIndicator(spec, plug);
-		        spec.setContent(new TabContentFactory(){
-
-					@Override
-					public View createTabContent(String tag) {
-		                View v = new View(target.getTabHost().getContext());
-		                v.setMinimumWidth(0);
-		                v.setMinimumHeight(0);
-						return v;
-					}
-		        	
-		        });
-		        tabHost.addTab(spec);	
-		        if (getActivePlug() == plug)
-		        	tabHost.setCurrentTab(i);
-			}	
-		}
 		tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
 			
 			@Override
@@ -91,6 +68,29 @@ public class FragmentTabOutlet extends Outlet implements ITabOutlet {
 				});
 			}
 		});
+		for(int i = 0; i < plugs.getItemCount(); i++)
+		{
+			final ITabPlug plug = (ITabPlug)plugs.getItem(i);
+			if (plug.getContent() instanceof FragmentHolder)
+			{
+		        TabHost.TabSpec spec = tabHost.newTabSpec("" + i);
+		        target.setTabIndicator(spec, plug);
+		        spec.setContent(new TabContentFactory(){
+
+					@Override
+					public View createTabContent(String tag) {
+		                View v = new View(target.getTabHost().getContext());
+		                v.setMinimumWidth(0);
+		                v.setMinimumHeight(0);
+						return v;
+					}
+		        	
+		        });
+		        tabHost.addTab(spec);	
+		        if (getActivePlug() == plug)
+		        	tabHost.setCurrentTab(i);
+			}	
+		}
 	}
 
 	@Override
