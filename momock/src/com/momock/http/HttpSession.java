@@ -36,6 +36,7 @@ import java.util.zip.GZIPInputStream;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -100,6 +101,7 @@ public class HttpSession{
 	File fileData = null;
 	File fileInfo = null;
 	int state = STATE_WAITING;
+	int statusCode = 0;
 	HttpRequestBase request = null;
 	boolean downloadMode = false;
 	byte[] result = null;
@@ -409,8 +411,8 @@ public class HttpSession{
 
 						@Override
 						public Object handleResponse(HttpResponse response) {
-
-							Logger.debug("Response headers of " + url + " : ");
+							statusCode = response.getStatusLine().getStatusCode();
+							Logger.debug("Response headers of " + url + "[" + statusCode + "] : ");
 							for(Header header : response.getAllHeaders()){
 								Logger.debug(header.getName() + " = " + header.getValue());
 							}
@@ -506,6 +508,9 @@ public class HttpSession{
 			request.abort();
 			request = null; 
 		}
+	}
+	public int getStatusCode() {
+		return statusCode;
 	}
 
 }
