@@ -70,7 +70,7 @@ public class DataNodeView extends DataViewBase<IDataNode> implements IEventHandl
 	}
 
 	void visit(IDataNode current, String[] segments, int level) {
-		if (segments != null && segments.length <= level)
+		if (segments == null || segments != null && segments.length <= level)
 			return;
 		String name = segments[level];
 		if (current.hasProperty(name)) {
