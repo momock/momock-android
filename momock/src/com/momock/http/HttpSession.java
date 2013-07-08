@@ -36,7 +36,6 @@ import java.util.zip.GZIPInputStream;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -398,8 +397,10 @@ public class HttpSession{
 			request.setHeader("Accept-Encoding", "gzip");	
 		} 
 		Logger.debug("Request headers of " + url + " : ");
-		for(Header header : request.getAllHeaders()){
-			Logger.debug(header.getName() + " = " + header.getValue());
+		if (request != null) {
+			for(Header header : request.getAllHeaders()){
+				Logger.debug(header.getName() + " = " + header.getValue());
+			}
 		}
 		setState(STATE_STARTED);
 		Runnable task = new Runnable(){
