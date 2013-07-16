@@ -631,4 +631,14 @@ public abstract class App extends android.app.Application implements
 	public boolean isExiting(){
 		return forceExit;
 	}
+
+	public static boolean isEnvironmentCreated() {
+		if (app == null)
+			return false;
+		
+		if (!app.environmentCreated)
+			return false;
+		
+		return true;
+	}
 }
