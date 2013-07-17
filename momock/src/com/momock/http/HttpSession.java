@@ -321,6 +321,9 @@ public class HttpSession{
 		return state == STATE_FINISHED;
 	}
 	public void setState(final int state) {
+		if (this.state == STATE_FINISHED && state > STATE_STARTED)
+			return;
+		
 		this.state = state;
 		if (state == STATE_CONTENT_RECEIVING){
 			Logger.debug(url + "(" + getStateName(state) + ") : " + downloadedLength + "/" + contentLength);
