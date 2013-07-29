@@ -127,8 +127,7 @@ public class ImageService implements IImageService {
 		if (pos > 0) {
 			int pos2 = fullUri.lastIndexOf('x');
 			Logger.check(pos2 > pos, "The image uri is not correct!");
-			expectedWidth = Convert.toInteger(fullUri.substring(pos + 1, pos2 - pos
-					- 1));
+			expectedWidth = Convert.toInteger(fullUri.substring(pos + 1, pos2));
 			expectedHeight = Convert.toInteger(fullUri.substring(pos2 + 1));
 			uri = fullUri.substring(0, pos);
 		} else {

@@ -27,6 +27,29 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 
 public class ImageHelper {
+
+	public static boolean toFile(Bitmap bitmap, File file) {
+		if (file == null) return false;
+		try {
+			FileOutputStream out = new FileOutputStream(file);
+			Bitmap.CompressFormat format = Bitmap.CompressFormat.PNG;
+			String fn = file.getName().toLowerCase();
+			if (fn.endsWith(".jpg") || fn.endsWith(".jpeg"))
+				format = Bitmap.CompressFormat.JPEG;
+			bitmap.compress(format, 85, out);
+			out.close();
+		} catch (Exception e) {
+			Logger.error(e);
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean toFile(Bitmap bitmap, String filename) {
+		if (filename == null) return false;		
+		return toFile(bitmap, new File(filename));
+	}
+
 	public static Bitmap fromFile(final String fn) {
 		return fromFile(fn, -1, -1);
 	}
@@ -65,6 +88,7 @@ public class ImageHelper {
 					options = new BitmapFactory.Options();
 					options.inSampleSize = Math.max(inWidth / expectedWidth,
 							inHeight / expectedHeight);
+					options.inPreferredConfig = Bitmap.Config.RGB_565;
 					roughBitmap = BitmapFactory.decodeStream(in, null, options);
 				} finally {
 					in.close();
