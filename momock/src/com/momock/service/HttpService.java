@@ -17,6 +17,7 @@ package com.momock.service;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -82,9 +83,14 @@ public class HttpService implements IHttpService {
 	}
 	
 	@Override
-	public void setDefaultHeaders(Header[] headers){
-		if (headers != null)
+	public void setDefaultHeaders(Header[] hs){
+		if (hs != null){
+			List<Header> headers = new ArrayList<Header>();  
+			for(Header h : hs){
+				headers.add(h);				
+			}
 			httpClient.getParams().setParameter(ClientPNames.DEFAULT_HEADERS, headers);
+		}
 	}
 	HttpEntity getHttpEntity(IDataMap<String, String> params){
 		if (params == null) return null;
