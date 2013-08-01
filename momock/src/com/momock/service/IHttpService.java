@@ -26,6 +26,7 @@ import com.momock.http.HttpSession;
 
 public interface IHttpService extends IService{
 	HttpClient getHttpClient();
+	void setDefaultHeaders(Header[] headers);
 	HttpSession download(String url, File file);
 	HttpSession get(String url);
 	HttpSession get(String url, IDataMap<String, String> params);

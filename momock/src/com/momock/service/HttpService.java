@@ -30,6 +30,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 
@@ -79,7 +80,12 @@ public class HttpService implements IHttpService {
 	public HttpClient getHttpClient() {
 		return httpClient;
 	}
-
+	
+	@Override
+	public void setDefaultHeaders(Header[] headers){
+		if (headers != null)
+			httpClient.getParams().setParameter(ClientPNames.DEFAULT_HEADERS, headers);
+	}
 	HttpEntity getHttpEntity(IDataMap<String, String> params){
 		if (params == null) return null;
 		List<BasicNameValuePair> lparams = new LinkedList<BasicNameValuePair>();
