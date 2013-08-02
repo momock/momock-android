@@ -67,7 +67,7 @@ import com.momock.outlet.IOutlet;
 import com.momock.outlet.IPlug;
 import com.momock.outlet.PlaceholderOutlet;
 import com.momock.service.AsyncTaskService;
-import com.momock.service.CrashResportService;
+import com.momock.service.CrashReportService;
 import com.momock.service.IAsyncTaskService;
 import com.momock.service.ICrashReportService;
 import com.momock.service.IImageService;
@@ -429,7 +429,7 @@ public abstract class App extends android.app.Application implements
 		destroyServices(); // try to stop the services previously keep running
 		onPreCreateServices();
 		
-		addService(ICrashReportService.class, new CrashResportService());
+		addService(ICrashReportService.class, new CrashReportService());
 		addService(ILayoutInflaterService.class, new LayoutInflaterService());
 		addService(IAsyncTaskService.class, new AsyncTaskService());
 		addService(IUITaskService.class, new UITaskService());

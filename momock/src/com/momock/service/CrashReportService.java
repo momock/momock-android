@@ -20,16 +20,16 @@ import com.momock.event.IEvent;
 import com.momock.event.IEventHandler;
 import com.momock.util.Logger;
 
-public class CrashResportService implements ICrashReportService {
+public class CrashReportService implements ICrashReportService {
 	protected IEvent<CrashEventArgs> event = new Event<CrashEventArgs>();
 	
 	protected Thread.UncaughtExceptionHandler defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-	public CrashResportService(){
+	public CrashReportService(){
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
 			@Override
 			public void uncaughtException(Thread thread, Throwable error) {
 				CrashEventArgs args = new CrashEventArgs(thread, error);
-				event.fireEvent(CrashResportService.this, args);
+				event.fireEvent(CrashReportService.this, args);
 				onCrash(thread, error);
 				defaultExceptionHandler.uncaughtException(thread, error);
 			}
