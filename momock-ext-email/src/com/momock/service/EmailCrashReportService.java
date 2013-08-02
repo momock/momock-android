@@ -22,7 +22,7 @@ import android.content.Context;
 import com.momock.app.IApplication;
 import com.momock.util.Logger;
 
-public class EmailCrashReportService extends CrashResportService {
+public class EmailCrashReportService extends CrashReportService {
 	@Inject
 	IEmailService emailService = null;
 	@Inject 
