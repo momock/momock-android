@@ -17,57 +17,43 @@ package com.momock.util;
 
 import java.util.Iterator;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import com.momock.data.DataNode;
-import com.momock.data.IDataNode;
-
 public class JsonHelper {
-	static void build(DataNode dn, Object obj){
-		if (obj instanceof JSONObject){
-			JSONObject jobj = (JSONObject)obj;
-			Iterator<?> keys = jobj.keys();
-	        while( keys.hasNext() ){
-	            String key = (String)keys.next();
+	public static Object select(JSONObject node, String path){
+		if (path == null) return node;
+		int pos = path.indexOf("/");
+		String current = pos == -1 ? path : path.substring(0, pos);
+		String next = pos == -1 ? null : path.substring(pos + 1);
+		Iterator<?> keys = node.keys();
+        while( keys.hasNext() ){
+            String key = (String)keys.next();
+            if (current.equals(key)){
 	            Object val;
 				try {
-					val = jobj.get(key);
+					val = node.get(key);
+					if (next == null) return val;
+		            if(val instanceof JSONObject){
+		            	return select((JSONObject)val, next);
+		            } else {
+		            	return null;
+		            }
 				} catch (JSONException e) {
 					Logger.error(e);
-					continue;
 				}
-	            if(val instanceof JSONObject || val instanceof JSONArray){
-	            	DataNode cdn = new DataNode();
-	            	build(cdn, val);
-	            	val = cdn;
-	            }
-	            dn.setProperty(key, val);
-	        }
-		} else if (obj instanceof JSONArray){
-			JSONArray jarr = (JSONArray)obj;
-			for(int i = 0; i < jarr.length(); i++){
-				Object val;
-				try {
-					val = jarr.get(i);
-				} catch (JSONException e) {
-					Logger.error(e);
-					continue;
-				}
-				if(val instanceof JSONObject || val instanceof JSONArray){
-	            	DataNode cdn = new DataNode();
-	            	build(cdn, val);
-	            	val = cdn;
-	            }
-				dn.addItem(val);
-			}
-		} else {
-			
-		}
+            }
+        }
+        return null;
 	}
-	public static IDataNode parse(String json) {
+	public static String selectString(JSONObject node, String path){
+		return Convert.toString(select(node, path));
+	}
+	public static Integer selectInteger(JSONObject node, String path){
+		return Convert.toInteger(select(node, path));
+	}
+	public static JSONObject parse(String json) {
 		JSONTokener tokener = new JSONTokener(json);
 		Object root;
 		try {
@@ -76,9 +62,7 @@ public class JsonHelper {
 			Logger.error(e);
 			return null;
 		}
-		DataNode dn = new DataNode();
-		build(dn, root);
-		return dn;
+		return (JSONObject)root;
 	}
 
 }

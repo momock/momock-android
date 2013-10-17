@@ -18,8 +18,10 @@ package com.momock.service;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -113,12 +115,19 @@ public class HttpService implements IHttpService {
 		return get(url, null);
 	}
 	@Override
-	public HttpSession get(String url, IDataMap<String, String> params) {
+	public HttpSession get(String url, IDataMap<String, String> params) {		
 		return get(url, null, params);
+	}
+	String getFullUrl(String url, IDataMap<String, String> params){
+		Map<String, String> ps = new HashMap<String, String>();
+		for(String key : params.getPropertyNames()){
+			ps.put(key, params.getProperty(key));
+		}
+		return HttpHelper.getFullUrl(url, ps);
 	}
 	@Override
 	public HttpSession get(String url, Header[] headers, IDataMap<String, String> params) {
-		HttpGet httpGet = new HttpGet(HttpHelper.getFullUrl(url, params));	
+		HttpGet httpGet = new HttpGet(getFullUrl(url, params));	
 		if (headers != null) httpGet.setHeaders(headers);
 		return new HttpSession(httpClient, httpGet, uiTaskService, asyncTaskService);
 	}
@@ -178,7 +187,7 @@ public class HttpService implements IHttpService {
 	}
 	@Override
 	public HttpSession delete(String url, Header[] headers,	IDataMap<String, String> params) {
-		HttpDelete httpDelete = new HttpDelete(HttpHelper.getFullUrl(url, params));	
+		HttpDelete httpDelete = new HttpDelete(getFullUrl(url, params));	
 		if (headers != null) httpDelete.setHeaders(headers);
 		return new HttpSession(httpClient, httpDelete, uiTaskService, asyncTaskService);
 	}

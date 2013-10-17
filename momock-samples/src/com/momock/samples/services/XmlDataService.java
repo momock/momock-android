@@ -24,8 +24,8 @@ import com.momock.data.IDataList;
 import com.momock.data.IDataNode;
 import com.momock.samples.model.Category;
 import com.momock.samples.model.Product;
+import com.momock.util.DataHelper;
 import com.momock.util.Logger;
-import com.momock.util.XmlHelper;
 
 public class XmlDataService implements IDataService{
 	DataList<Product> products = new DataList<Product>();
@@ -33,7 +33,7 @@ public class XmlDataService implements IDataService{
 	public XmlDataService(){
 		try {
 			int i; 
-			IDataNode node = XmlHelper.parse(XmlHelper.createParser(App.get().getAssets().open("PreloadData.xml"), "UTF-8"));
+			IDataNode node = DataHelper.parseXml(App.get().getAssets().open("PreloadData.xml"));
 			IDataList<IDataNode> cs = new DataNodeView(node, "Categories/Category").getData();
 			for(i = 0; i < cs.getItemCount(); i++){
 				Category c = new Category();

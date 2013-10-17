@@ -82,7 +82,6 @@ import com.momock.service.RService;
 import com.momock.service.UITaskService;
 import com.momock.util.Logger;
 import com.momock.util.MemoryHelper;
-import com.momock.util.TextHelper;
 
 public abstract class App extends android.app.Application implements
 		IApplication {
@@ -407,14 +406,12 @@ public abstract class App extends android.app.Application implements
 	protected void onPostCreateServices() {
 	}
 	protected void onStaticCreate(){
-		TextHelper.onStaticCreate(this);
 		TextHolder.onStaticCreate(this);
 		ImageHolder.onStaticCreate(this);
 		ViewHolder.onStaticCreate(this);
 		ViewBinder.onStaticCreate(this);
 	}
 	protected void onStaticDestroy(){
-		TextHelper.onStaticDestroy(this);
 		TextHolder.onStaticDestroy(this);
 		ImageHolder.onStaticDestroy(this);
 		ViewHolder.onStaticDestroy(this);

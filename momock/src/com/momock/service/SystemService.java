@@ -165,9 +165,9 @@ public class SystemService implements ISystemService {
 		try {
 			if (!idfile.exists()) {
 				deviceId = UUID.randomUUID().toString();
-				FileHelper.writeTextFile(idfile, deviceId);
+				FileHelper.writeText(idfile, deviceId);
 			} else {
-				deviceId = FileHelper.readTextFile(idfile);
+				deviceId = FileHelper.readText(idfile);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

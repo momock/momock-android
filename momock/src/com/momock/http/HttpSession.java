@@ -268,7 +268,7 @@ public class HttpSession{
 		try {
 			if (downloadMode) {
 				if (file != null)
-					return FileHelper.readTextFile(file, encoding);
+					return FileHelper.readText(file, encoding);
 
 			} else {
 				if (result != null)
@@ -474,7 +474,7 @@ public class HttpSession{
 										if (isDownloaded() || isChunked()){
 											if (file.exists())
 												file.delete();
-											FileHelper.copyFile(fileData, file);
+											FileHelper.copy(fileData, file);
 											fileData.delete();
 											fileInfo.delete();
 											setState(STATE_CONTENT_RECEIVED);	
