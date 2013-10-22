@@ -56,6 +56,7 @@ public class HttpHelper {
 		return URLEncodedUtils.format(lparams, "UTF-8");
 	}
 	public static String getFullUrl(String url, Map<String, String> params) {
+		if (url == null) return null;
 		if (params == null)
 			return url;
 		return url + (url.lastIndexOf('?') == -1 ? "?" : "&") + getParamString(params);

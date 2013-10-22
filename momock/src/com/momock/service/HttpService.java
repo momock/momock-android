@@ -57,15 +57,20 @@ public class HttpService implements IHttpService {
 	IAsyncTaskService asyncTaskService;
 	
 	public HttpService(){
-		
+		this(null);
 	}
 	public HttpService(String userAgent){
-		this.userAgent = userAgent == null ? "Android" : userAgent;
+		this(userAgent, null);
 	}
 	public HttpService(String userAgent, IUITaskService uiTaskService){
+		this(userAgent, uiTaskService, null);
+	}
+	public HttpService(String userAgent, IUITaskService uiTaskService, IAsyncTaskService asyncTaskService){
 		this.userAgent = userAgent == null ? "Android" : userAgent;
 		this.uiTaskService = uiTaskService;
+		this.asyncTaskService = asyncTaskService;
 	}
+	
 	@Override
 	public void start() {
 		httpClient = AndroidHttpClient.newInstance(userAgent);
@@ -119,6 +124,7 @@ public class HttpService implements IHttpService {
 		return get(url, null, params);
 	}
 	String getFullUrl(String url, IDataMap<String, String> params){
+		if (params == null) return HttpHelper.getFullUrl(url, null);
 		Map<String, String> ps = new HashMap<String, String>();
 		for(String key : params.getPropertyNames()){
 			ps.put(key, params.getProperty(key));
