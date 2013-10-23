@@ -53,6 +53,7 @@ public class FileHelper {
 		return readText(source, null);
 	}
 	public static String readText(File source, String encoding) throws IOException{
+		if (source == null || !source.exists()) return null;
 		StringBuilder sb = new StringBuilder();
 		FileInputStream fis = new FileInputStream(source);
 		InputStreamReader isr = new InputStreamReader(fis, encoding == null ? "UTF-8" : encoding);

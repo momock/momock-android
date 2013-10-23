@@ -23,16 +23,19 @@ import java.util.Locale;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -166,23 +169,23 @@ public class SystemHelper {
 
 		@Override
 		public void onLocationChanged(Location curLoc) {
-			Logger.info("RecordLocation.onLocationChanged : " + curLoc);
+			//Logger.info("RecordLocation.onLocationChanged : " + curLoc);
 			lastLoc = curLoc;			
 		}
 
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
-			Logger.info("RecordLocation.onStatusChanged : " + provider + " status = " + status);
+			//Logger.info("RecordLocation.onStatusChanged : " + provider + " status = " + status);
 		}
 
 		@Override
 		public void onProviderEnabled(String provider) {	
-			Logger.info("RecordLocation.onProviderEnabled : " + provider);
+			//Logger.info("RecordLocation.onProviderEnabled : " + provider);
 		}
 
 		@Override
 		public void onProviderDisabled(String provider) {
-			Logger.info("RecordLocation.onProviderDisabled : " + provider);
+			//Logger.info("RecordLocation.onProviderDisabled : " + provider);
 		}
 		
 	}
@@ -229,8 +232,6 @@ public class SystemHelper {
 		Logger.info("Net Country : " + country);	
 		if (c != null && c.length() == 2)
 			country = c;	
-		country = country.toLowerCase();
-		Logger.info("Country : " + country);
 		
 		try{
 			LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
@@ -248,8 +249,11 @@ public class SystemHelper {
 			    }
 		    }
 		} catch(Exception e) {
-			Logger.error(e);
+			//Logger.error(e);
 		}
+		
+		country = country.toLowerCase();
+		Logger.info("Country : " + country);
 		return country;
 	}
 	static int sw = 0;
@@ -277,5 +281,34 @@ public class SystemHelper {
 	public static int getScreenHeight(Context context){
 		initScreenSize(context);
 		return sh;
+	}
+	
+	public static void openLink(Context context, String url){
+		if (url == null) 
+			url = "http://google.com";
+		else if (url.indexOf("://") == -1)
+			url = "http://" + url;
+		Logger.debug("Open Link :" + url);
+		Intent intent = new Intent();
+		intent.setAction(Intent.ACTION_VIEW);
+		intent.setData(Uri.parse(url));
+		context.startActivity(intent);
+	}
+	
+	public static boolean isInstalled(Context context, String id){
+        PackageManager pm = context.getPackageManager();
+        try {
+        	pm.getPackageInfo(id, PackageManager.GET_ACTIVITIES);
+        	return true;
+        } catch (Exception e) {
+        	Logger.error(e);
+        }
+        return false;
+	}
+
+	public static boolean isTablet(Context context) {
+		boolean xlarge = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE);
+		boolean large = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
+		return (xlarge || large);
 	}
 }

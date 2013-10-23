@@ -35,10 +35,12 @@ public interface IHttpService extends IService{
 	HttpSession post(String url, IDataMap<String, String> params);
 	HttpSession post(String url, Header[] headers, IDataMap<String, String> params);
 	HttpSession post(String url, Header[] headers, HttpEntity entity);
+	HttpSession postJson(String url, String json);
 	HttpSession put(String url);
 	HttpSession put(String url, IDataMap<String, String> params);
 	HttpSession put(String url, Header[] headers, IDataMap<String, String> params);
 	HttpSession put(String url, Header[] headers, HttpEntity entity);
+	HttpSession putJson(String url, String json);
 	HttpSession delete(String url);
 	HttpSession delete(String url, IDataMap<String, String> params);
 	HttpSession delete(String url, Header[] headers, IDataMap<String, String> params);

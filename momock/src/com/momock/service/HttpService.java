@@ -34,6 +34,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 
@@ -42,6 +45,7 @@ import android.net.http.AndroidHttpClient;
 import com.momock.data.IDataMap;
 import com.momock.http.HttpSession;
 import com.momock.util.HttpHelper;
+import com.momock.util.Logger;
 
 public class HttpService implements IHttpService {
 
@@ -123,13 +127,23 @@ public class HttpService implements IHttpService {
 	public HttpSession get(String url, IDataMap<String, String> params) {		
 		return get(url, null, params);
 	}
+
+	public static String getParamString(Map<String, String> params){
+		List<BasicNameValuePair> lparams = new LinkedList<BasicNameValuePair>();
+		for (String key : params.keySet()) {
+			lparams.add(new BasicNameValuePair(key, params.get(key)));			
+		}
+		return URLEncodedUtils.format(lparams, "UTF-8");
+	}
+
 	String getFullUrl(String url, IDataMap<String, String> params){
-		if (params == null) return HttpHelper.getFullUrl(url, null);
+		if (params == null) return url;
 		Map<String, String> ps = new HashMap<String, String>();
 		for(String key : params.getPropertyNames()){
 			ps.put(key, params.getProperty(key));
 		}
-		return HttpHelper.getFullUrl(url, ps);
+		if (url == null) return null;
+		return url + (url.lastIndexOf('?') == -1 ? "?" : "&") + getParamString(ps);
 	}
 	@Override
 	public HttpSession get(String url, Header[] headers, IDataMap<String, String> params) {
@@ -204,5 +218,25 @@ public class HttpService implements IHttpService {
 	@Override
 	public boolean canStop() {
 		return true;
+	}
+	@Override
+	public HttpSession postJson(String url, String json) {
+		StringEntity entity = null;
+		try{
+			entity = new StringEntity(json, "UTF-8");			
+		}catch(Exception e){
+			Logger.error(e);
+		}
+		return post(url, new Header[]{new BasicHeader("Content-Type", "application/json")},	entity);
+	}
+	@Override
+	public HttpSession putJson(String url, String json) {
+		StringEntity entity = null;
+		try{
+			entity = new StringEntity(json, "UTF-8");			
+		}catch(Exception e){
+			Logger.error(e);
+		}
+		return put(url, new Header[]{new BasicHeader("Content-Type", "application/json")},	entity);
 	}
 }

@@ -16,6 +16,7 @@
 package com.momock.util;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -91,6 +92,38 @@ public class HttpHelper {
 			Logger.error(e);
 		}
 		return length;
+	}
+	public static Response upload(String url, InputStream is){
+		Response response = new Response();
+		String boundary = Long.toHexString(System.currentTimeMillis()); 
+		HttpURLConnection connection = null;
+		try{
+			URL httpURL = new URL(url);
+			connection = (HttpURLConnection) httpURL.openConnection();
+			connection.setConnectTimeout(15000);
+			connection.setReadTimeout(30000);
+			connection.setRequestMethod("POST");
+			connection.setDoOutput(true);
+			connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+			byte[] st = ("--" + boundary + "\r\n" + 
+					"Content-Disposition: form-data; name=\"file\"; filename=\"data\"\r\n" + 
+					"Content-Type: application/octet-stream; charset=UTF-8\r\n" +
+					"Content-Transfer-Encoding: binary\r\n\r\n").getBytes();
+			byte[] en = ("\r\n--" + boundary + "--\r\n").getBytes();			
+            connection.setRequestProperty("Content-Length", String.valueOf(st.length + en.length + is.available()));
+			OutputStream os = connection.getOutputStream();
+			os.write(st);
+            FileHelper.copy(is, os);
+            os.write(en);
+            os.flush();
+            os.close();  
+            response.setStatusCode(connection.getResponseCode());
+			connection = null;  
+		}catch(Exception e){
+			Logger.error(e);
+		}
+
+		return response;
 	}
 	private static Response doRequest(String url, String body, int method) {
 		Response response = new Response();

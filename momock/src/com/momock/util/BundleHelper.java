@@ -20,7 +20,8 @@ import android.os.Parcel;
 import android.util.Base64;
 
 public class BundleHelper {
-	public static String toString(Bundle in) {
+	
+	public static String toBase64(Bundle in) {
 		if (in == null) return null;
 		Parcel parcel = Parcel.obtain();
 		String serialized = null;
@@ -35,7 +36,7 @@ public class BundleHelper {
 		return serialized;
 	}
 
-	public static Bundle fromString(String serialized) {
+	public static Bundle fromBase64(String serialized) {
 		Bundle bundle = null;
 		if (serialized != null) {
 			Parcel parcel = Parcel.obtain();

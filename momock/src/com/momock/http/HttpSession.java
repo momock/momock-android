@@ -40,6 +40,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.json.JSONObject;
 
 import com.momock.event.Event;
 import com.momock.event.EventArgs;
@@ -47,6 +48,7 @@ import com.momock.service.IAsyncTaskService;
 import com.momock.service.IUITaskService;
 import com.momock.util.Convert;
 import com.momock.util.FileHelper;
+import com.momock.util.JsonHelper;
 import com.momock.util.Logger;
 
 public class HttpSession{
@@ -264,6 +266,9 @@ public class HttpSession{
 	public Throwable getError() {
 		return error;
 	}
+	public String getResultAsString(){
+		return getResultAsString(null);
+	}
 	public String getResultAsString(String encoding){
 		try {
 			if (downloadMode) {
@@ -278,6 +283,9 @@ public class HttpSession{
 			Logger.error(e);
 		}
 		return null;
+	}
+	public JSONObject getResultAsJson(){
+		return JsonHelper.parse(getResultAsString(null));
 	}
 	public InputStream getResult(){
 		if (downloadMode){
@@ -365,6 +373,9 @@ public class HttpSession{
 		return "chunked".equals(val);
 	}
 	public void start() {
+		start(false);
+	}
+	public void start(boolean sync) {
 		if (state != STATE_WAITING && state != STATE_FINISHED){
 			Logger.warn(url + " is executing.");
 			return;
@@ -501,7 +512,7 @@ public class HttpSession{
 				}
 			};
 		};
-		if (asyncTaskService != null)
+		if (!sync && asyncTaskService != null)
 			asyncTaskService.run(task);
 		else
 			task.run();
