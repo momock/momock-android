@@ -17,9 +17,15 @@ package com.momock.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -42,6 +48,8 @@ import android.os.Handler;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -169,13 +177,21 @@ public class SystemHelper {
 
 		@Override
 		public void onLocationChanged(Location curLoc) {
-			//Logger.info("RecordLocation.onLocationChanged : " + curLoc);
-			lastLoc = curLoc;			
+			Logger.info("Location Changed : " + curLoc);
+			lastLoc = curLoc;	
+			try{
+				if (listener != null && lm != null){
+					Logger.debug("Close GPS");
+					lm.removeUpdates(listener);
+				}		
+			}catch(Exception e){
+				Logger.error(e);
+			}
 		}
 
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
-			//Logger.info("RecordLocation.onStatusChanged : " + provider + " status = " + status);
+			Logger.info("RecordLocation.onStatusChanged : " + provider + " status = " + status);
 		}
 
 		@Override
@@ -189,20 +205,32 @@ public class SystemHelper {
 		}
 		
 	}
+	static Handler gpsHandler = null;
+	static LocationManager lm = null;
 	public static Location getLocation(Context context){
 		Location loc = null;
 		try{
-			final LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+			lm  = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
 		    Criteria criteria = new Criteria();
 		    final String provider = lm.getBestProvider(criteria, false);
 		    loc = lm.getLastKnownLocation(provider);
-		    if (listener == null){
+		    if (gpsHandler == null){
 		    	listener = new RecordLocation();
-		    	new Handler().post(new Runnable(){
+		    	gpsHandler = new Handler();
+		    	gpsHandler.post(new Runnable(){
 		    		public void run(){
 					    lm.requestLocationUpdates(provider, 400, 1, listener);			    			
 		    		}
 		    	});
+		    	gpsHandler.postDelayed(new Runnable(){
+		    		public void run(){
+		    			if (listener != null){
+		    				Logger.debug("Close GPS");
+		    				lm.removeUpdates(listener);
+		    			}
+		    		}
+		    	}, 1000 * 60);
+		    	
 		    }
 		} catch(Exception e) {
 			Logger.error(e);
@@ -301,7 +329,7 @@ public class SystemHelper {
         	pm.getPackageInfo(id, PackageManager.GET_ACTIVITIES);
         	return true;
         } catch (Exception e) {
-        	Logger.error(e);
+        	//Logger.error(e);
         }
         return false;
 	}
@@ -310,5 +338,68 @@ public class SystemHelper {
 		boolean xlarge = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE);
 		boolean large = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
 		return (xlarge || large);
+	}
+	
+	public static String getPackageNameFromUrl(String url){
+		if (url == null) return null;
+		String prefix = "details?id=";
+		int pos = url.indexOf(prefix);
+		if (pos > 0){
+			return url.substring(pos + prefix.length());
+		}
+		return null;
+	}
+	
+	public static PackageInfo[] getInstalledApps(Context context){
+		PackageManager pkgManager = context.getPackageManager();
+		List<PackageInfo> packs = pkgManager.getInstalledPackages(0);
+		List<PackageInfo> appList = new ArrayList<PackageInfo>();
+		for (int i = 0; i < packs.size(); i++) {
+			PackageInfo p = packs.get(i);
+			Intent intent = pkgManager.getLaunchIntentForPackage(p.packageName);
+			if (intent != null){
+				appList.add(p);
+			}
+		}
+		PackageInfo[] apps = new PackageInfo[appList.size()];
+		appList.toArray(apps);
+		Arrays.sort(apps, new Comparator<PackageInfo>(){
+
+			@Override
+			public int compare(PackageInfo lhs, PackageInfo rhs) {
+				return lhs.packageName.compareToIgnoreCase(rhs.packageName);
+			}
+			
+		});
+		return apps;
+	}
+	public static List<String> getEmailAccounts(Context context){
+		List<String> emails = new ArrayList<String>();
+		try{
+			Pattern emailPattern = Patterns.EMAIL_ADDRESS; 
+			Account[] accounts = AccountManager.get(context).getAccounts();
+			for (Account account : accounts) {
+			    if (emailPattern.matcher(account.name).matches()) {
+			    	emails.add(account.name);		        
+			    }
+			}
+		}catch(Exception e){
+			Logger.error(e);
+		}
+		return emails;
+	}
+	
+	public static boolean isRoaming(Context context)
+	{
+		TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+		return tm.isNetworkRoaming();
+	}
+	
+	public static String getMarketUrl(String packageName){
+		return "market://details?id=" + packageName;
+	}
+	
+	public static boolean hasSdcard(Context context){
+		return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
 	}
 }

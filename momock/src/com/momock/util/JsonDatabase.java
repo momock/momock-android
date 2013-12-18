@@ -66,114 +66,114 @@ public abstract class JsonDatabase {
 	public static class Collection {
 		MySQLiteOpenHelper helper;
 		String name;
-		SQLiteDatabase db = null;
+		SQLiteDatabase dbMem = null;
+		JsonDatabase jdb;
 
-		Collection(MySQLiteOpenHelper helper, String name) {
+		Collection(JsonDatabase db, MySQLiteOpenHelper helper, String name) {
+			this.jdb = db;
 			this.helper = helper;
 			this.name = name;
 		}
 
-		void begin() {
-			if (db == null || !db.isOpen()) {
-				db = helper.getWritableDatabase();
-			}
-		}
-
-		void end() {
-			if (helper.getName() != null)
-				db.close();
-		}
-
 		public JSONObject get(String id) {
+			if (id == null) return null;
 			JSONObject jo = null;
 			String sql = "select * from data where id=? and name=?;";
-			begin();
-			Cursor cursor = db.rawQuery(sql, new String[] { id, name });
-			if (cursor != null) {
-				if (cursor.getCount() == 1) {
-					cursor.moveToNext();
-					String json = cursor.getString(IDX_JSON);
-					jo = parse(json);
+			SQLiteDatabase db = jdb.getNativeDatabase();
+			if (db == null) return null;
+			try{
+				Cursor cursor = db.rawQuery(sql, new String[] { id, name });
+				if (cursor != null) {
+					if (cursor.getCount() == 1) {
+						cursor.moveToNext();
+						String json = cursor.getString(IDX_JSON);
+						jo = parse(json);
+					}
+					cursor.close();
 				}
-				cursor.close();
+			}catch(Exception e){
+				Logger.error(e);
 			}
-			end();
 			return jo;
 		}
 
 		public String set(String id, JSONObject jo) {
-			begin();
-			if (id == null)
-				id = UUID.randomUUID().toString();
-			if (jo == null) {
-				db.delete("data", "id=? and name=?", new String[] { id, name });
-			} else {
-				String sql = "select * from data where id=? and name=?;";
-				Cursor cursor = db.rawQuery(sql, new String[] { id, name });
-				String json = jo.toString();
-				boolean exists = cursor != null && cursor.getCount() == 1;
-				Logger.debug("exists " + exists + ":" + cursor.getCount());
-				cursor.close();
-				if (exists) {
-					ContentValues values = new ContentValues();
-					values.put("json", json);
-					db.update("data", values, "id=? and name=?", new String[] {
-							id, name });
+			SQLiteDatabase db = jdb.getNativeDatabase();
+			if (db == null) return null;
+			try{
+				if (id == null)
+					id = UUID.randomUUID().toString();
+				if (jo == null) {
+					db.delete("data", "id=? and name=?", new String[] { id, name });
 				} else {
-					ContentValues values = new ContentValues();
-					values.put("id", id);
-					values.put("name", name);
-					values.put("json", json);
-					db.insert("data", "", values);
+					String sql = "select * from data where id=? and name=?;";
+					Cursor cursor = db.rawQuery(sql, new String[] { id, name });
+					String json = jo.toString();
+					boolean exists = cursor != null && cursor.getCount() == 1;
+					Logger.debug("exists " + exists + ":" + cursor.getCount());
+					cursor.close();
+					if (exists) {
+						ContentValues values = new ContentValues();
+						values.put("json", json);
+						db.update("data", values, "id=? and name=?", new String[] {
+								id, name });
+					} else {
+						ContentValues values = new ContentValues();
+						values.put("id", id);
+						values.put("name", name);
+						values.put("json", json);
+						db.insert("data", "", values);
+					}
 				}
+			}catch(Exception e){
+				Logger.error(e);
 			}
-			end();
 			return id;
 		}
-
+		public List<Document> list() {
+			return list(null, false, 0);
+		}
 		public List<Document> list(IFilter filter, boolean delayLoad, int max) {
 			List<Document> rows = new ArrayList<Document>();
 			String sql = "select * from data where name=?";
-			begin();
-			Cursor cursor = db.rawQuery(sql, new String[] { name });
-			if (cursor != null) {
-				while (cursor.moveToNext()) {
-					String id = cursor.getString(IDX_ID);
-					if (filter == null) {
-						rows.add(new Document(this, id, delayLoad ? null
-								: parse(cursor.getString(IDX_JSON))));
-					} else {
-						String json = cursor.getString(IDX_JSON);
-						JSONObject jo = parse(json);
-						if (filter.check(id, jo)) {
-							rows.add(new Document(this, id, delayLoad ? null : jo));
+			SQLiteDatabase db = jdb.getNativeDatabase();
+			if (db == null) return rows;
+			try{
+				Cursor cursor = db.rawQuery(sql, new String[] { name });
+				if (cursor != null) {
+					while (cursor.moveToNext()) {
+						String id = cursor.getString(IDX_ID);
+						if (filter == null) {
+							rows.add(new Document(this, id, delayLoad ? null
+									: parse(cursor.getString(IDX_JSON))));
+						} else {
+							String json = cursor.getString(IDX_JSON);
+							JSONObject jo = parse(json);
+							if (filter.check(id, jo)) {
+								rows.add(new Document(this, id, delayLoad ? null : jo));
+							}
 						}
+						if (max > 0 && rows.size() >= max) break;
 					}
-					if (max > 0 && rows.size() >= max) break;
+					cursor.close();
 				}
-				cursor.close();
+			}catch(Exception e){
+				Logger.error(e);
 			}
-			end();
 			return rows;
 		}
 	}
 
 	private static class MySQLiteOpenHelper extends SQLiteOpenHelper {
-		String name;
 
 		public MySQLiteOpenHelper(Context context, String name) {
 			super(context, name, null, 1);
-			this.name = name;
-		}
-
-		public String getName() {
-			return name;
 		}
 
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			String sql = "create table data(id text,name text,json text, primary key(name, id));";
-			Logger.debug("Create Json Database : " + sql);
+			Logger.debug("Create Json Database");
 			db.execSQL(sql);
 		}
 
@@ -182,24 +182,55 @@ public abstract class JsonDatabase {
 		}
 
 	}
-
+		
+	abstract SQLiteDatabase getNativeDatabase();
 	public abstract Collection getCollection(String name);
+	public abstract void forceClose();
 
 	public static JsonDatabase get(Context context) {
 		return get(context, null);
 	}
 
-	public static JsonDatabase get(Context context, String name) {
-		final MySQLiteOpenHelper helper = new MySQLiteOpenHelper(context, name);
+	public static JsonDatabase get(final Context context, final String dbname) {
 		return new JsonDatabase() {
 			Map<String, Collection> cols = new HashMap<String, Collection>();
-
+			SQLiteDatabase db = null;
+			MySQLiteOpenHelper helper = new MySQLiteOpenHelper(context, dbname);
+			
 			@Override
 			public Collection getCollection(String name) {
 				if (!cols.containsKey(name)) {
-					cols.put(name, new Collection(helper, name));
+					cols.put(name, new Collection(this, helper, name));
 				}
 				return cols.get(name);
+			}
+
+			@Override
+			public void forceClose() {
+				if (db != null){
+					db.close();
+					db = null;
+				}
+			}
+
+			@Override
+			SQLiteDatabase getNativeDatabase() {
+				if (db == null || !db.isOpen()) {
+					try{
+						db = helper.getWritableDatabase();
+					}catch(Exception e){
+						Logger.error(e);
+						Logger.debug("Database Path :" + context.getDatabasePath(dbname).getPath());
+						try{
+							helper = new MySQLiteOpenHelper(context, null);
+							db = helper.getWritableDatabase();
+						}catch(Exception ex){
+							Logger.error(ex);
+							db = null;
+						}
+					}
+				}
+				return db;
 			}
 
 		};

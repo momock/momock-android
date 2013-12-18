@@ -15,9 +15,7 @@
  ******************************************************************************/
 package com.momock.util;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.Iterator;
 
 import org.json.JSONArray;
@@ -25,8 +23,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 import com.momock.data.DataList;
 import com.momock.data.DataNode;

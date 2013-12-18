@@ -44,7 +44,6 @@ import android.net.http.AndroidHttpClient;
 
 import com.momock.data.IDataMap;
 import com.momock.http.HttpSession;
-import com.momock.util.HttpHelper;
 import com.momock.util.Logger;
 
 public class HttpService implements IHttpService {

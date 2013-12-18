@@ -16,8 +16,6 @@
 package com.momock.service;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.RandomAccessFile;
 import java.util.List;
 import java.util.UUID;
 

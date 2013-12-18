@@ -56,6 +56,7 @@ public class ImageHelper {
 
 	public static Bitmap fromFile(final String fn, final int expectedWidth,
 			final int expectedHeight) {
+		if (fn == null) return null;
 		File f = new File(fn);
 		return fromFile(f, expectedWidth, expectedHeight);
 	}
@@ -93,6 +94,7 @@ public class ImageHelper {
 				} finally {
 					in.close();
 				}
+				if (roughBitmap == null) return null;
 				float[] values = new float[9];
 				Matrix m = new Matrix();
 				RectF inRect = new RectF(0, 0, roughBitmap.getWidth(),

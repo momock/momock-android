@@ -23,6 +23,7 @@ import org.json.JSONTokener;
 
 public class JsonHelper {
 	public static Object select(JSONObject node, String path){
+		if (node == null) return null;
 		if (path == null) return node;
 		int pos = path.indexOf("/");
 		String current = pos == -1 ? path : path.substring(0, pos);
@@ -58,11 +59,11 @@ public class JsonHelper {
 		Object root;
 		try {
 			root = tokener.nextValue();
-		} catch (JSONException e) {
+			return (JSONObject)root;
+		} catch (Exception e) {
 			Logger.error(e);
 			return null;
 		}
-		return (JSONObject)root;
 	}
 
 }
