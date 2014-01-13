@@ -28,7 +28,7 @@ import com.momock.util.MemoryHelper;
 import com.momock.util.ViewHelper;
 
 public class CaseFragment extends Fragment{
-
+	protected IActiveCaseIndicator activeCaseIndicator = null;
 	protected ICase<Fragment> kase = null;
 
 	protected String getCaseName(){
@@ -111,7 +111,7 @@ public class CaseFragment extends Fragment{
 	public void onStart() {
 		log("onStart");
 		super.onStart();
-		if (getCase().getParent() != null)
+		if (getCase().getParent() != null && (getActiveCaseIndicator() == null || getActiveCaseIndicator() != null && getActiveCaseIndicator().isActiveCase()))
 			getCase().getParent().setActiveCase(getCase());
 	}
 
@@ -174,5 +174,11 @@ public class CaseFragment extends Fragment{
 		log("onSaveInstanceState : " + usedMem + "K");
 		getCase().onSaveState(outState);
 		super.onSaveInstanceState(outState);
+	}
+	public IActiveCaseIndicator getActiveCaseIndicator() {
+		return activeCaseIndicator;
+	}
+	public void setActiveCaseIndicator(IActiveCaseIndicator activeCaseIndicator) {
+		this.activeCaseIndicator = activeCaseIndicator;
 	}
 }

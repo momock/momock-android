@@ -26,6 +26,7 @@ import android.widget.TabHost.TabContentFactory;
 import android.widget.TabWidget;
 
 import com.momock.app.CaseFragment;
+import com.momock.app.IActiveCaseIndicator;
 import com.momock.data.IDataList;
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.FragmentTabHolder;
@@ -48,8 +49,21 @@ public class FragmentPagerTabOutlet extends Outlet implements ITabOutlet{
 		tabContent.setAdapter(new FragmentPagerAdapter(target.getFragmentManager()) {
 
 			@Override
-			public Fragment getItem(int position) {
-				return ((FragmentHolder) ((ITabPlug)plugs.getItem(position)).getContent()).getFragment();
+			public Fragment getItem(final int position) {
+				final ITabPlug plug = (ITabPlug)plugs.getItem(position);
+				Fragment f = ((FragmentHolder)plug.getContent()).getFragment();
+				if (f instanceof CaseFragment){
+					CaseFragment cf = (CaseFragment)f;
+					cf.setActiveCaseIndicator(new IActiveCaseIndicator(){
+
+						@Override
+						public boolean isActiveCase() {
+							return getActivePlug() == plug;
+						}
+						
+					});
+				}
+				return f;
 			}
 
 			@Override
