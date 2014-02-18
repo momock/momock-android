@@ -131,10 +131,10 @@ public class ImageService implements IImageService {
 			expectedHeight = Convert.toInteger(fullUri.substring(pos2 + 1));
 			uri = fullUri.substring(0, pos);
 		} else {
-			expectedWidth = -1;
-			expectedHeight = -1;
+			expectedWidth = 0;
+			expectedHeight = 0;
 		}
-		Bitmap bitmap = getBitmap(uri);
+		Bitmap bitmap = getBitmap(fullUri);
 		if (bitmap != null) return bitmap;
 		if (uri.startsWith(PREFIX_FILE)) {
 			bitmap = ImageHelper.fromFile(uri.substring(PREFIX_FILE.length()), expectedWidth, expectedHeight);
@@ -208,7 +208,7 @@ public class ImageService implements IImageService {
 	@Override
 	public String getFullUri(String uri, int width, int height) {
 		if (uri == null) return null;
-		return width > 0 && height > 0 ? uri + "#" + width + "x" + height : uri;
+		return width != 0 && height != 0 ? uri + "#" + width + "x" + height : uri;
 	}
 
 

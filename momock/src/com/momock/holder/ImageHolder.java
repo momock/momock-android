@@ -91,7 +91,7 @@ public abstract class ImageHolder implements IHolder{
 		};
 	}
 	public static ImageHolder get(final String uri){
-		return get(uri, -1, -1);
+		return get(uri, 0, 0);
 	}
 	public static ImageHolder get(final String uri, final int expectedWidth, final int expectedHeight){
 		Logger.check(theImageService != null, "The ImageService must not be null!");		

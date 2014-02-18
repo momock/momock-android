@@ -51,7 +51,7 @@ public class ImageHelper {
 	}
 
 	public static Bitmap fromFile(final String fn) {
-		return fromFile(fn, -1, -1);
+		return fromFile(fn, 0, 0);
 	}
 
 	public static Bitmap fromFile(final String fn, final int expectedWidth,
@@ -62,7 +62,7 @@ public class ImageHelper {
 	}
 
 	public static Bitmap fromFile(final File f) {
-		return fromFile(f, -1, -1);
+		return fromFile(f, 0, 0);
 	}
 
 	public static Bitmap fromFile(final File f, final int expectedWidth,
@@ -70,7 +70,7 @@ public class ImageHelper {
 		if (f == null)
 			return null;
 		try {
-			if (expectedWidth > 0 && expectedHeight > 0) {
+			if (expectedWidth != 0 && expectedHeight != 0) {
 				int inWidth;
 				int inHeight;
 				InputStream in = new FileInputStream(f);
@@ -87,8 +87,10 @@ public class ImageHelper {
 				in = new FileInputStream(f);
 				try {
 					options = new BitmapFactory.Options();
-					options.inSampleSize = Math.max(inWidth / expectedWidth,
-							inHeight / expectedHeight);
+					if (expectedWidth > 0)
+						options.inSampleSize = Math.max(inWidth / expectedWidth, inHeight / expectedHeight);
+					else
+						options.inSampleSize = Math.min(-100 / expectedWidth, -100 / expectedHeight);
 					options.inPreferredConfig = Bitmap.Config.RGB_565;
 					roughBitmap = BitmapFactory.decodeStream(in, null, options);
 				} finally {
@@ -97,10 +99,11 @@ public class ImageHelper {
 				if (roughBitmap == null) return null;
 				float[] values = new float[9];
 				Matrix m = new Matrix();
-				RectF inRect = new RectF(0, 0, roughBitmap.getWidth(),
-						roughBitmap.getHeight());
-				RectF outRect = new RectF(0, 0, expectedWidth, expectedHeight);
-				m.setRectToRect(inRect, outRect, Matrix.ScaleToFit.CENTER);
+				RectF inRect = new RectF(0, 0, roughBitmap.getWidth(), roughBitmap.getHeight());
+				RectF outRect = expectedWidth > 0 ? 
+						new RectF(0, 0, expectedWidth, expectedHeight) :
+						new RectF(0, 0, -roughBitmap.getWidth() * expectedWidth / 100, -roughBitmap.getHeight() * expectedHeight / 100);
+				m.setRectToRect(inRect, outRect, expectedWidth > 0 ? Matrix.ScaleToFit.CENTER : Matrix.ScaleToFit.FILL);
 				m.getValues(values);
 				final Bitmap resizedBitmap = Bitmap.createScaledBitmap(
 						roughBitmap,
@@ -122,14 +125,14 @@ public class ImageHelper {
 	}
 
 	public static Bitmap fromStream(final InputStream in) {
-		return fromStream(in, -1, -1);
+		return fromStream(in, 0, 0);
 	}
 
 	public static Bitmap fromStream(final InputStream in,
 			final int expectedWidth, final int expectedHeight) {
 		if (in == null)
 			return null;
-		if (expectedWidth > 0 && expectedHeight > 0) {
+		if (expectedWidth != 0 && expectedHeight != 0) {
 			File tempFile;
 			try {
 				tempFile = File.createTempFile("image", ".tmp");
