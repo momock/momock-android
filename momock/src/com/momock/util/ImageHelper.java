@@ -102,7 +102,7 @@ public class ImageHelper {
 				RectF inRect = new RectF(0, 0, roughBitmap.getWidth(), roughBitmap.getHeight());
 				RectF outRect = expectedWidth > 0 ? 
 						new RectF(0, 0, expectedWidth, expectedHeight) :
-						new RectF(0, 0, -roughBitmap.getWidth() * expectedWidth / 100, -roughBitmap.getHeight() * expectedHeight / 100);
+						new RectF(0, 0, -inWidth * expectedWidth / 100, -inHeight * expectedHeight / 100);
 				m.setRectToRect(inRect, outRect, expectedWidth > 0 ? Matrix.ScaleToFit.CENTER : Matrix.ScaleToFit.FILL);
 				m.getValues(values);
 				final Bitmap resizedBitmap = Bitmap.createScaledBitmap(
