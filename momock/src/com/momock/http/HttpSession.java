@@ -52,7 +52,7 @@ import com.momock.util.JsonHelper;
 import com.momock.util.Logger;
 
 public class HttpSession{
-			
+	public static boolean DEBUG = false;
 	public static final int STATE_WAITING = 0;
 	public static final int STATE_STARTED = 1;
 	public static final int STATE_HEADER_RECEIVED = 2;
@@ -334,9 +334,11 @@ public class HttpSession{
 		
 		this.state = state;
 		if (state == STATE_CONTENT_RECEIVING){
-			Logger.debug(url + "(" + getStateName(state) + ") : " + downloadedLength + "/" + contentLength);
+			if (DEBUG)
+				Logger.debug(url + "(" + getStateName(state) + ") : " + downloadedLength + "/" + contentLength);
 		}else{
-			Logger.debug(url + "(" + getStateName(state) + ")");
+			if (DEBUG)
+				Logger.debug(url + "(" + getStateName(state) + ")");
 		}
 		if (state == STATE_FINISHED)
 			this.request = null;
@@ -410,10 +412,10 @@ public class HttpSession{
 			}
 			request.setHeader("Accept-Encoding", "gzip");	
 		} 
-		Logger.debug("Request headers of " + url + " : ");
+		if (DEBUG) Logger.debug("Request headers of " + url + " : ");
 		if (request != null) {
 			for(Header header : request.getAllHeaders()){
-				Logger.debug(header.getName() + " = " + header.getValue());
+				if (DEBUG) Logger.debug(header.getName() + " = " + header.getValue());
 			}
 		}
 		setState(STATE_STARTED);
@@ -427,9 +429,9 @@ public class HttpSession{
 						@Override
 						public Object handleResponse(HttpResponse response) {
 							statusCode = response.getStatusLine().getStatusCode();
-							Logger.debug("Response headers of " + url + "[" + statusCode + "] : ");
+							if (DEBUG) Logger.debug("Response headers of " + url + "[" + statusCode + "] : ");
 							for(Header header : response.getAllHeaders()){
-								Logger.debug(header.getName() + " = " + header.getValue());
+								if (DEBUG) Logger.debug(header.getName() + " = " + header.getValue());
 							}
 							
 							headers = new TreeMap<String, List<String>>();

@@ -171,71 +171,17 @@ public class SystemHelper {
 		ua += ";PRODUCT/" + android.os.Build.PRODUCT;
 		return ua;
 	}
-	static Location lastLoc = null;
-	static RecordLocation listener = null;
-	static class RecordLocation implements LocationListener{
-
-		@Override
-		public void onLocationChanged(Location curLoc) {
-			Logger.info("Location Changed : " + curLoc);
-			lastLoc = curLoc;	
-			try{
-				if (listener != null && lm != null){
-					Logger.debug("Close GPS");
-					lm.removeUpdates(listener);
-				}		
-			}catch(Exception e){
-				Logger.error(e);
-			}
-		}
-
-		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-			Logger.info("RecordLocation.onStatusChanged : " + provider + " status = " + status);
-		}
-
-		@Override
-		public void onProviderEnabled(String provider) {	
-			//Logger.info("RecordLocation.onProviderEnabled : " + provider);
-		}
-
-		@Override
-		public void onProviderDisabled(String provider) {
-			//Logger.info("RecordLocation.onProviderDisabled : " + provider);
-		}
-		
-	}
-	static Handler gpsHandler = null;
-	static LocationManager lm = null;
-	public static Location getLocation(Context context){
+	public static Location getLastLocation(Context context){
 		Location loc = null;
 		try{
-			lm  = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-		    Criteria criteria = new Criteria();
-		    final String provider = lm.getBestProvider(criteria, false);
-		    loc = lm.getLastKnownLocation(provider);
-		    if (gpsHandler == null){
-		    	listener = new RecordLocation();
-		    	gpsHandler = new Handler();
-		    	gpsHandler.post(new Runnable(){
-		    		public void run(){
-					    lm.requestLocationUpdates(provider, 400, 1, listener);			    			
-		    		}
-		    	});
-		    	gpsHandler.postDelayed(new Runnable(){
-		    		public void run(){
-		    			if (listener != null){
-		    				Logger.debug("Close GPS");
-		    				lm.removeUpdates(listener);
-		    			}
-		    		}
-		    	}, 1000 * 60);
-		    	
-		    }
+			LocationManager lm  = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+			loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			if (loc == null)
+				loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		} catch(Exception e) {
 			Logger.error(e);
 		}
-		return lastLoc == null ? loc : lastLoc;
+		return loc;
 	}
 	public static boolean isSystemApp(Context context){
 		PackageManager pm = context.getPackageManager();	

@@ -22,13 +22,19 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import org.json.JSONObject;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -53,11 +59,13 @@ public class Logger {
 	
 	public static final int LEVEL_NONE = 7;
 
-	static PrintStream logStream = null;
+	static PrintStream logStream = System.out;
 	static String logName = "app";
 	static String logFileName = "log.txt";
 	static int logLevel = LEVEL_DEBUG;
 	static boolean enabled = true;
+	static String appName;
+	static RemoteLoggerThread remoteLogger = null;
 
 	public static class LogEventArgs extends EventArgs{
 		String message;
@@ -78,16 +86,104 @@ public class Logger {
 	public static void addErrorLogHandler(IEventHandler<LogEventArgs> handler){
 		event.addEventHandler(handler);
 	}
+
+	static class RemoteLoggerThread extends Thread{
+		class LogItem{
+			public String level;
+			public String content;
+			public Date time;
+			public String source;
+			public LogItem(String level, String content, String source){
+				this.level = level;
+				this.content = content;
+				this.source = source;
+				this.time = new Date();
+			}
+		}
+		public String url = null;
+		public String deviceId = null;
+		boolean forceStop = false;
+		ArrayList<LogItem> logs = new ArrayList<LogItem>();
+		public RemoteLoggerThread(String url, String deviceId){
+			this.url = url;
+			this.deviceId = deviceId;
+		}
+		public void log(String level, String content, String source){
+			logs.add(new LogItem(level, content, source));
+		}
+		@Override
+		public void run() {
+			while(!forceStop){
+				try{
+					if (logs.size() == 0){
+						sleep(1000);
+					} else {
+						HttpURLConnection connection = null;
+						while(logs.size() > 0){
+							LogItem item = logs.get(0);
+							logs.remove(0);
+
+							try {
+								URL httpURL = new URL(url);
+								connection = (HttpURLConnection) httpURL.openConnection();
+								connection.setConnectTimeout(15000);
+								connection.setReadTimeout(30000);
+								connection.setRequestMethod("POST");
+								connection.setRequestProperty("Content-Type", "application/json");
+								JSONObject jo = new JSONObject();
+								jo.put("did", deviceId);
+								jo.put("app", appName);
+								jo.put("level", item.level);
+								jo.put("content", item.content);
+								jo.put("source", item.source);
+								jo.put("time", item.time.getTime());
+								String body = jo.toString();
+								if (body != null){
+									OutputStream os = connection.getOutputStream();
+						            OutputStreamWriter osw = new OutputStreamWriter(os);
+						            osw.write(body);
+						            osw.flush();
+						            osw.close();
+								}
+								connection.getResponseCode();
+								connection = null;
+							} catch (Exception e) {								
+							}
+						}
+					}
+				}catch(Exception e){					
+				}
+			}
+		}
+		public void destroy(){
+			forceStop = true;
+		}
+	}
 	@TargetApi(Build.VERSION_CODES.FROYO)
 	static File getExternalCacheDir(final Context context) {
 		return context.getExternalCacheDir();
 	}
+	public static void setRemoteLoggerServer(String url, String deviceId){
+		if (remoteLogger != null && url != null) {
+			remoteLogger.url = url;
+			remoteLogger.deviceId = deviceId;
+			return;			
+		}
+		if (remoteLogger != null){
+			remoteLogger.destroy();
+			remoteLogger = null;
+		}
+		if (url != null){
+			remoteLogger = new RemoteLoggerThread(url, deviceId);			
+			remoteLogger.start();
+		}
+	}
 	public static void open(Context context, final String name, int maxLogFiles, int level) {
 		if (!enabled) return;
+		appName = context.getPackageName();
 		logName = name;
 		logFileName = logName + "[" + new SimpleDateFormat("yyyyMMddHHmmss", Locale.US).format(new Date()) + "].log";
-		if (logStream == null) {
-			logStream = System.out;		
+		if (logStream == System.out) {
 			File logDir = null;
 			try {								
 				if (getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -106,7 +202,7 @@ public class Logger {
 						
 					});
 					List<String> allLogs = new ArrayList<String>();
-					for(int i = 0; i < fs.length; i++)
+					for(int i = 0; fs != null && i < fs.length; i++)
 						allLogs.add(fs[i]);
 					Collections.sort(allLogs);
 					for(int i = 0; i < allLogs.size() - maxLogFiles + 1; i++)
@@ -157,14 +253,15 @@ public class Logger {
 	}
 	static void checkLogFile()
 	{
-		if (enabled && logStream == null)
-			open(null, "log.txt", LEVEL_DEBUG);
 	}
 	static String getLog(String level, String msg)
 	{
 		Throwable t = new Throwable(); 
 		StackTraceElement trace = t.getStackTrace()[2];
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.ENGLISH);
+		if (remoteLogger != null){
+			remoteLogger.log(level, msg, trace.getFileName() + "(" + trace.getLineNumber() + ")");
+		}
 		return "[" + level + "] " + sdf.format(new Date()) + " in " + trace.getFileName() + "(" + trace.getLineNumber() + ") >" + msg;
 	}
 	static String getSourceInfo(StackTraceElement trace)
