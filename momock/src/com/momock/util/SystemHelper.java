@@ -193,6 +193,16 @@ public class SystemHelper {
 		}
 		return false;
 	}
+	public static boolean isSystemApp(Context context, String packageName){
+		PackageManager pm = context.getPackageManager();	
+		try {
+			ApplicationInfo ai = pm.getApplicationInfo(packageName, 0);
+			return (ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+		} catch (NameNotFoundException e) {
+			Logger.error(e);
+		}
+		return false;
+	}
 	public static String getCountry(Context context){
 		String country = Locale.getDefault().getCountry();
 		String c = null;

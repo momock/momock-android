@@ -487,8 +487,8 @@ public class HttpSession{
 										if (isDownloaded() || isChunked()){
 											if (file.exists())
 												file.delete();
-											FileHelper.copy(fileData, file);
-											fileData.delete();
+											if (!fileData.renameTo(file))
+												fileData.delete();
 											fileInfo.delete();
 											setState(STATE_CONTENT_RECEIVED);	
 										}
