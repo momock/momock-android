@@ -108,6 +108,7 @@ public class HttpSession{
 	byte[] result = null;
 	IUITaskService uiTaskService;
 	IAsyncTaskService asyncTaskService;
+	boolean acceptGzip = true;
 	
 	Event<StateChangedEventArgs> stateChangedEvent = new Event<StateChangedEventArgs>();
 
@@ -410,7 +411,7 @@ public class HttpSession{
 					Logger.error(e);
 				}
 			}
-			request.setHeader("Accept-Encoding", "gzip");	
+			if (acceptGzip) request.setHeader("Accept-Encoding", "gzip");	
 		} 
 		if (DEBUG) Logger.debug("Request headers of " + url + " : ");
 		if (request != null) {
@@ -528,6 +529,12 @@ public class HttpSession{
 	}
 	public int getStatusCode() {
 		return statusCode;
+	}
+	public boolean isAcceptGzip() {
+		return acceptGzip;
+	}
+	public void setAcceptGzip(boolean acceptGzip) {
+		this.acceptGzip = acceptGzip;
 	}
 
 }
