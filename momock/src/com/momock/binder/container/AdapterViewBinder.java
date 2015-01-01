@@ -23,6 +23,7 @@ import android.widget.BaseAdapter;
 import com.momock.binder.ContainerBinder;
 import com.momock.binder.IItemBinder;
 import com.momock.data.DataChangedEventArgs;
+import com.momock.data.IDataChangedAware;
 import com.momock.data.IDataList;
 import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
@@ -109,14 +110,15 @@ public class AdapterViewBinder<T extends AdapterView<?>> extends ContainerBinder
 
 			};
 			((AdapterView) view).setAdapter(adapter);
-			dataSource.addDataChangedHandler(new IEventHandler<DataChangedEventArgs>(){
-
-				@Override
-				public void process(Object sender, DataChangedEventArgs args) {
-					adapter.notifyDataSetChanged();
-				}
-				
-			});
+			if (dataSource instanceof IDataChangedAware)
+				((IDataChangedAware)dataSource).addDataChangedHandler(new IEventHandler<DataChangedEventArgs>(){
+	
+					@Override
+					public void process(Object sender, DataChangedEventArgs args) {
+						adapter.notifyDataSetChanged();
+					}
+					
+				});
 		}
 	}
 }

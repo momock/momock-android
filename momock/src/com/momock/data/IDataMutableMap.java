@@ -15,7 +15,7 @@
  ******************************************************************************/
 package com.momock.data;
 
-public interface IDataMutableMap<K, V> extends IDataMap<K, V> {
+public interface IDataMutableMap<K, V> extends IDataMap<K, V>, IDataChangedAware {
 	void setProperty(K name, V val);
 	void copyPropertiesFrom(IDataMap<K, V> source);
 }

@@ -15,7 +15,7 @@
  ******************************************************************************/
 package com.momock.data;
 
-public interface IDataMutableList<T> extends IDataList<T>{
+public interface IDataMutableList<T> extends IDataList<T>, IDataChangedAware{
 	void addItem(T val);
 	void insertItem(int index, T val);	
 	void setItem(int index, T val);

@@ -79,10 +79,12 @@ public class DataListView<T> extends DataViewBase<T> implements IEventHandler<Da
 		return source;
 	}
 	public void setSource(IDataList<T> source) {
-		if (this.source != null) this.source.removeDataChangedHandler(this);
+		if (this.source != null && this.source instanceof IDataChangedAware) 
+			((IDataChangedAware)this.source).removeDataChangedHandler(this);
 		this.source = source;
 		this.needRefreshData = true;
-		if (this.source != null) this.source.addDataChangedHandler(this);
+		if (this.source != null && this.source instanceof IDataChangedAware) 
+			((IDataChangedAware)this.source).addDataChangedHandler(this);
 	}
 	@Override
 	public void process(Object sender, DataChangedEventArgs args) {

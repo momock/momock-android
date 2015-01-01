@@ -16,6 +16,7 @@
 package com.momock.samples.model;
 
 import com.momock.data.DataMap;
+import com.momock.util.Convert;
 
 public class Product extends DataMap<String, Object> {
 	public static final String Id = "Id";
@@ -32,7 +33,7 @@ public class Product extends DataMap<String, Object> {
 	}
 
 	public Integer getCategoryId() {
-		return (Integer) this.getProperty(CategoryId);
+		return Convert.toInteger(this.getProperty(CategoryId));
 	}
 
 	public void setCategoryId(int categoryId) {

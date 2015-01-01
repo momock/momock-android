@@ -21,6 +21,7 @@ import com.momock.app.App;
 import com.momock.data.DataList;
 import com.momock.data.DataNodeView;
 import com.momock.data.IDataList;
+import com.momock.data.IDataMutableList;
 import com.momock.data.IDataNode;
 import com.momock.samples.model.Category;
 import com.momock.samples.model.Product;
@@ -72,11 +73,11 @@ public class XmlDataService implements IDataService{
 		return null;
 	}
 	@Override
-	public IDataList<Category> getAllCategories() {
+	public IDataMutableList<Category> getAllCategories() {
 		return categories;
 	}
 	@Override
-	public IDataList<Product> getProductsInCategory(int cid) {
+	public IDataMutableList<Product> getProductsInCategory(int cid) {
 		DataList<Product> ps = new DataList<Product>();
 		for(int i = 0; i < products.getItemCount(); i++)
 		{
@@ -87,7 +88,7 @@ public class XmlDataService implements IDataService{
 		return ps;
 	}
 	@Override
-	public IDataList<Product> getAllProducts() {
+	public IDataMutableList<Product> getAllProducts() {
 		return products;
 	}
 

@@ -15,7 +15,7 @@
  ******************************************************************************/
 package com.momock.samples.services;
 
-import com.momock.data.IDataList;
+import com.momock.data.IDataMutableList;
 import com.momock.samples.model.Category;
 import com.momock.samples.model.Product;
 import com.momock.service.IService;
@@ -25,9 +25,9 @@ public interface IDataService extends IService{
 
 	Category getCategoryById(int id);
 
-	IDataList<Category> getAllCategories();
+	IDataMutableList<Category> getAllCategories();
 
-	IDataList<Product> getProductsInCategory(int cid);
+	IDataMutableList<Product> getProductsInCategory(int cid);
 
-	IDataList<Product> getAllProducts();
+	IDataMutableList<Product> getAllProducts();
 }

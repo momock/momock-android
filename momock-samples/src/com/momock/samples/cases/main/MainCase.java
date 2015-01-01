@@ -29,6 +29,7 @@ import com.momock.samples.cases.binder.ListViewCase;
 import com.momock.samples.cases.card.CardCase;
 import com.momock.samples.cases.card.PagerCardCase;
 import com.momock.samples.cases.mainmenu.MainMenuCase;
+import com.momock.samples.cases.tab.DynamicPagerTabCase;
 import com.momock.samples.cases.tab.FragmentPagerTabCase;
 import com.momock.samples.cases.tab.FragmentTabCase;
 import com.momock.samples.cases.tab.PagerTabCase;
@@ -51,6 +52,7 @@ public class MainCase extends Case<CaseActivity>{
 		addCase(new ActionCase(this));
 		addCase(new TabCase(this));
 		addCase(new PagerTabCase(this));
+		addCase(new DynamicPagerTabCase(this));
 		addCase(new FragmentTabCase(this));
 		addCase(new FragmentPagerTabCase(this));
 		addCase(new CardCase(this));

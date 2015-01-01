@@ -15,30 +15,30 @@
  ******************************************************************************/
 package com.momock.samples.cases.tab;
 
+import javax.inject.Inject;
+
 import android.support.v4.app.Fragment;
 
-import com.momock.app.App;
 import com.momock.app.Case;
 import com.momock.app.ICase;
 import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.FragmentHolder;
-import com.momock.holder.ImageHolder;
 import com.momock.holder.TabHolder;
 import com.momock.holder.TextHolder;
-import com.momock.holder.ViewHolder;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.action.ActionPlug;
 import com.momock.outlet.card.CardPlug;
 import com.momock.outlet.card.ICardPlug;
 import com.momock.outlet.tab.PagerTabOutlet;
-import com.momock.outlet.tab.TabPlug;
 import com.momock.samples.OutletNames;
 import com.momock.samples.R;
+import com.momock.samples.services.IDataService;
 
-public class PagerTabCase extends Case<Fragment> {
-
-	public PagerTabCase(ICase<?> parent) {
+public class DynamicPagerTabCase extends Case<Fragment> {
+	@Inject
+	IDataService ds;
+	public DynamicPagerTabCase(ICase<?> parent) {
 		super(parent);
 	}
 
@@ -47,7 +47,7 @@ public class PagerTabCase extends Case<Fragment> {
 	@Override
 	public void onCreate() {
 		IOutlet outlet = getOutlet(OutletNames.SAMPLES);
-		outlet.addPlug(ActionPlug.create(TextHolder.get("Pager Tab Sample"))
+		outlet.addPlug(ActionPlug.create(TextHolder.get("Dynamic Pager Tab Sample"))
 				.addExecuteEventHandler(new IEventHandler<EventArgs>() {
 					@Override
 					public void process(Object sender, EventArgs args) {
@@ -55,18 +55,7 @@ public class PagerTabCase extends Case<Fragment> {
 					}
 				}));
 
-		tabs.addPlug(TabPlug.create(TextHolder.get("Pager Tab 1"),
-				ImageHolder.get(R.drawable.ic_action_alarm_2),
-				ViewHolder.create(this, R.layout.tab_one)));
-		tabs.addPlug(TabPlug.create(TextHolder.get("Pager Tab 2"),
-				ImageHolder.get(R.drawable.ic_action_calculator),
-				ViewHolder.create(this, R.layout.tab_two)));
-		tabs.addPlug(TabPlug.create(TextHolder.get("Pager Tab 3"),
-				ImageHolder.get(R.drawable.ic_action_google_play),
-				ViewHolder.create(this, R.layout.tab_three)));
-		tabs.addPlug(TabPlug.create(TextHolder.get("Pager Tab 4"),
-				ImageHolder.get(R.drawable.ic_action_line_chart),
-				ViewHolder.create(this, R.layout.tab_four)));
+		tabs.setPlugProvider(new CategoryPlugProvider(this, ds.getAllCategories()));
 	}
 
 	ICardPlug self = CardPlug.create(FragmentHolder.create(R.layout.case_pager_tab,
