@@ -17,23 +17,23 @@ package com.momock.holder;
 
 import java.lang.ref.WeakReference;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 
 import com.momock.app.ICase;
 
 public abstract class FragmentManagerHolder{
 	public abstract FragmentManager getFragmentManager();
 	
-	public static FragmentManagerHolder get(FragmentActivity activity)
+	public static FragmentManagerHolder get(Activity activity)
 	{
-		final WeakReference<FragmentActivity> refActivity = new WeakReference<FragmentActivity>(activity);
+		final WeakReference<Activity> refActivity = new WeakReference<Activity>(activity);
 		return new FragmentManagerHolder(){
 			
 			@Override
 			public FragmentManager getFragmentManager() {
-				return refActivity.get().getSupportFragmentManager();
+				return refActivity.get().getFragmentManager();
 			}
 	
 		};
@@ -47,7 +47,7 @@ public abstract class FragmentManagerHolder{
 			public FragmentManager getFragmentManager() {
 				FragmentManager fm = fragment.getFragmentManager();
 				if (fm == null && fragment.getActivity() != null)
-					fm = fragment.getActivity().getSupportFragmentManager();
+					fm = fragment.getActivity().getFragmentManager();
 				return fm;
 			}
 	
@@ -63,13 +63,13 @@ public abstract class FragmentManagerHolder{
 				FragmentManager fm = null;
 				ICase<?> current = kase;
 				while(current != null && fm == null){
-					if (current.getAttachedObject() instanceof FragmentActivity)
-						fm = ((FragmentActivity)current.getAttachedObject()).getSupportFragmentManager();
+					if (current.getAttachedObject() instanceof Activity)
+						fm = ((Activity)current.getAttachedObject()).getFragmentManager();
 					else if (current.getAttachedObject() instanceof Fragment){
 						Fragment fragment = (Fragment)current.getAttachedObject();
 						fm = fragment.getFragmentManager();
 						if (fm == null && fragment.getActivity() != null)
-							fm = fragment.getActivity().getSupportFragmentManager();
+							fm = fragment.getActivity().getFragmentManager();
 					}
 					current = current.getParent();
 				}

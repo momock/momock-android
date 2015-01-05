@@ -15,9 +15,9 @@
  ******************************************************************************/
 package com.momock.samples.cases.tab;
 
-import android.support.v4.app.Fragment;
 
-import com.momock.app.App;
+import android.app.Fragment;
+
 import com.momock.app.Case;
 import com.momock.app.ICase;
 import com.momock.event.EventArgs;

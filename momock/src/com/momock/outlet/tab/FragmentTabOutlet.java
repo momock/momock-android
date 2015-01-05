@@ -15,9 +15,9 @@
  ******************************************************************************/
 package com.momock.outlet.tab;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Handler;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;

@@ -17,9 +17,9 @@ package com.momock.holder;
 
 import java.lang.ref.WeakReference;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TabHost;
@@ -60,9 +60,9 @@ public abstract class FragmentTabHolder implements IComponentHolder {
 
 	public abstract FragmentManager getFragmentManager();
 
-	public static FragmentTabHolder get(FragmentActivity activity, final int tabContentId) {
+	public static FragmentTabHolder get(Activity activity, final int tabContentId) {
 
-		final WeakReference<FragmentActivity> refActivity = new WeakReference<FragmentActivity>(activity);
+		final WeakReference<Activity> refActivity = new WeakReference<Activity>(activity);
 		return new FragmentTabHolder() {
 			protected WeakReference<ViewGroup> tabContent = null;
 
@@ -73,8 +73,8 @@ public abstract class FragmentTabHolder implements IComponentHolder {
 
 			@Override
 			public FragmentManager getFragmentManager() {
-				Logger.check(refActivity.get() != null, "The FragmentActivity is not available!");
-				return refActivity.get().getSupportFragmentManager();
+				Logger.check(refActivity.get() != null, "The Activity is not available!");
+				return refActivity.get().getFragmentManager();
 			}
 
 			@Override
@@ -87,7 +87,7 @@ public abstract class FragmentTabHolder implements IComponentHolder {
 
 			@Override
 			public TabHost getTabHost() {
-				Logger.check(refActivity.get() != null, "The FragmentActivity is not available!");
+				Logger.check(refActivity.get() != null, "The Activity is not available!");
 				return (TabHost)refActivity.get().findViewById(android.R.id.tabhost);
 			}
 

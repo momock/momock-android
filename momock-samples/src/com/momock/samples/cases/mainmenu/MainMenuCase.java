@@ -15,7 +15,8 @@
  ******************************************************************************/
 package com.momock.samples.cases.mainmenu;
 
-import android.support.v4.app.Fragment;
+
+import android.app.Fragment;
 
 import com.momock.app.App;
 import com.momock.app.Case;

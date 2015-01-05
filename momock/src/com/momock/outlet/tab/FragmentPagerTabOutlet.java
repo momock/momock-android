@@ -15,9 +15,9 @@
  ******************************************************************************/
 package com.momock.outlet.tab;
 
+import android.app.Fragment;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;

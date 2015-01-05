@@ -1,13 +1,13 @@
 package com.momock.samples.cases.database;
 
-import android.support.v4.app.Fragment;
+
+import android.app.Fragment;
 
 import com.momock.app.Case;
 import com.momock.app.ICase;
 import com.momock.event.EventArgs;
 import com.momock.event.IEventHandler;
 import com.momock.holder.FragmentHolder;
-import com.momock.holder.TabHolder;
 import com.momock.holder.TextHolder;
 import com.momock.outlet.IOutlet;
 import com.momock.outlet.action.ActionPlug;

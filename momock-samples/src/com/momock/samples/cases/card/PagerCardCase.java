@@ -15,7 +15,7 @@
  ******************************************************************************/
 package com.momock.samples.cases.card;
 
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.View;
 import android.widget.Button;
 

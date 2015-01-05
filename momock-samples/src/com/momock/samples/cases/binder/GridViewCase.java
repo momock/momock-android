@@ -15,7 +15,7 @@
  ******************************************************************************/
 package com.momock.samples.cases.binder;
 
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 
 import com.momock.app.Case;
 import com.momock.app.ICase;

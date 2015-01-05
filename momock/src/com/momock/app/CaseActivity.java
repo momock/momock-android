@@ -15,9 +15,9 @@
  ******************************************************************************/
 package com.momock.app;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -26,17 +26,17 @@ import com.momock.util.Logger;
 import com.momock.util.MemoryHelper;
 import com.momock.util.ViewHelper;
 
-public abstract class CaseActivity extends FragmentActivity {
+public abstract class CaseActivity extends Activity {
 
 	protected abstract String getCaseName();
 	protected abstract void onCreate();
 	
-	protected ICase<FragmentActivity> kase = null;
+	protected ICase<Activity> kase = null;
 	
 	@SuppressWarnings("unchecked")
-	public ICase<FragmentActivity> getCase() {
+	public ICase<Activity> getCase() {
 		if (kase == null) {
-			kase = (ICase<FragmentActivity>)App.get().findChildCase(getCaseName());
+			kase = (ICase<Activity>)App.get().findChildCase(getCaseName());
 		}
 		Logger.check(kase != null, getCaseName() + " has not been created!");
 		return kase;

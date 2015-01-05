@@ -18,8 +18,8 @@ package com.momock.holder;
 import java.lang.ref.WeakReference;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

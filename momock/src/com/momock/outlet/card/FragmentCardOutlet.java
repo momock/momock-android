@@ -15,9 +15,9 @@
  ******************************************************************************/
 package com.momock.outlet.card;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Handler;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 
 import com.momock.holder.FragmentHolder;
 import com.momock.holder.FragmentManagerHolder;
