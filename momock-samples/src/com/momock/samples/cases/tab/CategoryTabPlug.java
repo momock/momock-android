@@ -1,11 +1,14 @@
 package com.momock.samples.cases.tab;
 
+import android.graphics.Color;
 import android.view.View;
 
 import com.momock.app.ICase;
 import com.momock.binder.ComposedItemBinder;
+import com.momock.binder.IContainerBinder;
 import com.momock.binder.ItemBinder;
 import com.momock.binder.ValueBinderSelector;
+import com.momock.binder.ViewBinder.Setter;
 import com.momock.binder.container.ListViewBinder;
 import com.momock.holder.IComponentHolder;
 import com.momock.holder.ImageHolder;
@@ -37,12 +40,25 @@ public class CategoryTabPlug extends TabPlug {
 			public void onViewCreated(View view) {
 				IDataService ds = kase.getService(IDataService.class);
 				ComposedItemBinder cib = new ComposedItemBinder();
+				Setter bgSetter = new Setter(){
+
+					@Override
+					public boolean onSet(View view, String viewProp, int index,
+							String key, Object val, View parent,
+							IContainerBinder container) {
+						parent.setBackgroundColor(index % 2 == 1 ? Color.GRAY : Color.WHITE);
+						return false;
+					}
+					
+				};
 				ItemBinder binder1 = new ItemBinder(
 						R.layout.samples_list_item,
 						new int[] { R.id.sampleItem }, new String[] { "Name" });
+				binder1.addSetter(bgSetter);
 				ItemBinder binder2 = new ItemBinder(
 						R.layout.samples_list_item2,
 						new int[] { R.id.sampleItem }, new String[] { "Name" });
+				binder2.addSetter(bgSetter);
 				
 				cib.addBinder(new ValueBinderSelector("Type", "L"), binder1);
 				cib.addBinder(new ValueBinderSelector("Type", "R"), binder2);
