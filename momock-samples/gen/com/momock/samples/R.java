@@ -58,10 +58,11 @@ public final class R {
         public static final int case_tab=0x7f03000c;
         public static final int grid_item=0x7f03000d;
         public static final int samples_list_item=0x7f03000e;
-        public static final int tab_four=0x7f03000f;
-        public static final int tab_one=0x7f030010;
-        public static final int tab_three=0x7f030011;
-        public static final int tab_two=0x7f030012;
+        public static final int samples_list_item2=0x7f03000f;
+        public static final int tab_four=0x7f030010;
+        public static final int tab_one=0x7f030011;
+        public static final int tab_three=0x7f030012;
+        public static final int tab_two=0x7f030013;
     }
     public static final class menu {
         public static final int activity_holo_action_bar=0x7f060000;

@@ -26,6 +26,7 @@ import com.momock.event.EventArgs;
 import com.momock.event.IEvent;
 import com.momock.event.ItemEventArgs;
 import com.momock.holder.ViewHolder;
+import com.momock.util.Convert;
 import com.momock.util.Logger;
 
 public abstract class ContainerBinder<T extends ViewGroup> implements IContainerBinder {
@@ -57,12 +58,12 @@ public abstract class ContainerBinder<T extends ViewGroup> implements IContainer
 	}
 
 	@Override
-	public View getViewOf(Object item) {
+	public View getViewOf(int index) {
 		ViewGroup parent = getContainerView();
 		if (parent != null){
 			for(int i = 0; i < parent.getChildCount(); i++){
 				View c = parent.getChildAt(i);
-				if (c.getTag() == item) return c;
+				if (Convert.toInteger(c.getTag()) == index) return c;
 			}
 		}
 		return null;

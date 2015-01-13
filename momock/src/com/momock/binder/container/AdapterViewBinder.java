@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
 import com.momock.binder.ContainerBinder;
+import com.momock.binder.IComposedItemBinder;
 import com.momock.binder.IItemBinder;
 import com.momock.data.DataChangedEventArgs;
 import com.momock.data.IDataChangedAware;
@@ -87,11 +88,8 @@ public class AdapterViewBinder<T extends AdapterView<?>> extends ContainerBinder
 				@Override
 				public View getView(int position, View convertView,
 						ViewGroup parent) {
-					Object item = getItem(position);
-					if (convertView != null)
-						convertView.setTag(null);
-					View view = itemBinder.onCreateItemView(convertView, item, AdapterViewBinder.this);
-					view.setTag(item);
+					View view = itemBinder.onCreateItemView(convertView, position, AdapterViewBinder.this);
+					if (view != null) view.setTag(position);
 					return view;
 				}
 
@@ -106,6 +104,26 @@ public class AdapterViewBinder<T extends AdapterView<?>> extends ContainerBinder
 				public void notifyDataSetInvalidated() {
 					super.notifyDataSetInvalidated();
 					Logger.debug("AdapterViewBinder.BaseAdapter.notifyDataSetInvalidated");
+				}
+
+				@Override
+				public int getItemViewType(int position) {					
+					if (itemBinder instanceof IComposedItemBinder){
+						IComposedItemBinder cib = (IComposedItemBinder)itemBinder;
+						return cib.getBinderIndex(getItem(position));
+					} else {						
+						return super.getItemViewType(position);
+					}
+				}
+
+				@Override
+				public int getViewTypeCount() {
+					if (itemBinder instanceof IComposedItemBinder){
+						IComposedItemBinder cib = (IComposedItemBinder)itemBinder;
+						return cib.getBinderCount();
+					} else {						
+						return super.getViewTypeCount();
+					}					
 				}
 
 			};

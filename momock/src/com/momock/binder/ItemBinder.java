@@ -30,12 +30,12 @@ public class ItemBinder extends ViewBinder implements IItemBinder{
 		}
 	}
 	@Override
-	public View onCreateItemView(View convertView, Object item, IContainerBinder container) {
+	public View onCreateItemView(View convertView, int index, IContainerBinder container) {		
 		View view = convertView;
 		if (view == null) {
 			view = ViewHolder.create(container.getContainerView(), itemViewId).getView();
 		}
-		bind(view, item, container);
+		bind(view, index, container);
 		return view;
 	}
 

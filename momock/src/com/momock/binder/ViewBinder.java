@@ -34,7 +34,7 @@ import com.momock.util.Logger;
 
 public class ViewBinder {
 	public static interface Setter {
-		boolean onSet(View view, String viewProp, Object obj, String key, Object val, View parent, IContainerBinder container);
+		boolean onSet(View view, String viewProp, int index, String key, Object val, View parent, IContainerBinder container);
 	}
 	static IImageService theImageService = null;
 	public static void onStaticCreate(IApplication app){
@@ -53,7 +53,7 @@ public class ViewBinder {
 	static {
 		addGlobalSetter(new Setter() {
 			@Override
-			public boolean onSet(View view, String viewProp, Object obj, String key, Object val, View parent, IContainerBinder container) {
+			public boolean onSet(View view, String viewProp, int index, String key, Object val, View parent, IContainerBinder container) {
 				if (view instanceof TextView
 						&& ("Text".equals(viewProp) || viewProp == null)) {
 					((TextView) view).setText(Convert.toString(val));
@@ -64,7 +64,7 @@ public class ViewBinder {
 		});
 		addGlobalSetter(new Setter() {
 			@Override
-			public boolean onSet(View view, String viewProp, Object obj, String key, Object val, View parent, IContainerBinder container) {
+			public boolean onSet(View view, String viewProp, int index, String key, Object val, View parent, IContainerBinder container) {
 				if (view instanceof ImageView) {
 					if (viewProp == null) {
 						if (val instanceof CharSequence) {
@@ -80,7 +80,7 @@ public class ViewBinder {
 								else
 									((ImageView) view).setImageBitmap(ImageHolder.get(Convert.toInteger(key.substring(pos + 1).trim())).getAsBitmap());
 								if (container != null)
-									theImageService.bind(uri, container, obj);
+									theImageService.bind(uri, container, index);
 								else
 									theImageService.bind(uri, (ImageView) view);
 							}
@@ -148,12 +148,13 @@ public class ViewBinder {
 		return this;
 	}
 
-	public void bind(View view, Object target) {
-		bind(view, target, null);
+	public void bind(View view, int index) {
+		bind(view, index, null);
 	}
 
 	@SuppressWarnings("unchecked")
-	public void bind(View view, Object target, IContainerBinder container) {
+	public void bind(View view, int index, IContainerBinder container) {
+		Object target = container.getDataSource().getItem(index);
 		IDataMap<String, Object> map = null;
 		if (target instanceof IDataMap)
 			map = (IDataMap<String, Object>) target;
@@ -177,13 +178,13 @@ public class ViewBinder {
 			else
 				cv = view.findViewById(Convert.toInteger(tagOrId));
 			for (Setter s : customSetters) {
-				set = s.onSet(cv, pv.viewProp, target, name, val, view, container);
+				set = s.onSet(cv, pv.viewProp, index, name, val, view, container);
 				if (set)
 					break;
 			}
 			if (!set) {
 				for (Setter s : globalSetters) {
-					set = s.onSet(cv, pv.viewProp, target, name, val, view, container);
+					set = s.onSet(cv, pv.viewProp, index, name, val, view, container);
 					if (set)
 						break;
 				}

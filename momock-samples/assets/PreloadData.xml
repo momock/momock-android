@@ -19,9 +19,65 @@
         <Category Id="2" Name="Games" />
     </Categories>
     <Products>
-        <Product Id="1" CategoryId="1" Name="Game1.1" Description="Game1.1 Desc" />
-        <Product Id="2" CategoryId="1" Name="Game1.2" Description="Game1.2 Desc" />
-        <Product Id="3" CategoryId="2" Name="Game2.1" Description="Game2.1 Desc" />
-        <Product Id="4" CategoryId="2" Name="Game2.2" Description="Game2.2 Desc" />
+        <Product Id="1" Type="L" CategoryId="1" Name="Game1.1" Description="Game1.1 Desc" />
+        <Product Id="2" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.2 Desc" />
+        <Product Id="3" Type="L" CategoryId="1" Name="Game1.3" Description="Game1.3 Desc" />
+        <Product Id="4" Type="R" CategoryId="1" Name="Game1.4" Description="Game1.4 Desc" />
+        <Product Id="5" Type="L" CategoryId="1" Name="Game1.5" Description="Game1.5 Desc" />
+        <Product Id="6" Type="L" CategoryId="1" Name="Game1.6" Description="Game1.6 Desc" />
+        <Product Id="7" Type="L" CategoryId="1" Name="Game1.7" Description="Game1.7 Desc" />
+        
+        <Product Id="21" Type="R" CategoryId="1" Name="Game2.1" Description="Game1.1 Desc" />
+        <Product Id="22" Type="L" CategoryId="1" Name="Game2.2" Description="Game1.2 Desc" />
+        <Product Id="23" Type="L" CategoryId="1" Name="Game2.3" Description="Game1.3 Desc" />
+        <Product Id="24" Type="R" CategoryId="1" Name="Game2.4" Description="Game1.4 Desc" />
+        <Product Id="25" Type="L" CategoryId="1" Name="Game2.5" Description="Game1.5 Desc" />
+        <Product Id="26" Type="R" CategoryId="1" Name="Game2.6" Description="Game1.6 Desc" />
+        <Product Id="27" Type="L" CategoryId="1" Name="Game2.7" Description="Game1.7 Desc" />
+        
+        <Product Id="31" Type="L" CategoryId="1" Name="Game3.1" Description="Game1.1 Desc" />
+        <Product Id="32" Type="R" CategoryId="1" Name="Game3.2" Description="Game1.2 Desc" />
+        <Product Id="33" Type="L" CategoryId="1" Name="Game3.3" Description="Game1.3 Desc" />
+        <Product Id="34" Type="L" CategoryId="1" Name="Game3.4" Description="Game1.4 Desc" />
+        <Product Id="35" Type="L" CategoryId="1" Name="Game3.5" Description="Game1.5 Desc" />
+        <Product Id="36" Type="L" CategoryId="1" Name="Game3.6" Description="Game1.6 Desc" />
+        <Product Id="37" Type="L" CategoryId="1" Name="Game3.7" Description="Game1.7 Desc" />
+        
+        <Product Id="1" Type="L" CategoryId="1" Name="Game1.1" Description="Game1.1 Desc" />
+        <Product Id="2" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.2 Desc" />
+        <Product Id="3" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.3 Desc" />
+        <Product Id="4" Type="R" CategoryId="1" Name="Game1.2" Description="Game1.4 Desc" />
+        <Product Id="5" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.5 Desc" />
+        <Product Id="6" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.6 Desc" />
+        <Product Id="7" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.7 Desc" />
+        
+        <Product Id="1" Type="L" CategoryId="1" Name="Game1.1" Description="Game1.1 Desc" />
+        <Product Id="2" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.2 Desc" />
+        <Product Id="3" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.3 Desc" />
+        <Product Id="4" Type="R" CategoryId="1" Name="Game1.2" Description="Game1.4 Desc" />
+        <Product Id="5" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.5 Desc" />
+        <Product Id="6" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.6 Desc" />
+        <Product Id="7" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.7 Desc" />
+        
+        <Product Id="1" Type="L" CategoryId="1" Name="Game1.1" Description="Game1.1 Desc" />
+        <Product Id="2" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.2 Desc" />
+        <Product Id="3" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.3 Desc" />
+        <Product Id="4" Type="R" CategoryId="1" Name="Game1.2" Description="Game1.4 Desc" />
+        <Product Id="5" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.5 Desc" />
+        <Product Id="6" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.6 Desc" />
+        <Product Id="7" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.7 Desc" />
+        
+        <Product Id="1" Type="L" CategoryId="1" Name="Game1.1" Description="Game1.1 Desc" />
+        <Product Id="2" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.2 Desc" />
+        <Product Id="3" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.3 Desc" />
+        <Product Id="4" Type="R" CategoryId="1" Name="Game1.2" Description="Game1.4 Desc" />
+        <Product Id="5" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.5 Desc" />
+        <Product Id="6" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.6 Desc" />
+        <Product Id="7" Type="L" CategoryId="1" Name="Game1.2" Description="Game1.7 Desc" />
+        
+        <Product Id="21" Type="L" CategoryId="2" Name="Game2.1" Description="Game2.1 Desc" />
+        <Product Id="22" Type="R" CategoryId="2" Name="Game2.2" Description="Game2.2 Desc" />
+        <Product Id="23" Type="R" CategoryId="2" Name="Game2.2" Description="Game2.3 Desc" />
+        <Product Id="24" Type="R" CategoryId="2" Name="Game2.2" Description="Game2.4 Desc" />
     </Products>
 </DataSet>

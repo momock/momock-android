@@ -25,7 +25,7 @@ import com.momock.event.IEvent;
 public interface IContainerBinder {
 	IDataList<?> getDataSource();	
 	ViewGroup getContainerView();
-	View getViewOf(Object item);
+	View getViewOf(int index);
 	IItemBinder getItemBinder();
 	void bind(ViewGroup containerView, final IDataList<?> dataSource);
 	IEvent<EventArgs> getDataChangedEvent();

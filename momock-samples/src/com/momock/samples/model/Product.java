@@ -21,6 +21,7 @@ import com.momock.util.Convert;
 public class Product extends DataMap<String, Object> {
 	public static final String Id = "Id";
 	public static final String Name = "Name";
+	public static final String Type = "Type";
 	public static final String Description = "Description";
 	public static final String CategoryId = "CategoryId";
 
@@ -48,6 +49,14 @@ public class Product extends DataMap<String, Object> {
 		this.setProperty(Name, name);
 	}
 
+	public String getType() {
+		return (String) this.getProperty(Type);
+	}
+
+	public void setType(String name) {
+		this.setProperty(Type, name);
+	}
+	
 	public String getDescription() {
 		return (String) this.getProperty(Description);
 	}

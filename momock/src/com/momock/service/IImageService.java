@@ -68,5 +68,5 @@ public interface IImageService extends IService{
 	
 	void bind(String fullUri, ImageView view);	
 	
-	void bind(String fullUri, IContainerBinder binder, Object item);
+	void bind(String fullUri, IContainerBinder binder, int index);
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 momock.com
+ * Copyright 2015 momock.com
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
 package com.momock.binder;
 
-import android.view.View;
-
-public interface IItemBinder {
-	View onCreateItemView(View convertView, int index, IContainerBinder container);
+public class AlwaysBinderSelector implements IBinderSelector {
+	@Override
+	public boolean onSelect(Object item) {
+		return true;
+	}		
 }

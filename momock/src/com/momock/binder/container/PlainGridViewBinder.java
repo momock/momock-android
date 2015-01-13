@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.momock.binder.IItemBinder;
+import com.momock.util.Convert;
 import com.momock.widget.PlainGridView;
 
 public class PlainGridViewBinder extends PlainAdapterViewBinder<PlainGridView>{
@@ -29,14 +30,14 @@ public class PlainGridViewBinder extends PlainAdapterViewBinder<PlainGridView>{
 	}
 
 	@Override
-	public View getViewOf(Object item) {
+	public View getViewOf(int index) {
 		ViewGroup parent = getContainerView();
 		if (parent != null){
 			for(int i = 0; i < parent.getChildCount(); i++){
 				ViewGroup line = (ViewGroup)parent.getChildAt(i);
 				for(int j = 0; j < line.getChildCount(); j++){
 					View c = line.getChildAt(j);
-					if (c.getTag() == item) return c;
+					if (Convert.toInteger(c.getTag()) == index) return c;
 				}
 			}
 		}

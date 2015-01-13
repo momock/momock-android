@@ -3,6 +3,9 @@ package com.momock.samples.cases.tab;
 import android.view.View;
 
 import com.momock.app.ICase;
+import com.momock.binder.ComposedItemBinder;
+import com.momock.binder.ItemBinder;
+import com.momock.binder.ValueBinderSelector;
 import com.momock.binder.container.ListViewBinder;
 import com.momock.holder.IComponentHolder;
 import com.momock.holder.ImageHolder;
@@ -33,8 +36,19 @@ public class CategoryTabPlug extends TabPlug {
 			@Override
 			public void onViewCreated(View view) {
 				IDataService ds = kase.getService(IDataService.class);
-				ListViewBinder binder = ListViewBinder.getSimple("Name");
-				binder.bind(ViewHolder.get(view, R.id.lvproducts), ds.getProductsInCategory(category.getId()));
+				ComposedItemBinder cib = new ComposedItemBinder();
+				ItemBinder binder1 = new ItemBinder(
+						R.layout.samples_list_item,
+						new int[] { R.id.sampleItem }, new String[] { "Name" });
+				ItemBinder binder2 = new ItemBinder(
+						R.layout.samples_list_item2,
+						new int[] { R.id.sampleItem }, new String[] { "Name" });
+				
+				cib.addBinder(new ValueBinderSelector("Type", "L"), binder1);
+				cib.addBinder(new ValueBinderSelector("Type", "R"), binder2);
+				
+				ListViewBinder lvb = new ListViewBinder(cib);
+				lvb.bind(ViewHolder.get(view, R.id.lvproducts), ds.getProductsInCategory(category.getId()));
 			}
 			
 		});

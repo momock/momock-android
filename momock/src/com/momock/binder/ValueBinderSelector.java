@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 momock.com
+ * Copyright 2015 momock.com
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
 package com.momock.binder;
 
-import android.view.View;
+import com.momock.util.BeanHelper;
 
-public interface IItemBinder {
-	View onCreateItemView(View convertView, int index, IContainerBinder container);
+public class ValueBinderSelector implements IBinderSelector {
+	String propName;
+	Object val;
+	public ValueBinderSelector(String propName, Object val){
+		this.propName = propName;
+		this.val = val;
+	}
+	@Override
+	public boolean onSelect(Object item) {
+		Object propVal = null;
+		if (item != null && propName != null)
+			propVal = BeanHelper.getProperty(item, propName, null);			
+		return val == null ? propVal == null : val.equals(propVal);
+	}		
 }

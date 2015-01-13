@@ -269,23 +269,23 @@ public class ImageService implements IImageService {
 
 	class BinderRefreshHandler implements IEventHandler<ImageEventArgs>{
 		public IContainerBinder binder;
-		public Object item;
-		public BinderRefreshHandler(IContainerBinder binder, Object item){
+		public int index;
+		public BinderRefreshHandler(IContainerBinder binder, int index){
 			this.binder = binder;
-			this.item = item;
+			this.index = index;
 		}
 		@Override
 		public void process(Object sender, ImageEventArgs args) {
-			if (binder.getContainerView() != null && binder.getViewOf(item) != null){
-				binder.getItemBinder().onCreateItemView(binder.getViewOf(item), item, binder);
+			if (binder.getContainerView() != null && binder.getViewOf(index) != null){
+				binder.getItemBinder().onCreateItemView(binder.getViewOf(index), index, binder);
 			} 
 		}
 
 	}
 	List<BinderRefreshHandler> binderHandlers = new ArrayList<BinderRefreshHandler>();
 	@Override
-	public void bind(String fullUri, IContainerBinder binder, Object item) {
-		Logger.check(binder != null && item != null, "Parameter binder and item cannot be null !");
+	public void bind(String fullUri, IContainerBinder binder, int index) {
+		Logger.check(binder != null && index != -1, "Parameter binder and item cannot be null !");
 		Bitmap bitmap = loadBitmap(fullUri);
 		if (bitmap == null){
 			BinderRefreshHandler handler = null;
@@ -294,13 +294,13 @@ public class ImageService implements IImageService {
 				BinderRefreshHandler h = it.next();
 				if (h.binder.getContainerView() == null) 
 					it.remove();
-				else if (h.binder == binder && h.item == item){
+				else if (h.binder == binder && h.index == index){
 					handler = h;
 					break;
 				}				
 			}
 			if (handler == null){
-				handler = new BinderRefreshHandler(binder, item);
+				handler = new BinderRefreshHandler(binder, index);
 				binderHandlers.add(handler);
 			}
 			addImageEventHandler(fullUri, handler);
