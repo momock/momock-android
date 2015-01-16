@@ -86,7 +86,7 @@ public class AsyncTaskService implements IAsyncTaskService {
 
 	@Override
 	public boolean canStop() {
-		return true;
+		return false;
 	}
 
 }
