@@ -15,6 +15,9 @@
  ******************************************************************************/
 package com.momock.outlet;
 
+import com.momock.event.EventArgs;
+import com.momock.event.IEvent;
+
 public interface IOutlet extends IPlugProvider {
 	IPlugProvider getPlugProvider();
 
@@ -33,4 +36,6 @@ public interface IOutlet extends IPlugProvider {
 	void onDeactivate(IPlug plug);
 	
 	int getIndexOf(IPlug plug);
+	
+	IEvent<EventArgs> getActivePlugChangedEvent();
 }

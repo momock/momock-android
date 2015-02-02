@@ -34,6 +34,7 @@ import com.momock.outlet.tab.PagerTabOutlet;
 import com.momock.samples.OutletNames;
 import com.momock.samples.R;
 import com.momock.samples.services.IDataService;
+import com.momock.util.Logger;
 
 public class DynamicPagerTabCase extends Case<Fragment> {
 	@Inject
@@ -46,7 +47,7 @@ public class DynamicPagerTabCase extends Case<Fragment> {
 
 	@Override
 	public void onCreate() {
-		IOutlet outlet = getOutlet(OutletNames.SAMPLES);
+		IOutlet outlet = getOutlet(OutletNames.SAMPLES);		
 		outlet.addPlug(ActionPlug.create(TextHolder.get("Dynamic Pager Tab Sample"))
 				.addExecuteEventHandler(new IEventHandler<EventArgs>() {
 					@Override
@@ -56,6 +57,14 @@ public class DynamicPagerTabCase extends Case<Fragment> {
 				}));
 
 		tabs.setPlugProvider(new CategoryPlugProvider(this, ds.getAllCategories()));
+		tabs.getActivePlugChangedEvent().addEventHandler(new IEventHandler<EventArgs>(){
+
+			@Override
+			public void process(Object sender, EventArgs args) {
+				Logger.debug("Tab changed");
+			}
+			
+		});
 	}
 
 	ICardPlug self = CardPlug.create(FragmentHolder.create(R.layout.case_pager_tab,

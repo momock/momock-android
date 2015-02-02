@@ -18,6 +18,8 @@ package com.momock.outlet;
 import com.momock.data.DataList;
 import com.momock.data.IDataList;
 import com.momock.data.IDataMutableList;
+import com.momock.event.EventArgs;
+import com.momock.event.IEvent;
 import com.momock.util.Logger;
 
 public class PlaceholderOutlet implements IOutlet {
@@ -84,6 +86,11 @@ public class PlaceholderOutlet implements IOutlet {
 			if (plugs.getItem(i) == plug) return i;		
 		}		
 		return -1;
+	}
+
+	@Override
+	public IEvent<EventArgs> getActivePlugChangedEvent() {
+		return null;
 	}
 
 }

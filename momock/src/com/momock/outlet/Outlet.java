@@ -18,9 +18,14 @@ package com.momock.outlet;
 import com.momock.data.DataList;
 import com.momock.data.IDataList;
 import com.momock.data.IDataMutableList;
+import com.momock.event.Event;
+import com.momock.event.EventArgs;
+import com.momock.event.IEvent;
+import com.momock.event.ItemEventArgs;
 
 public class Outlet implements IOutlet {
 	private IDataMutableList<IPlug> plugs = new DataList<IPlug>();
+	protected IEvent<EventArgs> activePlugChangedEvent = new Event<EventArgs>();
 	protected IPlug activePlug = null;
 
 	@Override
@@ -51,11 +56,16 @@ public class Outlet implements IOutlet {
 			if (activePlug != null)
 				onDeactivate(activePlug);
 			activePlug = plug;
-			if (activePlug != null)
+			if (activePlug != null){
 				onActivate(activePlug);
+				activePlugChangedEvent.fireEvent(this, null);
+			}
 		}
 	}
-
+	@Override
+	public IEvent<EventArgs> getActivePlugChangedEvent() {
+		return activePlugChangedEvent;
+	}
 	@Override
 	public void onActivate(IPlug plug) {
 		if (plug != null) plug.onActivate();		
