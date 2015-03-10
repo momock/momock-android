@@ -63,7 +63,8 @@ public abstract class ContainerBinder<T extends ViewGroup> implements IContainer
 		if (parent != null){
 			for(int i = 0; i < parent.getChildCount(); i++){
 				View c = parent.getChildAt(i);
-				if (Convert.toInteger(c.getTag()) == index) return c;
+				Integer savedIndex = Convert.toInteger(c.getTag()); 
+				if (savedIndex != null && savedIndex == index) return c;
 			}
 		}
 		return null;
