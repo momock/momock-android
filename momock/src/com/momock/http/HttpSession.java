@@ -522,10 +522,21 @@ public class HttpSession{
 	}
 
 	public void stop() {
-		if (request != null){
-			request.abort();
-			request = null; 
-		}
+		Runnable task = new Runnable(){
+
+			@Override
+			public void run() {
+				if (request != null){
+					request.abort();
+					request = null; 
+				}
+			}
+		
+		};
+		if (asyncTaskService != null)
+			asyncTaskService.run(task);
+		else
+			task.run();
 	}
 	public int getStatusCode() {
 		return statusCode;
