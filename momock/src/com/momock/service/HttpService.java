@@ -16,7 +16,16 @@
 package com.momock.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -24,6 +33,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -34,11 +46,21 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
 
 import android.net.http.AndroidHttpClient;
 
@@ -51,6 +73,8 @@ public class HttpService implements IHttpService {
     private static final int SOCKET_OPERATION_TIMEOUT = 60 * 1000 * 5;
     
 	String userAgent;
+	
+	boolean autoRedirect = true;
 
 	AndroidHttpClient httpClient = null;
 	
@@ -69,16 +93,96 @@ public class HttpService implements IHttpService {
 		this(userAgent, uiTaskService, null);
 	}
 	public HttpService(String userAgent, IUITaskService uiTaskService, IAsyncTaskService asyncTaskService){
+		this(userAgent, true, uiTaskService, asyncTaskService);
+	}
+	public HttpService(String userAgent, boolean autoRedirect, IUITaskService uiTaskService, IAsyncTaskService asyncTaskService){
 		this.userAgent = userAgent == null ? "Android" : userAgent;
 		this.uiTaskService = uiTaskService;
 		this.asyncTaskService = asyncTaskService;
+		this.autoRedirect = autoRedirect;
 	}
 	
+	class SSLSocketFactoryEx extends SSLSocketFactory {
+
+		SSLContext sslContext = SSLContext.getInstance("TLS");
+
+		public SSLSocketFactoryEx(KeyStore truststore)
+				throws NoSuchAlgorithmException, KeyManagementException,
+				KeyStoreException, UnrecoverableKeyException {
+			super(truststore);
+
+			TrustManager tm = new X509TrustManager() {
+
+				@Override
+				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+					return null;
+				}
+
+				@Override
+				public void checkClientTrusted(
+						java.security.cert.X509Certificate[] chain, String authType)
+						throws java.security.cert.CertificateException {
+
+				}
+
+				@Override
+				public void checkServerTrusted(
+						java.security.cert.X509Certificate[] chain, String authType)
+						throws java.security.cert.CertificateException {
+
+				}
+			};
+
+			sslContext.init(null, new TrustManager[] { tm }, null);
+		}
+
+		@Override
+		public Socket createSocket(Socket socket, String host, int port,
+				boolean autoClose) throws IOException, UnknownHostException {
+			return sslContext.getSocketFactory().createSocket(socket, host, port,
+					autoClose);
+		}
+
+		@Override
+		public Socket createSocket() throws IOException {
+			return sslContext.getSocketFactory().createSocket();
+		}
+	}
+
 	@Override
 	public void start() {
-		httpClient = AndroidHttpClient.newInstance(userAgent);
-        HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), SOCKET_OPERATION_TIMEOUT);
-        HttpConnectionParams.setSoTimeout(httpClient.getParams(), SOCKET_OPERATION_TIMEOUT);
+		
+        try{
+
+    		HttpParams params = new BasicHttpParams();
+            HttpConnectionParams.setStaleCheckingEnabled(params, false);
+            HttpConnectionParams.setConnectionTimeout(params, SOCKET_OPERATION_TIMEOUT);
+            HttpConnectionParams.setSoTimeout(params, SOCKET_OPERATION_TIMEOUT);
+            HttpConnectionParams.setSocketBufferSize(params, 8192);
+            HttpClientParams.setRedirecting(params, autoRedirect);
+            HttpProtocolParams.setUserAgent(params, userAgent);
+            SchemeRegistry schemeRegistry = new SchemeRegistry();
+            schemeRegistry.register(new Scheme("http",
+                    PlainSocketFactory.getSocketFactory(), 80));
+
+	        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+			trustStore.load(null, null);
+			SSLSocketFactory sf = new SSLSocketFactoryEx(trustStore);
+			sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+	
+	        schemeRegistry.register(new Scheme("https", sf, 443));
+	        
+	        ClientConnectionManager manager =
+	                new ThreadSafeClientConnManager(params, schemeRegistry);
+	        
+			Class<?> clazz = Class.forName("android.net.http.AndroidHttpClient"); 
+			Constructor<?> constructor = clazz.getDeclaredConstructors()[0];  
+			constructor.setAccessible(true);  
+			httpClient = (AndroidHttpClient)constructor.newInstance(manager, params); 
+        }catch(Exception e){
+        	Logger.error(e);
+        	httpClient = AndroidHttpClient.newInstance(userAgent);
+        }
 	}
 
 	@Override
