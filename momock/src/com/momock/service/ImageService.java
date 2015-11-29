@@ -214,12 +214,11 @@ public class ImageService implements IImageService {
 
 	@Override
 	public void bind(String fullUri, IEventHandler<ImageEventArgs> handler) {
-		Bitmap bitmap = getBitmap(fullUri);
+		Bitmap bitmap = loadBitmap(fullUri);
 		if (bitmap != null) {
 			ImageEventArgs args = new ImageEventArgs(fullUri, bitmap, null);
 			handler.process(this, args);
 		} else {
-			loadBitmap(fullUri);
 			addImageEventHandler(fullUri, handler);
 		}
 	}
@@ -243,11 +242,10 @@ public class ImageService implements IImageService {
 	@Override
 	public void bind(String fullUri, ImageView view) {
 		Logger.check(view != null, "Parameter view cannot be null !");
-		Bitmap bitmap = getBitmap(fullUri);
+		Bitmap bitmap = loadBitmap(fullUri);
 		if (bitmap != null)
 			view.setImageBitmap(bitmap);
 		else {
-			loadBitmap(fullUri);
 			ImageViewRefreshHandler handler = null;
 			Iterator<ImageViewRefreshHandler> it = imageViewHandlers.iterator();
 			while(it.hasNext()){
