@@ -422,6 +422,7 @@ public class HttpSession{
 		setState(STATE_STARTED);
 		Runnable task = new Runnable(){
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				try {
@@ -450,6 +451,7 @@ public class HttpSession{
 							if (downloadMode){
 								if (statusCode != 200 && statusCode != 206){
 									error = new Exception("Status code received should be 200 or 206");
+									Logger.error(error);
 									setState(STATE_ERROR);
 									setState(STATE_FINISHED);	
 									return null;
@@ -498,6 +500,14 @@ public class HttpSession{
 												fileData.delete();
 											fileInfo.delete();
 											setState(STATE_CONTENT_RECEIVED);	
+										} else if (downloadedLength > contentLength){
+											error = new Exception("Downloaded content is bigger than it should be!");
+											Logger.error(error);
+											fileData.delete();
+											fileInfo.delete();
+											setState(STATE_ERROR);
+											setState(STATE_FINISHED);	
+											return null;
 										}
 									} else {
 										setState(STATE_CONTENT_RECEIVED);														
@@ -529,15 +539,17 @@ public class HttpSession{
 
 	public void stop() {
 		Runnable task = new Runnable(){
-
 			@Override
 			public void run() {
-				if (request != null){
-					request.abort();
-					request = null; 
+				try {
+					if (request != null){
+						request.abort();
+						request = null; 
+					}
+				} catch (Exception e) {
+					Logger.error(e);
 				}
 			}
-		
 		};
 		if (asyncTaskService != null)
 			asyncTaskService.run(task);
