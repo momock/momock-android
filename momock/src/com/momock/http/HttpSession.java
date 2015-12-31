@@ -448,6 +448,12 @@ public class HttpSession{
 								vals.add(h.getValue());
 							}
 							if (downloadMode){
+								if (statusCode != 200 && statusCode != 206){
+									error = new Exception("Status code received should be 200 or 206");
+									setState(STATE_ERROR);
+									setState(STATE_FINISHED);	
+									return null;
+								}
 								writeHeaders();
 							}
 							resetFromHeaders();
