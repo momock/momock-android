@@ -374,7 +374,9 @@ public abstract class App extends android.app.Application implements
 		if (serviceCanNotStop.contains(klass)){ 
 			Logger.debug("Service " + service.getClass() + " is already running.");
 		} else {
-			services.put(klass, service);
+			synchronized(services){
+				services.put(klass, service);
+			}
 			injector.addProvider(klass, service);			
 		}
 	}
@@ -492,22 +494,24 @@ public abstract class App extends android.app.Application implements
 	}
 	protected void destroyServices(){
 		serviceCanNotStop.clear();
-		for(Map.Entry<Class<?>, IService> e : services.entrySet()){
-			if (!e.getValue().canStop()){
-				serviceCanNotStop.add(e.getKey());
-				Logger.debug("Service " + e.getValue().getClass() + " cannot stop.");
-				addDependentServices(serviceCanNotStop, e.getValue());
+		synchronized(services){
+			for(Map.Entry<Class<?>, IService> e : services.entrySet()){
+				if (!e.getValue().canStop()){
+					serviceCanNotStop.add(e.getKey());
+					Logger.debug("Service " + e.getValue().getClass() + " cannot stop.");
+					addDependentServices(serviceCanNotStop, e.getValue());
+				}
 			}
+			List<Class<?>> keys = new ArrayList<Class<?>>();
+			keys.addAll(services.keySet());
+			for(Class<?> cls : keys){
+				if (!serviceCanNotStop.contains(cls)){
+					services.get(cls).stop();		
+					services.remove(cls);		
+					injector.removeProvider(cls);
+				}
+			}		
 		}
-		List<Class<?>> keys = new ArrayList<Class<?>>();
-		keys.addAll(services.keySet());
-		for(Class<?> cls : keys){
-			if (!serviceCanNotStop.contains(cls)){
-				services.get(cls).stop();		
-				services.remove(cls);		
-				injector.removeProvider(cls);
-			}
-		}		
 		servicesCreated = false;
 	}
 	@Override
