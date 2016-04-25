@@ -49,6 +49,7 @@ import android.os.PowerManager;
 import android.os.Vibrator;
 import android.os.storage.StorageManager;
 import android.service.wallpaper.WallpaperService;
+import android.support.multidex.MultiDex;
 import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
@@ -641,5 +642,10 @@ public abstract class App extends android.app.Application implements
 			return false;
 		
 		return true;
+	}
+	@Override
+	protected void attachBaseContext(Context base) {
+		super.attachBaseContext(base);
+		MultiDex.install(this);
 	}
 }
