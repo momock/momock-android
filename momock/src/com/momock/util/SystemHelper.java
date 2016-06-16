@@ -109,7 +109,7 @@ public class SystemHelper {
 		} catch (NoSuchAlgorithmException e) {
 			Logger.error(e);
 		}
-		m.update(text.getBytes(), 0, text.length());
+		m.update(text.getBytes());
 		byte md5Data[] = m.digest();
 
 		String uniqueID = new String();
