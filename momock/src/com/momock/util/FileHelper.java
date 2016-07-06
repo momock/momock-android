@@ -125,7 +125,9 @@ public class FileHelper {
 	public static File getCacheDir(Context context, String category) {
 		if (cacheDir == null){
 			if (getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-				cacheDir = new File(getExternalStorageDirectory().getPath() + "/Android/data/" + context.getPackageName() + "/cache/");
+				cacheDir = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ? 
+						getExternalCacheDir(context)
+						: new File(getExternalStorageDirectory().getPath() + "/Android/data/" + context.getPackageName() + "/cache/");
 			} else {
 				cacheDir = context.getCacheDir();
 			}
@@ -233,5 +235,25 @@ public class FileHelper {
 	        }  
 	        file.delete();  
 	    }  
+	}
+	
+	public static String getFileExtensionName(String fileName){
+		try {
+			int index = fileName.lastIndexOf(".");
+			String pf = fileName.substring(index+1, fileName.length());
+			return pf;
+		} catch (Exception e) {
+			Logger.error(e);
+		}
+		
+		return null;
 	} 
+	
+	public static long getFileSize(File file) {
+        if (file == null) {
+            return -1;
+        }
+
+        return (file.exists() && file.isFile() ? file.length() : -1);
+    }
 }
